@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title>Debug </title>
+</head>
+<body>
+    <div class="container">
+
+        <div class="page-header">
+            <h1>Login</h1>
+            <p class="lead">basic認証をHTMLからやってみる.</p>
+        </div>
+
+        <div>
+            <div class="form-group">
+                <label for="userId">Your Id</label>
+                <input type="text" class="form-control" id="userId" placeholder="Your Id">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Password">
+            </div>
+
+            <button type="button" class="btn btn-default" onClick="login()">Login</button>
+        </div>
+
+    
+    </div> <!-- /container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/docs.min.js"></script>
+    <script type="text/javascript">
+
+        function login() {
+            var a =
+                location.protocol + '//'
+                + location.host + '/'
+                + 'login/'
+                + $('#userId').val() + '/'
+                + 'pass/'
+                + $('#password').val();
+
+            //alert(a);
+            location.href = a;
+        }
+    </script>
+    
+</body>
+</html>

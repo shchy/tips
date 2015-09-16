@@ -57,6 +57,10 @@
       <HintPath>..\packages\Nancy.1.2.0\lib\net40\Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Nancy.Authentication.Forms, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Authentication.Forms.1.2.0\lib\net40\Nancy.Authentication.Forms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Nancy.Bootstrappers.Unity, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nancy.Bootstrappers.Unity.1.2.0\lib\net40\Nancy.Bootstrappers.Unity.dll</HintPath>
       <Private>True</Private>
@@ -77,6 +81,7 @@
   <ItemGroup>
     <Compile Include="Auth\BasicAuthentication.cs" />
     <Compile Include="Auth\BasicAuthUserValidator.cs" />
+    <Compile Include="Auth\FormAuthUserMapper.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
