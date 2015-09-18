@@ -58,7 +58,7 @@ namespace Tips.Web.Modules
                 }
 
                 return
-                    this.LoginAndRedirect(userToGuid.ToGuid(user.Return()), DateTime.Now.AddDays(7), "/users");
+                    this.LoginAndRedirect(userToGuid.ToGuid(user.Return()), DateTime.Now.AddDays(7), "/manage/users");
             };
         }
     }
