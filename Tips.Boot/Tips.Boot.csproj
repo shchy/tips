@@ -107,6 +107,10 @@
       <Project>{e379bd80-bb57-4c4d-8f92-ff09210dcbed}</Project>
       <Name>Tips.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tips.GitServer\Tips.GitServer.csproj">
+      <Project>{b8df0707-25f8-4221-9a59-23d6006b5752}</Project>
+      <Name>Tips.GitServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tips.Model\Tips.Model.csproj">
       <Project>{bd7fa271-119b-451e-83ed-49f7580bff13}</Project>
       <Name>Tips.Model</Name>

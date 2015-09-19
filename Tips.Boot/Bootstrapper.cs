@@ -13,12 +13,14 @@ using Nancy.Security;
 using Nancy.Authentication.Forms;
 using Tips.Web.Modules;
 using Tips.Model.Models;
+using Tips.GitServer;
 
 namespace Tips.Boot
 {
     public class Bootstrapper : Nancy.Bootstrappers.Unity.UnityNancyBootstrapper
     {
         private IEnumerable<object> controllers;
+        private SshModule sshGitTest;
 
         protected override void ConfigureConventions(Nancy.Conventions.NancyConventions nancyConventions)
         {
@@ -55,6 +57,11 @@ namespace Tips.Boot
             // コントローラーを起動
             this.controllers = MakeControllers().ToArray();
 
+            var projectPath = @"C:\Users\Shuichi\home\src";
+            var gitPath = @"C:\Users\Shuichi\AppData\Local\Atlassian\SourceTree\git_local\bin";
+
+            this.sshGitTest = new SshModule(gitPath, projectPath);
+            sshGitTest.Start();
             base.ApplicationStartup(container, pipelines);
 
         }

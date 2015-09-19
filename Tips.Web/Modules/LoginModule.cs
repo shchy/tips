@@ -20,7 +20,7 @@ namespace Tips.Web.Modules
         public LoginModule()
         {
             this.ea = ServiceLocator.Current.GetInstance<IEventAggregator>();
-            this.userToGuid = ServiceLocator.Current.GetInstance<IUserToGuid>(); 
+            this.userToGuid = ServiceLocator.Current.GetInstance<IUserToGuid>();
 
             Get["/"] = prms =>
             {
