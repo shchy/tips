@@ -58,6 +58,10 @@
       <HintPath>..\packages\Nancy.Authentication.Basic.1.2.0\lib\net40\Nancy.Authentication.Basic.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Nancy.Authentication.Forms, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Authentication.Forms.1.2.0\lib\net40\Nancy.Authentication.Forms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -69,16 +73,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Modules\LoginModule.cs" />
-    <Compile Include="Modules\TestModule.cs" />
+    <Compile Include="Modules\UserManageModule.cs" />
+    <Compile Include="Modules\UserModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Views\404.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Views\Sample01.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +103,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Views\UserList.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Views\Login.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

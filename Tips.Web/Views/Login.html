@@ -10,8 +10,8 @@
     <div class="container">
 
         <div class="page-header">
-            <h1>Add User</h1>
-            <p class="lead">debug add user page.</p>
+            <h1>Login</h1>
+            <p class="lead">basic認証をHTMLからやってみる.</p>
         </div>
 
         <div>
@@ -23,20 +23,12 @@
                 <label for="password">Password</label>
                 <input type="password" class="form-control" id="password" placeholder="Password">
             </div>
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" placeholder="Your Name">
-            </div>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="isAdmin"> IsAdministrator
-                </label>
-            </div>
-            <button type="button" class="btn btn-default" onClick="addUser()">Submit</button>
+
+            <button type="button" class="btn btn-default" onClick="login()">Login</button>
         </div>
 
-    </div><!-- /container -->
-
+    
+    </div> <!-- /container -->
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -46,14 +38,19 @@
     <script src="/js/docs.min.js"></script>
     <script type="text/javascript">
 
-        function addUser() {
-            location.href =
-                '/manage/users/add'
-                + '/id/' + $('#userId').val()
-                + '/pass/' + $('#password').val()
-                + '/name/' + $('#name').val()
-                + '/isadmin/' + $('#isAdmin').is(':checked');
+        function login() {
+            var a =
+                location.protocol + '//'
+                + location.host + '/'
+                + 'login/'
+                + $('#userId').val() + '/'
+                + 'pass/'
+                + $('#password').val();
+
+            //alert(a);
+            location.href = a;
         }
     </script>
+    
 </body>
 </html>

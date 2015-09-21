@@ -13,12 +13,12 @@ using Tips.Model.Models;
 
 namespace Tips.Web.Modules
 {
-    public class TestModule : NancyModule
+    public class UserManageModule : NancyModule
     {
         private IEventAggregator ea;
 
-        public TestModule()
-            :base("/users/")
+        public UserManageModule()
+            :base("/manage/users/")
         {
             this.ea = ServiceLocator.Current.GetInstance<IEventAggregator>();
 
@@ -62,7 +62,7 @@ namespace Tips.Web.Modules
                             Role = isAdmin ? UserRole.Admin : UserRole.Normal
                         });
 
-                return Response.AsRedirect("/users/");
+                return Response.AsRedirect("/manage/users/");
             };
         }
     }
