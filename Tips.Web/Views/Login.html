@@ -38,18 +38,35 @@
     <script src="/js/docs.min.js"></script>
     <script type="text/javascript">
 
+        // todo validate
+
         function login() {
-            var a =
+
+            var id = $('#userId').val();
+            var pass = $('#password').val();
+
+            if (id.match(/^[ 　\r\n\t]*$/)
+                || pass.match(/^[ 　\r\n\t]*$/)) {
+                return;
+            }
+
+            var next =
                 location.protocol + '//'
                 + location.host + '/'
                 + 'login/'
-                + $('#userId').val() + '/'
+                + id + '/'
                 + 'pass/'
-                + $('#password').val();
+                + pass;
 
-            //alert(a);
-            location.href = a;
+            location.href = next;
         }
+
+        $('#password').keypress(function (e)
+        {
+            if (e.which === 13) {
+                login();
+            }
+        });
     </script>
     
 </body>

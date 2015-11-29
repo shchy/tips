@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nancy;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,11 @@ using System.Threading.Tasks;
 
 namespace Tips.Web.Modules
 {
-    class UserModule
+    public class UserModule : NancyModule
     {
+        public UserModule()
+        {
+
+        }
     }
 }
