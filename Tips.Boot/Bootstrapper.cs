@@ -57,11 +57,12 @@ namespace Tips.Boot
             // コントローラーを起動
             this.controllers = MakeControllers().ToArray();
 
+            // ssh git server test
             var projectPath = @"C:\Users\Shuichi\home\src";
             var gitPath = @"C:\Users\Shuichi\AppData\Local\Atlassian\SourceTree\git_local\bin";
-
             this.sshGitTest = new SshModule(gitPath, projectPath);
             sshGitTest.Start();
+
             base.ApplicationStartup(container, pipelines);
 
         }
