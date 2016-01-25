@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tips.Core", "Tips.Core\Tips.Core.csproj", "{E379BD80-BB57-4C4D-8F92-FF09210DCBED}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tips.Model", "Tips.Model\Tips.Model.csproj", "{BD7FA271-119B-451E-83ED-49F7580BFF13}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tips.GitServer", "Tips.GitServer\Tips.GitServer.csproj", "{B8DF0707-25F8-4221-9A59-23D6006B5752}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tips.Desktop", "Tips.Desktop\Tips.Desktop.csproj", "{8BF54D93-AFB4-4EFC-B970-9CDD8147E97A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{B8DF0707-25F8-4221-9A59-23D6006B5752}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8DF0707-25F8-4221-9A59-23D6006B5752}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8DF0707-25F8-4221-9A59-23D6006B5752}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BF54D93-AFB4-4EFC-B970-9CDD8147E97A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BF54D93-AFB4-4EFC-B970-9CDD8147E97A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BF54D93-AFB4-4EFC-B970-9CDD8147E97A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BF54D93-AFB4-4EFC-B970-9CDD8147E97A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
