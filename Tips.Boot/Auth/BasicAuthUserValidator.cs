@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Nancy.Security;
 using Tips.Model.Context;
-using Microsoft.Practices.Prism.PubSubEvents;
 using Tips.Core.Events;
+using Prism.Events;
 
 namespace Tips.Boot.Auth
 {
@@ -23,21 +23,17 @@ namespace Tips.Boot.Auth
 
         public IUserIdentity Validate(string username, string password)
         {
-            var maybeUsers = this.ea.GetEvent<GetUserEvent>().Publish(_ => true);
+            var users = this.ea.GetEvent<GetUserEvent>().Get(_ => true);
             var user =
-                from users in maybeUsers
-                let validUsers =
-                    from u in users
-                    where u.Id == username
-                    where u.Password == password
-                    select new UserIdentity
-                    {
-                        UserName = username,
-                        Claims = new[] { u.Role.ToString() }
-                    }
-                from validUser in validUsers.FirstOrNothing()
-                select validUser;
-            return user.Return(() => null);
+                from u in users
+                where u.Id == username
+                where u.Password == password
+                select new UserIdentity
+                {
+                    UserName = username,
+                    Claims = new[] { u.Role.ToString() }
+                };
+            return user.FirstOrDefault();
         }
     }
 

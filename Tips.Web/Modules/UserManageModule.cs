@@ -1,8 +1,8 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.ServiceLocation;
+﻿using Microsoft.Practices.ServiceLocation;
 using Nancy;
 using Nancy.Responses;
 using Nancy.Security;
+using Prism.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +29,10 @@ namespace Tips.Web.Modules
             {
                 var users =
                     this.ea.GetEvent<GetUserEvent>()
-                        .Publish(Fn.New((IUser _) => true));
+                        .Get(Fn.New((IUser _) => true));
                 var model = new
                 {
-                    Users = users.Return(Enumerable.Empty<IUser>())
+                    Users = users
                 };
                 return View["Views/UserList", model];
             };
@@ -41,7 +41,7 @@ namespace Tips.Web.Modules
             {
                 var users =
                     this.ea.GetEvent<GetUserEvent>()
-                        .Publish(Fn.New((IUser _) => true));
+                        .Get(Fn.New((IUser _) => true));
 
                 return View["Views/UserAdd"];
             };

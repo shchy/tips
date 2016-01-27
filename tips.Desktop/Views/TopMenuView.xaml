@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="tips.Desktop.Views.TopMenuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"       
+             xmlns:ctrls="clr-namespace:tips.Desktop.Views.Controls"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             Background="Gray">
+    <Grid>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <ctrls:LinkButton Text="Home" Command="{Binding ToHomeCommand}" Foreground="Orange" Padding="6" />
+        </StackPanel>
+        
+    </Grid>
+</UserControl>

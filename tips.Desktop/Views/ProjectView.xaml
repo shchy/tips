@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="tips.Desktop.Views.ProjectView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"      
+             xmlns:views="clr-namespace:tips.Desktop.Views"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <views:ProjectSideView Grid.Column="0" />
+
+        <ContentControl prism:RegionManager.RegionName="ProjectContentRegion" Grid.Column="1" />
+
+    </Grid>
+</UserControl>

@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Tips.Desktop
+namespace tips.Desktop.Views
 {
     /// <summary>
-    /// MainWindow.xaml の相互作用ロジック
+    /// ProjectCardView.xaml の相互作用ロジック
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ProjectCardView : UserControl
     {
-        public MainWindow()
+        public ProjectCardView()
         {
             InitializeComponent();
         }

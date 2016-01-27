@@ -1,5 +1,4 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.ServiceLocation;
+﻿using Microsoft.Practices.ServiceLocation;
 using Nancy;
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 using Tips.Core.Events;
 using Nancy.Authentication.Forms;
 using Tips.Model.Models;
+using Prism.Events;
 
 namespace Tips.Web.Modules
 {
@@ -42,23 +42,19 @@ namespace Tips.Web.Modules
                 var id = (string)prms.id;
                 var pass = (string)prms.pass;
 
-                var user =
-                    from ux in this.ea.GetEvent<GetUserEvent>().Publish(_ => true)
-                    let a =
-                        from u in ux
-                        where u.Id == id
-                        where u.Password == pass
-                        select u
-                    from u in a.FirstOrNothing()
+                var users =
+                    from u in this.ea.GetEvent<GetUserEvent>().Get(_ => true)
+                    where u.Id == id
+                    where u.Password == pass
                     select u;
-
-                if (user.IsNothing)
+                var user = users.FirstOrDefault();
+                if (user== null)
                 {
                     return Response.AsRedirect("/");
                 }
 
                 return
-                    this.LoginAndRedirect(userToGuid.ToGuid(user.Return()), DateTime.Now.AddDays(7), "/manage/users");
+                    this.LoginAndRedirect(userToGuid.ToGuid(user), DateTime.Now.AddDays(7), "/manage/users");
             };
         }
     }

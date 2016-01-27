@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="tips.Desktop.Views.CreateProjectView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"             
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="300"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Content="Create New Project" Grid.ColumnSpan="2" FontWeight="Bold" FontSize="16"  />
+
+        <Label Content="Project Name" Grid.Row="1" Grid.Column="0" />
+        <TextBox Text="{Binding ProjectName}" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" />
+
+        <Label Content="Describe" Grid.Row="2" Grid.Column="0" />
+        <TextBox Text="{Binding Describe}"  
+                 Grid.Row="2" Grid.Column="1" 
+                  VerticalAlignment="Center" 
+                  AcceptsReturn="True"
+                  TextWrapping="Wrap" 
+                  VerticalScrollBarVisibility="Auto"
+                  MinHeight="200"  />
+
+        <Button Grid.Row="3" Grid.Column="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Content="Create"
+                Padding="6"
+                Command="{Binding CreateCommand}"/>
+
+    </Grid>
+</UserControl>

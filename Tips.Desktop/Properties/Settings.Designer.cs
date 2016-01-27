@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Tips.Desktop.Properties
+namespace tips.Desktop.Properties
 {
 
 

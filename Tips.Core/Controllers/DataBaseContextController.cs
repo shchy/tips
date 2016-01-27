@@ -1,5 +1,5 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.ServiceLocation;
+﻿using Microsoft.Practices.ServiceLocation;
+using Prism.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +20,27 @@ namespace Tips.Core.Controllers
         {
             this.ea = ServiceLocator.Current.GetInstance<IEventAggregator>();
             this.context = ServiceLocator.Current.GetInstance<IDataBaseContext>();
-            this.ea.GetEvent<GetUserEvent>().Subscribe(a => GetUser(a.Item1, a.Item2), true);
+            this.ea.GetEvent<GetUserEvent>().Subscribe(GetUser, true);
             this.ea.GetEvent<AddUserEvent>().Subscribe(AddUser, true);
+            this.ea.GetEvent<AddProjectEvent>().Subscribe(AddProject, true);
+            this.ea.GetEvent<GetProjectEvent>().Subscribe(GetProject, true);
+        }
+
+        
+
+        private void GetProject(GetOrder<IProject> order)
+        {
+            order.Callback(this.context.GetProjects(order.Predicate));
+        }
+
+        private void AddProject(AddProjectOrder order)
+        {
+            var model = new Project
+            {
+                Name = order.Name,
+                Describe = order.Describe,
+            };
+            this.context.AddProject(model);
         }
 
         private void AddUser(IUser user)
@@ -29,9 +48,10 @@ namespace Tips.Core.Controllers
             this.context.AddUser(user);
         }
 
-        private void GetUser(Action<IEnumerable<IUser>> callback, Func<IUser, bool> predicate)
+
+        private void GetUser(GetOrder<IUser> order)
         {
-            callback(this.context.GetUser(predicate));
+            order.Callback(this.context.GetUser(order.Predicate));
         }
     }
 }

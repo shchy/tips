@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="tips.Desktop.Views.ProjectCardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:tips.Desktop.Views"
+             xmlns:ctrls="clr-namespace:tips.Desktop.Views.Controls"
+             >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="6*" />
+            <ColumnDefinition Width="4*"/>
+        </Grid.ColumnDefinitions>
+
+        <ctrls:LabelWithTag Grid.Row="0" Grid.ColumnSpan="2" 
+                            TagContent="ProjectName:"
+                            Orientation="Horizontal">
+            <ctrls:LabelWithTag.TextContent>
+                <ctrls:LinkButton
+                          Command="{Binding SelectProjectCommand}"
+                          Text="{Binding Project.Name}"  />
+            </ctrls:LabelWithTag.TextContent>
+        </ctrls:LabelWithTag>
+        
+
+        <ctrls:LabelWithTag Grid.Row="1" Grid.Column="0"
+                            TextContent="{Binding Project.Describe}"
+                            TagContent="Describe："
+                            Orientation="Vertical"/>
+
+        <ctrls:LabelWithTag Grid.Row="1" Grid.Column="1"
+                            TagContent="Score："
+                            Orientation="Vertical">
+            <ctrls:LabelWithTag.TextContent>
+                <Viewbox  Stretch="Uniform" StretchDirection="Both" >
+                    <TextBlock Text="89" FontWeight="Bold" VerticalAlignment="Top" />
+                </Viewbox>
+            </ctrls:LabelWithTag.TextContent>
+        </ctrls:LabelWithTag>
+
+        <ctrls:LabelWithTag Grid.Row="2" Grid.ColumnSpan="2"
+                            TagContent="Member："
+                            Orientation="Vertical">
+            <ctrls:LabelWithTag.TextContent>
+                <Label Content="◎◎◎◎◎◎◎"  />
+            </ctrls:LabelWithTag.TextContent>
+        </ctrls:LabelWithTag>
+
+
+    </Grid>
+</UserControl>

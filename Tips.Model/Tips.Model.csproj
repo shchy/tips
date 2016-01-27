@@ -44,7 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Context\FileDataBaseContext.cs" />
     <Compile Include="Context\IDataBaseContext.cs" />
+    <Compile Include="Context\InMemoryDataBaseContext.cs" />
     <Compile Include="Models\IProject.cs" />
     <Compile Include="Models\IUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

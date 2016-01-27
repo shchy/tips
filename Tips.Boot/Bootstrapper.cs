@@ -1,7 +1,6 @@
 ﻿using Nancy.Conventions;
 using Microsoft.Practices.Unity;
 using Tips.Model.Context;
-using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.ServiceLocation;
 using Tips.Core.Controllers;
 using Nancy.Bootstrapper;
@@ -14,6 +13,7 @@ using Nancy.Authentication.Forms;
 using Tips.Web.Modules;
 using Tips.Model.Models;
 using Tips.GitServer;
+using Prism.Events;
 
 namespace Tips.Boot
 {

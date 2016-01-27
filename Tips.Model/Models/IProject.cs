@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Tips.Model.Models
 {
@@ -65,11 +66,26 @@ namespace Tips.Model.Models
     public interface IProject : IIdentity<int>, INameable
     {
         IEnumerable<IItelator> Itelators { get; }
+        string Describe { get; }
     }
 
 
 
+    public class Project : IProject
+    {
+        public string Describe { get; set; }
 
+        public int Id { get; set; }
+        [XmlIgnore]
+        public IEnumerable<IItelator> Itelators { get; set; }
+
+        public string Name { get; set; }
+
+        public Project()
+        {
+            this.Itelators = Enumerable.Empty<IItelator>();
+        }
+    }
 
 
 }
