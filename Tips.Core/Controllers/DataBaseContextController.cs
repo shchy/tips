@@ -24,9 +24,14 @@ namespace Tips.Core.Controllers
             this.ea.GetEvent<AddUserEvent>().Subscribe(AddUser, true);
             this.ea.GetEvent<AddProjectEvent>().Subscribe(AddProject, true);
             this.ea.GetEvent<GetProjectEvent>().Subscribe(GetProject, true);
+            this.ea.GetEvent<UpdateProjectEvent>().Subscribe(UpdateProject, true);
+            
         }
 
-        
+        private void UpdateProject(IProject model)
+        {
+            this.context.AddProject(model);
+        }
 
         private void GetProject(GetOrder<IProject> order)
         {

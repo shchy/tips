@@ -97,6 +97,8 @@
     <Compile Include="Modules\NavigateFacadeModule.cs" />
     <Compile Include="ViewModels\CreateProjectViewModel.cs" />
     <Compile Include="ViewModels\ProjectCardViewModel.cs" />
+    <Compile Include="ViewModels\ProjectInBacklogEditViewModel.cs" />
+    <Compile Include="ViewModels\ProjectInBacklogViewModel.cs" />
     <Compile Include="ViewModels\ProjectsViewModel.cs" />
     <Compile Include="ViewModels\ProjectViewModel.cs" />
     <Compile Include="ViewModels\TopMenuViewModel.cs" />
@@ -111,6 +113,9 @@
     </Compile>
     <Compile Include="Views\ProjectCardView.xaml.cs">
       <DependentUpon>ProjectCardView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProjectInBacklogEditView.xaml.cs">
+      <DependentUpon>ProjectInBacklogEditView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProjectInBacklogView.xaml.cs">
       <DependentUpon>ProjectInBacklogView.xaml</DependentUpon>
@@ -155,6 +160,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\ProjectCardView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ProjectInBacklogEditView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

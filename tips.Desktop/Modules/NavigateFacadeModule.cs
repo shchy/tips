@@ -1,4 +1,5 @@
-﻿using Microsoft.Practices.Unity;
+﻿using Haskellable.Code.Monads.Maybe;
+using Microsoft.Practices.Unity;
 using Prism.Events;
 using Prism.Modularity;
 using Prism.Regions;
@@ -9,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using tips.Desktop.Views;
+using Tips.Core.Events;
+using Tips.Model.Models;
 
 namespace tips.Desktop.Modules
 {
@@ -34,6 +37,7 @@ namespace tips.Desktop.Modules
             this.container.RegisterType<object, CreateProjectView>(ViewNames.CREATE_PROJECT);
             this.container.RegisterType<object, ProjectView>(ViewNames.PROJECT);
             this.container.RegisterType<object, ProjectInBacklogView>(ViewNames.PROJECT_IN_BACKLOG);
+            this.container.RegisterType<object, ProjectInBacklogEditView>(ViewNames.PROJECT_IN_BACKLOG_EDIT);
 
             this.eventAgg.GetEvent<NavigateEvent>().Subscribe(Navigate, true);
             this.eventAgg.GetEvent<NavigateInProjectViewEvent>().Subscribe(NavigateInProjectView, true);
@@ -56,12 +60,14 @@ namespace tips.Desktop.Modules
 
             if (isVisibleTop)
             {
-                regionManager.Move(RegionNames.TopMenuRegion, typeof(TopMenuView).ToString());
+                regionManager.Move(RegionNames.TopMenuRegion, typeof(TopMenuView).ToString(), order.Prms);
             }
             else
             {
                 regionManager.Clear(RegionNames.TopMenuRegion);
             }
+
+            regionManager.Clear(RegionNames.ProjectContentRegion);
 
             regionManager.Move(RegionNames.ContentRegion, order.ViewName, order.Prms);
         }
@@ -77,6 +83,7 @@ namespace tips.Desktop.Modules
         public static readonly string PROJECT = typeof(ProjectView).ToString();
         public static readonly string CREATE_PROJECT = typeof(CreateProjectView).ToString();
         public static readonly string PROJECT_IN_BACKLOG = typeof(ProjectInBacklogView).ToString();
+        public static readonly string PROJECT_IN_BACKLOG_EDIT = typeof(ProjectInBacklogEditView).ToString();
 
     }
 
@@ -117,6 +124,10 @@ namespace tips.Desktop.Modules
 
         public static void Clear(this IRegionManager regionManager, string regionName)
         {
+            if (regionManager.Regions.ContainsRegionWithName(regionName) == false)
+            {
+                return;
+            }
             var currentViews = regionManager.Regions[regionName].ActiveViews.ToArray();
             currentViews.ForEach(regionManager.Regions[regionName].Deactivate);
         }
@@ -152,6 +163,24 @@ namespace tips.Desktop.Modules
                 Prms = prms,
             };
             @this.Publish(order);
+        }
+
+        public static IMaybe<IProject> TryToGetProject(this NavigationContext @this, IEventAggregator eventAgg)
+        {
+            var query =
+                from c in @this.ToMaybe()
+                let find =
+                    from p in c.Parameters
+                    where p.Key == "ProjectId"
+                    select p.Value
+                from v in find.FirstOrNothing()
+                let projects =
+                    from p in eventAgg.GetEvent<GetProjectEvent>().Get(_ => true)
+                    where p.Id == (int)v
+                    select p
+                from p in projects.FirstOrNothing()
+                select p;
+            return query;
         }
     }
 

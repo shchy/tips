@@ -10,25 +10,20 @@ using Tips.Model.Models;
 
 namespace tips.Desktop.ViewModels
 {
-    [PropertyChanged.ImplementPropertyChanged]
-    public class ProjectViewModel : BindableBase, INavigationAware
+    public class ProjectInBacklogViewModel : BindableBase, INavigationAware
     {
         private IEventAggregator eventAgg;
 
-        public DelegateCommand ToBacklogCommand { get; private set; }
-        public DelegateCommand ToSprintBoardCommand { get; private set; }
-        public DelegateCommand ToIssuesCommand { get; private set; }
-        public DelegateCommand ToBugsCommand { get; private set; }
-        public DelegateCommand ToRecordCommand { get; private set; }
+        public DelegateCommand ToEditBacklogCommand { get; private set; }
         public IProject Project { get; private set; }
 
-        public ProjectViewModel(IEventAggregator eventAgg)
+        public ProjectInBacklogViewModel(IEventAggregator eventAgg)
         {
             this.eventAgg = eventAgg;
-            this.ToBacklogCommand = 
-                new DelegateCommand(() => 
+            this.ToEditBacklogCommand = 
+                new DelegateCommand(()=> 
                     eventAgg.GetEvent<NavigateInProjectViewEvent>()
-                        .Publish(ViewNames.PROJECT_IN_BACKLOG, new NavigateParams { { "ProjectId", this.Project.Id } }));
+                        .Publish(ViewNames.PROJECT_IN_BACKLOG_EDIT, new NavigateParams { {"ProjectId", this.Project.Id } }));
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
@@ -38,7 +33,6 @@ namespace tips.Desktop.ViewModels
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)

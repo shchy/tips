@@ -12,9 +12,6 @@ namespace Tips.Model.Models
         string Name { get; }
     }
 
-
-
-
     public interface IResource : IIdentity<int>, INameable
     {
         /// <summary>
@@ -29,7 +26,7 @@ namespace Tips.Model.Models
         T Right { get; }
     }
 
-    public interface ITask : IIdentity<int>, INameable
+    public interface ITaskItem : IIdentity<int>, INameable
     {
         double Value { get; }
     }
@@ -43,12 +40,6 @@ namespace Tips.Model.Models
         IResource Who { get; }
     }
 
-    //public interface ITaskWithRecord 
-    //{
-    //    ITask Task { get; }
-    //    IEnumerable<ITaskRecord> Records { get;}
-    //}
-
     public interface IPlan : IIdentity<int>
     {
         DateTime Day { get; }
@@ -56,19 +47,16 @@ namespace Tips.Model.Models
         IResource Who { get; }
     }
 
-    public interface IItelator : IIdentity<int>, INameable
+    public interface ISprint : IIdentity<int>, INameable, IRange<DateTime?>
     {
-        IEnumerable<ITask> Tasks { get; }
-        IEnumerable<ITaskRecord> Records { get; }
-        IEnumerable<IPlan> Plans { get; }
+        IEnumerable<ITaskItem> Tasks { get; }
     }
 
     public interface IProject : IIdentity<int>, INameable
     {
-        IEnumerable<IItelator> Itelators { get; }
+        IEnumerable<ISprint> Sprints { get; set; }
         string Describe { get; }
     }
-
 
 
     public class Project : IProject
@@ -76,16 +64,50 @@ namespace Tips.Model.Models
         public string Describe { get; set; }
 
         public int Id { get; set; }
+
         [XmlIgnore]
-        public IEnumerable<IItelator> Itelators { get; set; }
+        public IEnumerable<ISprint> Sprints { get; set; }
 
         public string Name { get; set; }
 
         public Project()
         {
-            this.Itelators = Enumerable.Empty<IItelator>();
+            this.Sprints = Enumerable.Empty<ISprint>();
         }
     }
 
+    public class Sprint : ISprint
+    {
+        private List<ITaskItem> tasks;
+
+        public Sprint()
+        {
+            this.tasks = new List<ITaskItem>();
+        }
+
+        public void AddTask(ITaskItem task)
+        {
+            this.tasks.Add(task);
+        }
+
+        public int Id { get; set; }
+
+        public DateTime? Left { get; set; }
+
+        public string Name { get; set; }
+
+        public DateTime? Right { get; set; }
+
+        public IEnumerable<ITaskItem> Tasks { get { return tasks.ToArray(); } }
+    }
+
+    public class TaskItem : ITaskItem
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public double Value { get; set; }
+    }
 
 }

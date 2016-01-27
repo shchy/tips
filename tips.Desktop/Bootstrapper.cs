@@ -6,6 +6,9 @@ using Tips.Model.Context;
 using Prism.Modularity;
 using tips.Desktop.Modules;
 using Prism.Events;
+using Tips.Core.Services;
+using System.IO;
+using System;
 
 namespace tips.Desktop
 {
@@ -32,6 +35,18 @@ namespace tips.Desktop
             base.ConfigureContainer();
 
             this.Container.RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager());
+
+            var dbPath =
+                Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+                    , "debugData");
+
+            this.Container.RegisterType<IDataBaseContext, FileDataBaseContext>(
+                new ContainerControlledLifetimeManager()
+                , new InjectionConstructor(dbPath));
+
+            this.Container.RegisterType<ITaskToTextFactory, TextToTaskFactory>();
+
         }
 
         protected override void ConfigureModuleCatalog()

@@ -5,9 +5,16 @@
              xmlns:ctrls="clr-namespace:tips.Desktop.Views.Controls"
              prism:ViewModelLocator.AutoWireViewModel="True"
              Background="Gray">
+    <UserControl.Resources>
+        <Style TargetType="ctrls:LinkButton">
+            <Setter Property="Margin" Value="6" />
+            <Setter Property="Foreground" Value="Orange" />
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-            <ctrls:LinkButton Text="Home" Command="{Binding ToHomeCommand}" Foreground="Orange" Padding="6" />
+            <ctrls:LinkButton Text="Home" Command="{Binding ToHomeCommand}" Foreground="Orange" />
+            <ctrls:LinkButton Text="{Binding Project.Name}" Command="{Binding ToProjectHomeCommand}" Foreground="Orange" />
         </StackPanel>
         
     </Grid>

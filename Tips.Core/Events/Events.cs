@@ -22,6 +22,10 @@ namespace Tips.Core.Events
     {
     }
 
+    public class UpdateProjectEvent : PubSubEvent<IProject>
+    {
+    }
+
     public class GetProjectEvent : PubSubEvent<GetOrder<IProject>>
     {
     }

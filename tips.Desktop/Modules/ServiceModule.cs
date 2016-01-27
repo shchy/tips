@@ -26,13 +26,6 @@ namespace tips.Desktop.Modules
 
         public void Initialize()
         {
-            var dbPath = 
-                Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
-                    , "debugData");
-            this.container.RegisterType<IDataBaseContext, FileDataBaseContext>(
-                new ContainerControlledLifetimeManager()
-                , new InjectionConstructor(dbPath));
             
 
             this.services = new[]

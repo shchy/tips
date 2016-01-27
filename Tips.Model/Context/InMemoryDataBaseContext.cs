@@ -55,9 +55,10 @@ namespace Tips.Model.Context
                     .When(px => px.Any(), px => px.Max(x => x.Id) + 1)
                     .Return(1);
             }
+
             if (this.inMemoryData.Projects.Any(x=>x.Id == project.Id))
             {
-                throw new Exception("mou iruyo");
+                inMemoryData.Projects.Remove(inMemoryData.Projects.FirstOrDefault(x => x.Id == project.Id));
             }
             inMemoryData.Projects.Add(project as Project);
         }

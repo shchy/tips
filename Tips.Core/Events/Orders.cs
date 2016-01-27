@@ -11,7 +11,7 @@ namespace Tips.Core.Events
         public string Name { get; set; }
         public string Describe { get; set; }
     }
-
+    
     public class GetOrder<T>
     {
         public Action<IEnumerable<T>> Callback { get; set; }

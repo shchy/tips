@@ -32,17 +32,6 @@ namespace tips.Desktop.Views.Controls
             var canvas = new Canvas { Width = 100, Height = 100, Margin = new System.Windows.Thickness(0) };
             var label = new Label();
             canvas.Children.Add(label);
-            
-            //var size = new System.Windows.Size(canvas.Width, canvas.Height);
-            //canvas.Measure(size);
-            //canvas.Arrange(new System.Windows.Rect(size));
-            //var renderBitmap = new System.Windows.Media.Imaging.RenderTargetBitmap(
-            //                                        (int)size.Width,       // 画像の幅
-            //                                        (int)size.Height,      // 画像の高さ
-            //                                        96.0 ,                 // 横96.0DPI
-            //                                        96.0 ,                 // 縦96.0DPI
-            //                                        PixelFormats.Pbgra32); // 32bit(RGBA各8bit)
-            //renderBitmap.Render(canvas);
             return label.Padding;
         }
 
