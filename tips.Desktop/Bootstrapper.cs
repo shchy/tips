@@ -9,6 +9,7 @@ using Prism.Events;
 using Tips.Core.Services;
 using System.IO;
 using System;
+using System.Data.Entity;
 
 namespace tips.Desktop
 {
@@ -36,16 +37,20 @@ namespace tips.Desktop
 
             this.Container.RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager());
 
+
             var dbPath =
                 Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
-                    , "debugData");
+                    , "db");
+            this.Container.RegisterType<IDataSource, SqliteContext>(
+                new InjectionConstructor(dbPath));
 
-            this.Container.RegisterType<IDataBaseContext, FileDataBaseContext>(
-                new ContainerControlledLifetimeManager()
-                , new InjectionConstructor(dbPath));
+            this.Container.RegisterType<IDataBaseSource<SqliteContext>, DataBaseSource<SqliteContext>>(
+                new InjectionConstructor(Fn.New(()=> Container.Resolve<IDataSource>() as SqliteContext)));
 
-            this.Container.RegisterType<ITaskToTextFactory, TextToTaskFactory>();
+            this.Container.RegisterType<IDataBaseContext, DataBaseContext<SqliteContext>>();
+
+            this.Container.RegisterType<ITaskToTextFactory, TaskToTextFactory>();
 
         }
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace Tips.Model.Models
 {
@@ -58,14 +58,13 @@ namespace Tips.Model.Models
         string Describe { get; }
     }
 
-
-    public class Project : IProject
+    [PropertyChanged.ImplementPropertyChanged]
+    public partial class Project : IProject
     {
         public string Describe { get; set; }
 
         public int Id { get; set; }
 
-        [XmlIgnore]
         public IEnumerable<ISprint> Sprints { get; set; }
 
         public string Name { get; set; }
@@ -78,16 +77,14 @@ namespace Tips.Model.Models
 
     public class Sprint : ISprint
     {
-        private List<ITaskItem> tasks;
-
         public Sprint()
         {
-            this.tasks = new List<ITaskItem>();
+            Tasks = Enumerable.Empty<ITaskItem>();
         }
 
         public void AddTask(ITaskItem task)
         {
-            this.tasks.Add(task);
+            this.Tasks = this.Tasks.Concat(task).ToArray(); 
         }
 
         public int Id { get; set; }
@@ -98,7 +95,7 @@ namespace Tips.Model.Models
 
         public DateTime? Right { get; set; }
 
-        public IEnumerable<ITaskItem> Tasks { get { return tasks.ToArray(); } }
+        public IEnumerable<ITaskItem> Tasks { get; set; }
     }
 
     public class TaskItem : ITaskItem

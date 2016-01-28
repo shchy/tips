@@ -14,9 +14,9 @@ namespace Tips.Core.Services
         string Make(IEnumerable<ISprint> sprints);
     }
 
-    public class TextToTaskFactory : ITaskToTextFactory
+    public class TaskToTextFactory : ITaskToTextFactory
     {
-        public TextToTaskFactory()
+        public TaskToTextFactory()
         {
 
         }
@@ -86,7 +86,7 @@ namespace Tips.Core.Services
             var name = line.TrimStart().TrimStart('-');
 
             {
-                var reg = new Regex(@"@(\d+)pt",
+                var reg = new Regex(@"(@(\d+)pt|@(\d+))",
                     RegexOptions.IgnoreCase | RegexOptions.Singleline);
                 var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
                 var values = findedList.Select(x=>TryToInt(x.TrimStart('@').Replace("pt", string.Empty))).ToArray();
@@ -129,7 +129,7 @@ namespace Tips.Core.Services
                 return null;
             }
 
-            var reg = new Regex(@"@(\d{4})/(\d{2})/(\d{2})",
+            var reg = new Regex(@"(@(\d{4})/(\d{2})/(\d{2})|@(\d{2})/(\d{2}))",
                 RegexOptions.IgnoreCase | RegexOptions.Singleline);
             var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
 

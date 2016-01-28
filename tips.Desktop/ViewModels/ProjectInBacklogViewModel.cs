@@ -10,6 +10,7 @@ using Tips.Model.Models;
 
 namespace tips.Desktop.ViewModels
 {
+    [PropertyChanged.ImplementPropertyChanged]
     public class ProjectInBacklogViewModel : BindableBase, INavigationAware
     {
         private IEventAggregator eventAgg;
@@ -33,6 +34,7 @@ namespace tips.Desktop.ViewModels
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
+            
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
@@ -41,4 +43,6 @@ namespace tips.Desktop.ViewModels
             query.On(p => this.Project = p);
         }
     }
+
+    
 }

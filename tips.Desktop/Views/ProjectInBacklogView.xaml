@@ -3,15 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"            
              xmlns:ctrls="clr-namespace:tips.Desktop.Views.Controls"
+             xmlns:views="clr-namespace:tips.Desktop.Views"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
 
         <Label Grid.Row="0" Content="Backlog" FontWeight="Bold" FontSize="16" />
+        
         <ctrls:LinkButton Grid.Row="0" HorizontalAlignment="Right" Margin="6"
                           Text="edit" Command="{Binding ToEditBacklogCommand}"  />
 
@@ -19,7 +21,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border BorderThickness="1" BorderBrush="LightGray" CornerRadius="6" Margin="6" >
-                        <views:ProjectCardView DataContext="{Binding}" Width="320" MinHeight="240" />
+                        <views:SprintView DataContext="{Binding}"  />
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
