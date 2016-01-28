@@ -68,12 +68,12 @@ namespace Tips.Model.Context
             sql += "create table DbLinkProjectWithSprint(";
             sql += " ProjectId INTEGER";
             sql += " ,SprintId INTEGER";
-            sql += " ,PRIMARY KEY (ProjectId, SprintId)";
+            sql += " ,PRIMARY KEY (SprintId)";
             sql += ");";
             sql += "create table DbLinkSprintWithTask(";
             sql += " SprintId INTEGER";
             sql += " ,TaskItemId INTEGER";
-            sql += " ,PRIMARY KEY (SprintId, TaskItemId)";
+            sql += " ,PRIMARY KEY (TaskItemId)";
             sql += ");";
             return sql;
         }

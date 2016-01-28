@@ -24,7 +24,42 @@ namespace Tips.Core.Services
 
         public string Make(IEnumerable<ISprint> sprints)
         {
-            return null;
+            var items =
+                from s in sprints
+                select new object[] { s }.Concat(s.Tasks);
+
+            var lines =
+                items
+                .SelectMany(x => x)
+                .Select(x =>
+                    x.ToCaseOf()
+                    .Match((ISprint a) => ToText(a))
+                    .Match((ITaskItem a) => ToText(a))
+                    .Return(string.Empty));
+            var sb = new StringBuilder();
+
+            lines.ForEach(l => sb.AppendLine(l));
+
+            return sb.ToString();
+        }
+
+        private string ToText(ISprint model)
+        {
+            return
+                string.Format(@"# {0} {1} {2} {3}"
+                    , model.Id.ToString("[00]")
+                    , model.Name
+                    , model.Left.HasValue ? model.Left.Value.ToString("@yyyy/MM/dd") : ""
+                    , model.Right.HasValue ? model.Right.Value.ToString("@yyyy/MM/dd") : "");
+
+        }
+        private string ToText(ITaskItem model)
+        {
+            return
+                string.Format(@"- {0} {1} {2}"
+                    , model.Id.ToString("[00]")
+                    , model.Name
+                    , model.Value.ToString("0pt"));
         }
 
         public IEnumerable<ISprint> Make(string text)
@@ -101,10 +136,10 @@ namespace Tips.Core.Services
             }
 
             {
-                var reg = new Regex(@"!(\d+)",
+                var reg = new Regex(@"[(\d+)]",
                     RegexOptions.IgnoreCase | RegexOptions.Singleline);
                 var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
-                var values = findedList.Select(x=>TryToInt(x.TrimStart('!'))).ToArray();
+                var values = findedList.Select(x=>TryToInt(x.TrimStart('[').TrimEnd(']'))).ToArray();
 
                 if (values.Any())
                     task.Id = values.Max();
@@ -129,27 +164,42 @@ namespace Tips.Core.Services
                 return null;
             }
 
-            var reg = new Regex(@"(@(\d{4})/(\d{2})/(\d{2})|@(\d{2})/(\d{2}))",
-                RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
+            var model = new Sprint();
+            var name = line.TrimStart().TrimStart('#');
+            {
+                var reg = new Regex(@"(@(\d{4})/(\d{2})/(\d{2})|@(\d{2})/(\d{2}))",
+                    RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
 
-            var dates = findedList.Select(x=>TryToDate(x.TrimStart('@'))).Where(x => x != DateTime.MinValue).ToArray();
+                var dates = findedList.Select(x => TryToDate(x.TrimStart('@'))).Where(x => x != DateTime.MinValue).ToArray();
 
-            var startDate = dates.Any() ? new DateTime?(dates.Min()) : null;
-            var endDate = dates.Count() > 1 ? new DateTime?(dates.Max()) : null;
-            var name =
+                model.Left = dates.Any() ? new DateTime?(dates.Min()) : null;
+                model.Right = dates.Count() > 1 ? new DateTime?(dates.Max()) : null;
+
+
+                name =
                 findedList.Aggregate(
-                    line.TrimStart().TrimStart('#')
+                    name
                     , (a, x) => a.Replace(x, string.Empty))
                     .Trim();
-
-            return new Sprint
+            }
             {
-                Name = name,
-                Left = startDate,
-                Right = endDate,
-            };
+                var reg = new Regex(@"[(\d+)]",
+                        RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
+                var values = findedList.Select(x => TryToInt(x.TrimStart('[').TrimEnd(']'))).ToArray();
 
+                if (values.Any())
+                    model.Id = values.Max();
+
+                name =
+                findedList.Aggregate(
+                    name
+                    , (a, x) => a.Replace(x, string.Empty))
+                    .Trim();
+            }
+            model.Name = name;
+            return model;
         }
 
 
