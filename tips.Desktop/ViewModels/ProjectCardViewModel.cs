@@ -18,7 +18,10 @@ namespace tips.Desktop.ViewModels
         {
             this.SelectProjectCommand =
                 new DelegateCommand(() =>
-                    eventAgg.GetEvent<NavigateEvent>().Publish(ViewNames.PROJECT, new NavigateParams { { "ProjectId", this.Project.Id } }));
+                {
+                    eventAgg.GetEvent<NavigateEvent>().Publish(ViewNames.PROJECT, new NavigateParams { { "ProjectId", this.Project.Id } });
+                    eventAgg.GetEvent<NavigateInProjectViewEvent>().Publish(ViewNames.PROJECT_IN_BACKLOG, new NavigateParams { { "ProjectId", this.Project.Id } });
+                });
         }
     }
 }

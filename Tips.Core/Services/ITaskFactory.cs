@@ -16,28 +16,18 @@ namespace Tips.Core.Services
 
     public class TaskToTextFactory : ITaskToTextFactory
     {
-        public TaskToTextFactory()
-        {
-
-        }
-
-
         public string Make(IEnumerable<ISprint> sprints)
         {
-            var items =
-                from s in sprints
-                select new object[] { s }.Concat(s.Tasks);
-
             var lines =
-                items
-                .SelectMany(x => x)
-                .Select(x =>
-                    x.ToCaseOf()
+                from s in sprints
+                from o in new object[] { s }.Concat(s.Tasks).Concat(new object[] { 0 })
+                select
+                    o.ToCaseOf()
                     .Match((ISprint a) => ToText(a))
                     .Match((ITaskItem a) => ToText(a))
-                    .Return(string.Empty));
-            var sb = new StringBuilder();
+                    .Return(string.Empty);
 
+            var sb = new StringBuilder();
             lines.ForEach(l => sb.AppendLine(l));
 
             return sb.ToString();
@@ -59,12 +49,12 @@ namespace Tips.Core.Services
                 string.Format(@"- {0} {1} {2}"
                     , model.Id.ToString("[00]")
                     , model.Name
-                    , model.Value.ToString("0pt"));
+                    , model.Value.ToString("@0pt"));
         }
 
         public IEnumerable<ISprint> Make(string text)
         {
-            var items =
+            var query =
                 from line in text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                 let item =
                     from f in new Func<string,object>[] { ToSprint, ToTask }
@@ -75,7 +65,27 @@ namespace Tips.Core.Services
                 where rslt != null 
                 select rslt;
 
-            var result = ToSprintList(items.ToArray()).ToArray();
+            var items = query.ToArray();
+            // まとめる
+            var result = ToSprintList(items).ToArray();
+
+            // 取りこぼしタスクがあったら無所属としてスプリント作っていれる
+            var leaveTasks =
+                from i in items.OfType<ITaskItem>()
+                where result.SelectMany(x => x.Tasks).ToArray().Contains(i) == false
+                select i;
+            var leaveTasksArray = leaveTasks.ToArray();
+            if (leaveTasksArray.Any())
+            {
+                var leaveSprint = new Sprint
+                {
+                    Name = "Pending(Auto)",
+                    Tasks = leaveTasksArray,
+                };
+                result = result.Concat(leaveSprint).ToArray();
+            }
+
+
             return result;
         }
 
@@ -136,7 +146,7 @@ namespace Tips.Core.Services
             }
 
             {
-                var reg = new Regex(@"[(\d+)]",
+                var reg = new Regex(@"\[(\d+)\]",
                     RegexOptions.IgnoreCase | RegexOptions.Singleline);
                 var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
                 var values = findedList.Select(x=>TryToInt(x.TrimStart('[').TrimEnd(']'))).ToArray();
@@ -184,7 +194,7 @@ namespace Tips.Core.Services
                     .Trim();
             }
             {
-                var reg = new Regex(@"[(\d+)]",
+                var reg = new Regex(@"\[(\d+)\]",
                         RegexOptions.IgnoreCase | RegexOptions.Singleline);
                 var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
                 var values = findedList.Select(x => TryToInt(x.TrimStart('[').TrimEnd(']'))).ToArray();

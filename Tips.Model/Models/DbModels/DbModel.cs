@@ -59,7 +59,6 @@ namespace Tips.Model.Models.DbModels
 
     public class DbLinkProjectWithSprint
     {
-        //[Key, Column(Order = 0)]
         public int ProjectId { get; set; }
         [Key]
         public int SprintId { get; set; }
@@ -67,7 +66,6 @@ namespace Tips.Model.Models.DbModels
 
     public class DbLinkSprintWithTask
     {
-        //[Key, Column(Order = 0)]
         public int SprintId { get; set; }
         [Key]
         public int TaskItemId { get; set; }

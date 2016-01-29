@@ -33,8 +33,7 @@ namespace tips.Desktop.ViewModels
         }
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
-        {
-            
+        {   
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
