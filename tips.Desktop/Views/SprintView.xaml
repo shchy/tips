@@ -3,10 +3,51 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:tips.Desktop.Views"
+             xmlns:views="clr-namespace:tips.Desktop.Views"
+             xmlns:ctrls="clr-namespace:tips.Desktop.Views.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <Label Content="unko" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+            <ctrls:LabelWithTag
+                Orientation="Horizontal"
+                TagContent="Name"
+                TextContent="{Binding Name}" />
+            <ctrls:LabelWithTag
+                Orientation="Horizontal"
+                TagContent="Range" >
+                <ctrls:LabelWithTag.TextContent>
+                    <StackPanel 
+                        Orientation="Horizontal" 
+                        VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Left, StringFormat={}{0:yyyy/MM/dd}}" />
+                        <TextBlock Text="~" />
+                        <TextBlock Text="{Binding Right, StringFormat={}{0:yyyy/MM/dd}}" />
+                    </StackPanel>
+                </ctrls:LabelWithTag.TextContent>
+            </ctrls:LabelWithTag>
+        </StackPanel>
+
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Tasks}" >
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="LightGray" BorderThickness="0,1,0,0" >
+                        <views:LineTaskItemView DataContext="{Binding}"  />
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel IsItemsHost="True" Orientation="Vertical" Margin="0,0,0,0" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+
     </Grid>
 </UserControl>

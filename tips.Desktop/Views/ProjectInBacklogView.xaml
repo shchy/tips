@@ -17,20 +17,21 @@
         <ctrls:LinkButton Grid.Row="0" HorizontalAlignment="Right" Margin="6"
                           Text="edit" Command="{Binding ToEditBacklogCommand}"  />
 
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding Project.Sprints}" >
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderThickness="1" BorderBrush="LightGray" CornerRadius="6" Margin="6" >
-                        <views:SprintView DataContext="{Binding}"  />
-                    </Border>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel IsItemsHost="True" Orientation="Vertical" HorizontalAlignment="Center"  />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
-        
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Project.Sprints}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="1" BorderBrush="LightGray" CornerRadius="6,0,0,0" Margin="6" >
+                            <views:SprintView DataContext="{Binding}"  />
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel IsItemsHost="True" Orientation="Vertical" Margin="6" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </UserControl>

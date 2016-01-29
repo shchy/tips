@@ -40,7 +40,7 @@ namespace Tips.Model.Context
             // SqliteはDDL発行を対応してないらしい
             var sql = string.Empty;
             sql += "create table DbUser(";
-            sql += " Id TEXT";
+            sql += " Id TEXT not null";
             sql += " ,Name TEXT not null";
             sql += " ,Password TEXT not null";
             sql += " ,Role INTEGER";
@@ -68,11 +68,13 @@ namespace Tips.Model.Context
             sql += "create table DbLinkProjectWithSprint(";
             sql += " ProjectId INTEGER";
             sql += " ,SprintId INTEGER";
+            sql += " ,Sort INTEGER";
             sql += " ,PRIMARY KEY (SprintId)";
             sql += ");";
             sql += "create table DbLinkSprintWithTask(";
             sql += " SprintId INTEGER";
             sql += " ,TaskItemId INTEGER";
+            sql += " ,Sort INTEGER";
             sql += " ,PRIMARY KEY (TaskItemId)";
             sql += ");";
             return sql;
@@ -82,6 +84,10 @@ namespace Tips.Model.Context
         {
             // 名前から主キーとかを推論させない
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+
+            modelBuilder.Entity<DbUser>().Property(x => x.Id).IsRequired();
+            modelBuilder.Entity<DbUser>().Property(x => x.Name).IsRequired();
+            modelBuilder.Entity<DbUser>().Property(x => x.Password).IsRequired();
 
             //// 主キー設定
             //modelBuilder.Entity<OdakyuTrainRawInput>()

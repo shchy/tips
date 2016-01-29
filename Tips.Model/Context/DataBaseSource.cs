@@ -55,7 +55,6 @@ namespace Tips.Model.Context
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

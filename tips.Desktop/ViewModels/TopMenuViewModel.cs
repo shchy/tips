@@ -27,7 +27,11 @@ namespace tips.Desktop.ViewModels
         {
             this.eventAgg = eventAgg;
             this.ToHomeCommand = new DelegateCommand(() => eventAgg.GetEvent<NavigateEvent>().Publish(ViewNames.PROJECTS));
-            this.ToProjectHomeCommand = new DelegateCommand(() => eventAgg.GetEvent<NavigateEvent>().Publish(ViewNames.PROJECT, new NavigateParams { { "ProjectId", this.Project.Id } }));
+            this.ToProjectHomeCommand = new DelegateCommand(() =>
+            {
+                eventAgg.GetEvent<NavigateEvent>().Publish(ViewNames.PROJECT, new NavigateParams { { "ProjectId", this.Project.Id } });
+                eventAgg.GetEvent<NavigateInProjectViewEvent>().Publish(ViewNames.PROJECT_IN_BACKLOG, new NavigateParams { { "ProjectId", this.Project.Id } });
+            });
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)

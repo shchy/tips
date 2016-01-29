@@ -17,6 +17,18 @@ namespace tips.Desktop
         {
             base.OnStartup(e);
 
+            var a = "http://localhost:9876/";
+            var c = new Tips.Model.Context.WebApiContext(a, new Tips.Model.Models.User { Id = "admin", Password = "admin"  });
+            var test = c.GetUser(_ => true);
+            c.AddUser(new Tips.Model.Models.User
+            {
+                Id = "test",
+                Name = "testest",
+                Password = "test",
+                Role = Tips.Model.Models.UserRole.Normal,
+            });
+
+
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run();
         }

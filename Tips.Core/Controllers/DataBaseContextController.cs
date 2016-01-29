@@ -14,17 +14,19 @@ namespace Tips.Core.Controllers
     public class DataBaseContextController
     {
         private IDataBaseContext context;
-        private IEventAggregator ea;
+        private IEventAggregator eventAgg;
 
-        public DataBaseContextController()
+        public DataBaseContextController(
+            IEventAggregator eventAgg
+            , IDataBaseContext context)
         {
-            this.ea = ServiceLocator.Current.GetInstance<IEventAggregator>();
-            this.context = ServiceLocator.Current.GetInstance<IDataBaseContext>();
-            this.ea.GetEvent<GetUserEvent>().Subscribe(GetUser, true);
-            this.ea.GetEvent<AddUserEvent>().Subscribe(AddUser, true);
-            this.ea.GetEvent<AddProjectEvent>().Subscribe(AddProject, true);
-            this.ea.GetEvent<GetProjectEvent>().Subscribe(GetProject, true);
-            this.ea.GetEvent<UpdateProjectEvent>().Subscribe(UpdateProject, true);
+            this.eventAgg = eventAgg;
+            this.context = context;
+            this.eventAgg.GetEvent<GetUserEvent>().Subscribe(GetUser, true);
+            this.eventAgg.GetEvent<AddUserEvent>().Subscribe(AddUser, true);
+            this.eventAgg.GetEvent<AddProjectEvent>().Subscribe(AddProject, true);
+            this.eventAgg.GetEvent<GetProjectEvent>().Subscribe(GetProject, true);
+            this.eventAgg.GetEvent<UpdateProjectEvent>().Subscribe(UpdateProject, true);
             
         }
 

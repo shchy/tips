@@ -38,8 +38,8 @@ namespace Tips.Model.Models.DbModels
         [NotMapped]
         public DateTime? Right
         {
-            get { return this.LeftTicks.ToDateTime(); }
-            set { this.LeftTicks = value.ToTicks(); }
+            get { return this.RightTicks.ToDateTime(); }
+            set { this.RightTicks = value.ToTicks(); }
         }
 
         [Column("Left")]
@@ -62,6 +62,8 @@ namespace Tips.Model.Models.DbModels
         public int ProjectId { get; set; }
         [Key]
         public int SprintId { get; set; }
+
+        public int Sort { get; set; }
     }
 
     public class DbLinkSprintWithTask
@@ -69,6 +71,9 @@ namespace Tips.Model.Models.DbModels
         public int SprintId { get; set; }
         [Key]
         public int TaskItemId { get; set; }
+
+        public int Sort { get; set; }
+
     }
 
 
@@ -116,21 +121,23 @@ namespace Tips.Model.Models.DbModels
             };
         }
 
-        public static DbLinkProjectWithSprint ToDbLink(this DbProject @this, DbSprint sprint)
+        public static DbLinkProjectWithSprint ToDbLink(this DbProject @this, DbSprint sprint, int order)
         {
             return new DbLinkProjectWithSprint
             {
                 ProjectId = @this.Id,
                 SprintId = sprint.Id,
+                Sort = order,
             };
         }
 
-        public static DbLinkSprintWithTask ToDbLink(this DbSprint @this, DbTaskItem taskitem)
+        public static DbLinkSprintWithTask ToDbLink(this DbSprint @this, DbTaskItem taskitem, int order)
         {
             return new DbLinkSprintWithTask
             {
                 SprintId = @this.Id,
                 TaskItemId = taskitem.Id,
+                Sort = order,
             };
         }
 
