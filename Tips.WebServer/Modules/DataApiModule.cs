@@ -30,7 +30,7 @@ namespace Tips.WebServer.Modules
             {
                 var model = this.Bind();
 
-                
+                this.Request.Body.
 
                 using (var r = new System.IO.StreamReader(Request.Body))
                 {
