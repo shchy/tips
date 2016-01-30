@@ -9,6 +9,7 @@ namespace Tips.Model.Context
 {
     public interface IDataBaseContext
     {
+        IUser AuthUser(IUser authUser);
         void AddUser(IUser user);
         IEnumerable<IUser> GetUser(Func<IUser, bool> predicate = null);
         void AddProject(IProject project);

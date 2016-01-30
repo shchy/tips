@@ -22,12 +22,18 @@ namespace Tips.Core.Controllers
         {
             this.eventAgg = eventAgg;
             this.context = context;
+            this.eventAgg.GetEvent<AuthUserEvent>().Subscribe(AuthUser, true);
             this.eventAgg.GetEvent<GetUserEvent>().Subscribe(GetUser, true);
             this.eventAgg.GetEvent<AddUserEvent>().Subscribe(AddUser, true);
             this.eventAgg.GetEvent<AddProjectEvent>().Subscribe(AddProject, true);
             this.eventAgg.GetEvent<GetProjectEvent>().Subscribe(GetProject, true);
             this.eventAgg.GetEvent<UpdateProjectEvent>().Subscribe(UpdateProject, true);
             
+        }
+
+        private void AuthUser(AuthOrder order)
+        {
+            order.Callback(this.context.AuthUser(order.AuthUser));
         }
 
         private void UpdateProject(IProject model)

@@ -10,6 +10,8 @@ using Tips.Core.Services;
 using System.IO;
 using System;
 using System.Data.Entity;
+using Tips.Core.Events;
+using Tips.Model.Models;
 
 namespace tips.Desktop
 {
@@ -38,17 +40,24 @@ namespace tips.Desktop
             this.Container.RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager());
 
 
-            var dbPath =
-                Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
-                    , "db");
-            this.Container.RegisterType<IDataSource, SqliteContext>(
-                new InjectionConstructor(dbPath));
+            //var dbPath =
+            //    Path.Combine(
+            //        Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            //        , "db");
+            //this.Container.RegisterType<IDataSource, SqliteContext>(
+            //    new InjectionConstructor(dbPath));
 
-            this.Container.RegisterType<IDataBaseSource<SqliteContext>, DataBaseSource<SqliteContext>>(
-                new InjectionConstructor(Fn.New(()=> Container.Resolve<IDataSource>() as SqliteContext)));
+            //this.Container.RegisterType<IDataBaseSource<SqliteContext>, DataBaseSource<SqliteContext>>(
+            //    new InjectionConstructor(Fn.New(()=> Container.Resolve<IDataSource>() as SqliteContext)));
 
-            this.Container.RegisterType<IDataBaseContext, DataBaseContext<SqliteContext>>();
+            //this.Container.RegisterType<IDataBaseContext, DataBaseContext<SqliteContext>>();
+            this.Container.RegisterType<IDataBaseContext, WebApiContext>(
+                new InjectionConstructor(
+                    "http://localhost:9876/"
+                    , Fn.New(() => 
+                        this.Container.Resolve<IEventAggregator>()
+                        .GetEvent<GetAuthUserEvent>()
+                        .Get().Return(null as IUser))));
 
             this.Container.RegisterType<ITaskToTextFactory, TaskToTextFactory>();
 

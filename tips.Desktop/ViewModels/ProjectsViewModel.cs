@@ -45,6 +45,15 @@ namespace tips.Desktop.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
+            var debug = new User
+            {
+                Id = "admin",
+                Password = "admin"
+            };
+            this.eventAgg.GetEvent<AuthUserEvent>().Get(debug);
+            this.eventAgg.GetEvent<SetAuthUserEvent>().Publish(debug);
+
+
             var projects =
                 from p in eventAgg.GetEvent<GetProjectEvent>().Get(_ => true)
                 let vm = this.locator.GetInstance<ProjectCardViewModel>()

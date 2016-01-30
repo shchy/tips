@@ -15,23 +15,42 @@ namespace Tips.Model.Context
     public class WebApiContext : IDataBaseContext
     {
         private string baseUrl;
-        private IUser authUser;
+        private Func<IUser> getAuthUser;
 
-        public WebApiContext(string baseUrl, IUser authUser)
+        public WebApiContext(string baseUrl, Func<IUser> getAuthUser)
         {
             this.baseUrl = baseUrl;
-            this.authUser = authUser;
+            this.getAuthUser = getAuthUser;
         }
 
-        public void AddProject(IProject project)
+        public IUser AuthUser(IUser authUser)
         {
-            throw new NotImplementedException();
+            return
+                PostAsJson("/api/login/", () =>
+                {
+                    return authUser;
+                },
+                json =>
+                {
+                    return
+                        JsonConvert.DeserializeObject<User>(json);
+                });
         }
 
 
         public IEnumerable<IProject> GetProjects(Func<IProject, bool> predicate = null)
         {
-            throw new NotImplementedException();
+            return
+                Get("api/projects/", json =>
+                {
+                    var query = JArray.Parse(json);
+                    var list =
+                        from q in query.Children()
+                        select Project.FromJson(q.ToString());
+                    return
+                        list.ToArray();
+                        //JsonConvert.DeserializeObject<List<Project>>(json);
+                });
         }
 
         public IEnumerable<IUser> GetUser(Func<IUser, bool> predicate = null)
@@ -50,7 +69,15 @@ namespace Tips.Model.Context
             {
                 return user;
             });
-;        }
+        }
+
+        public void AddProject(IProject project)
+        {
+            PostAsJson("api/projects/", () =>
+            {
+                return project;
+            });
+        }
 
         T Get<T>(string api, Func<string, T> getter)
         {
@@ -59,12 +86,7 @@ namespace Tips.Model.Context
                 client.BaseAddress = new Uri(this.baseUrl);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-
-                var byteArray = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", this.authUser.Id, this.authUser.Password));
-                client.DefaultRequestHeaders.Authorization = 
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
+                SetAuth(client);
 
                 var response = client.GetAsync(api);
                 response.Wait();
@@ -75,7 +97,8 @@ namespace Tips.Model.Context
             }
         }
 
-        void PostAsJson(string api, Func<object> getPostData)
+        
+        T PostAsJson<T>(string api, Func<object> getPostData, Func<string, T> getter = null)
         {
             using (var client = new HttpClient())
             {
@@ -83,27 +106,41 @@ namespace Tips.Model.Context
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var byteArray = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", this.authUser.Id, this.authUser.Password));
-                client.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                SetAuth(client);
 
                 var model = getPostData();
 
                 var response = client.PostAsJsonAsync(api, model);
                 response.Wait();
                 response.Result.EnsureSuccessStatusCode();
+
+                if (getter == null)
+                {
+                    return default(T);
+                }
+
+                var body = response.Result.Content.ReadAsStringAsync();
+                body.Wait();
+                return getter(body.Result);
             }
         }
 
-        private IUser ToUser(JToken u)
+        private void SetAuth(HttpClient client)
         {
-            var user = new User
+            var authUser = getAuthUser();
+            if (authUser == null)
             {
-                Id = u["Id"].Value<string>(),
-                Name = u["Name"].Value<string>(),
-                Role = u["Role"].Value<UserRole>(),
-            };
-            return user;
+                return;
+            }
+            var byteArray = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", authUser.Id, authUser.Password));
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+        }
+
+        void PostAsJson(string api, Func<object> getPostData )
+        {
+            PostAsJson<object>(api, getPostData, null);
         }
 
     }

@@ -9,6 +9,10 @@ using Tips.Model.Models;
 
 namespace Tips.Core.Events
 {
+    public class AuthUserEvent : PubSubEvent<AuthOrder>
+    {
+    }
+
     public class GetUserEvent : PubSubEvent<GetOrder<IUser>>
     {
     }
@@ -41,6 +45,19 @@ namespace Tips.Core.Events
             var callback = Act.New((TReturn x) => { v = x; isCallback = true; });
             @this.Publish(callback);
             return v.ToMaybe().Where(_ => isCallback);
+        }
+
+        public static IUser Get(this PubSubEvent<AuthOrder> @this, IUser authUser)
+        {
+            var v = null as IUser;
+            var callback = Act.New((IUser x) => { v = x; });
+            var order = new AuthOrder
+            {
+                AuthUser = authUser,
+                Callback = callback,
+            };
+            @this.Publish(order);
+            return v;
         }
 
         public static IEnumerable<TReturn> Get<TReturn>(this PubSubEvent<GetOrder<TReturn>> @this, Func<TReturn,bool> predicate)

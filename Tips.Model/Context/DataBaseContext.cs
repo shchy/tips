@@ -22,6 +22,8 @@ namespace Tips.Model.Context
             this.dbContext = dbContext;
         }
 
+
+
         public void AddProject(IProject project)
         {
             this.dbContext.Update(db =>
@@ -83,6 +85,11 @@ namespace Tips.Model.Context
                 var model = user.ToDbModel();
                 db.Users.Add(model);
             });
+        }
+
+        public IUser AuthUser(IUser authUser)
+        {
+            throw new NotImplementedException();
         }
 
         public IEnumerable<IProject> GetProjects(Func<IProject, bool> predicate = null)

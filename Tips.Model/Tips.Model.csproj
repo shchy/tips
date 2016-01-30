@@ -83,7 +83,6 @@
     <Compile Include="Context\DataBaseSource.cs" />
     <Compile Include="Context\IDataBaseContext.cs" />
     <Compile Include="Context\IDataBaseSource.cs" />
-    <Compile Include="Context\InMemoryDataBaseContext.cs" />
     <Compile Include="Context\SqliteContext.cs" />
     <Compile Include="Context\WebApiContext.cs" />
     <Compile Include="Models\DbModels\DbModel.cs" />

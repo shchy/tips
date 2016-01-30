@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tips.Model.Models;
 
 namespace Tips.Core.Events
 {
@@ -16,5 +17,11 @@ namespace Tips.Core.Events
     {
         public Action<IEnumerable<T>> Callback { get; set; }
         public Func<T,bool> Predicate { get; set; }
+    }
+
+    public class AuthOrder 
+    {
+        public IUser AuthUser { get; set; }
+        public Action<IUser> Callback { get; set; }
     }
 }

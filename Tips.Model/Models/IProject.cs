@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -72,6 +73,44 @@ namespace Tips.Model.Models
         public Project()
         {
             this.Sprints = Enumerable.Empty<ISprint>();
+        }
+
+        public static IProject FromJson(string json)
+        {
+            var model = JObject.Parse(json);
+            var f = Fn.New((JObject o, string n) => o.GetValue(n, StringComparison.OrdinalIgnoreCase));
+
+            var project =
+                from m in model.ToMaybe()
+                let sprints =
+                    from n in f( m,"Sprints").Children()
+                    let tasks =
+                        from t in f(n,"Tasks").Children()
+                        select new TaskItem
+                        {
+                            Id = t["id"].Value<int>(),
+                            Name = t["name"].Value<string>(),
+                            Value = t["value"].Value<double>(),
+                        }
+                    let s = new Sprint
+                    {
+                        Id = n["id"].Value<int>(),
+                        Name = n["name"].Value<string>(),
+                        Left = n["left"].Value<DateTime?>(),
+                        Right = n["right"].Value<DateTime?>(),
+                        Tasks = tasks.ToArray(),
+                    }
+                    select s
+                let p = new Project
+
+                {
+                    Id = m["id"].Value<int>(),
+                    Name = m["name"].Value<string>(),
+                    Describe = m["describe"].Value<string>(),
+                    Sprints = sprints.ToArray(),
+                }
+                select p;
+            return project.Return();
         }
     }
 
