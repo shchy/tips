@@ -117,6 +117,7 @@
     </ApplicationDefinition>
     <Compile Include="Modules\NavigateFacadeModule.cs" />
     <Compile Include="ViewModels\CreateProjectViewModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ProjectCardViewModel.cs" />
     <Compile Include="ViewModels\ProjectInBacklogEditViewModel.cs" />
     <Compile Include="ViewModels\ProjectInBacklogViewModel.cs" />
@@ -134,6 +135,9 @@
     </Compile>
     <Compile Include="Views\LineTaskItemView.xaml.cs">
       <DependentUpon>LineTaskItemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LoginView.xaml.cs">
+      <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProjectCardView.xaml.cs">
       <DependentUpon>ProjectCardView.xaml</DependentUpon>
@@ -172,6 +176,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LineTaskItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

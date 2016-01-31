@@ -50,8 +50,8 @@ namespace Tips.Model.Context
                         from q in query.Children()
                         select Project.FromJson(q.ToString());
                     return
-                        list.ToArray();
-                        //JsonConvert.DeserializeObject<List<Project>>(json);
+                        list.Where(predicate).ToArray();
+                    //JsonConvert.DeserializeObject<List<Project>>(json);
                 });
         }
 
@@ -61,7 +61,8 @@ namespace Tips.Model.Context
                 Get("api/users/", json =>
                 {
                     return 
-                        JsonConvert.DeserializeObject<List<User>>(json);
+                        JsonConvert.DeserializeObject<List<User>>(json)
+                        .Where(predicate).ToArray();
                 });
         }
 

@@ -20,8 +20,6 @@ namespace tips.Desktop.Modules
         private IUnityContainer container;
         private IEventAggregator eventAgg;
         private IRegionManager regionManager;
-
-        
         
         public NavigateFacadeModule(IEventAggregator eventAgg, IRegionManager regionManager, IUnityContainer container)
         {
@@ -32,6 +30,7 @@ namespace tips.Desktop.Modules
 
         public void Initialize()
         {
+            this.container.RegisterType<object, LoginView>(ViewNames.ROOT);
             this.container.RegisterType<object, TopMenuView>(typeof(TopMenuView).ToString());
             this.container.RegisterType<object, ProjectsView>(ViewNames.PROJECTS);
             this.container.RegisterType<object, CreateProjectView>(ViewNames.CREATE_PROJECT);
@@ -41,11 +40,10 @@ namespace tips.Desktop.Modules
 
             this.eventAgg.GetEvent<NavigateEvent>().Subscribe(Navigate, true);
             this.eventAgg.GetEvent<NavigateInProjectViewEvent>().Subscribe(NavigateInProjectView, true);
-            
 
 
             // 初期画面
-            this.eventAgg.GetEvent<NavigateEvent>().Publish(ViewNames.PROJECTS);
+            this.eventAgg.GetEvent<NavigateEvent>().Publish(ViewNames.ROOT);
         }
 
         private void NavigateInProjectView(NavigateOrder order)
@@ -78,7 +76,7 @@ namespace tips.Desktop.Modules
 
     public class ViewNames
     {
-        public static readonly string ROOT = "/";
+        public static readonly string ROOT = typeof(LoginView).ToString();
         public static readonly string PROJECTS = typeof(ProjectsView).ToString();
         public static readonly string PROJECT = typeof(ProjectView).ToString();
         public static readonly string CREATE_PROJECT = typeof(CreateProjectView).ToString();

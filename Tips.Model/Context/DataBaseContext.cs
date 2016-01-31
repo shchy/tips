@@ -118,7 +118,7 @@ namespace Tips.Model.Context
                         select s
                     select p.ToModel(sprints.ToArray());
 
-                return projects.ToArray();
+                return projects.Where(predicate).ToArray();
             });
         }
 
@@ -127,7 +127,7 @@ namespace Tips.Model.Context
             return this.dbContext.Get(db =>
             {
                 return 
-                    db.Users.ToArray();
+                    db.Users.Where(predicate).ToArray();
             });
         }
     }
