@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +22,7 @@ namespace Tips.Model.Context
         {
             this.baseUrl = baseUrl;
             this.getAuthUser = getAuthUser;
+
         }
 
         public IUser AuthUser(IUser authUser)
@@ -110,7 +112,16 @@ namespace Tips.Model.Context
 
                 var model = getPostData();
 
-                var response = client.PostAsJsonAsync(api, model);
+                var json =
+                    JsonConvert.SerializeObject(
+                        model,
+                        Formatting.Indented,
+                        new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }
+                      );
+                var content = new ByteArrayContent(Encoding.UTF8.GetBytes(json));
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                var response = client.PostAsync(api, content);
                 response.Wait();
                 response.Result.EnsureSuccessStatusCode();
 

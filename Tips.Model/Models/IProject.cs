@@ -78,14 +78,13 @@ namespace Tips.Model.Models
         public static IProject FromJson(string json)
         {
             var model = JObject.Parse(json);
-            var f = Fn.New((JObject o, string n) => o.GetValue(n, StringComparison.OrdinalIgnoreCase));
 
             var project =
                 from m in model.ToMaybe()
                 let sprints =
-                    from n in f( m,"Sprints").Children()
+                    from n in m["sprints"].Children()
                     let tasks =
-                        from t in f(n,"Tasks").Children()
+                        from t in n["tasks"].Children()
                         select new TaskItem
                         {
                             Id = t["id"].Value<int>(),

@@ -21,6 +21,7 @@ namespace Tips.WebServer.Modules
         public DataApiModule(IEventAggregator eventAgg) : base("/api/")
         {
             this.RequiresAuthentication();
+            
 
             Get["/users/"] = _ =>
             {
