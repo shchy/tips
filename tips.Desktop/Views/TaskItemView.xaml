@@ -3,22 +3,92 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"             
              xmlns:ctrls="clr-namespace:tips.Desktop.Views.Controls"
+             xmlns:local="clr-namespace:tips.Desktop.Views"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
         <ctrls:LabelWithTag Grid.Row="0" Orientation="Horizontal"
                             TagContent="Subject:"
-                            TextContent="{Binding TaskItem.Name}" />
+                            TextContent="{Binding TaskItemWithRecord.TaskItem.Name}" />
 
         <ctrls:LabelWithTag Grid.Row="1" Orientation="Horizontal"
                             TagContent="Value:"
-                            TextContent="{Binding TaskItem.Value, StringFormat={}{0:0pt}}" />
+                            TextContent="{Binding TaskItemWithRecord.TaskItem.Value, StringFormat={}{0:0pt}}" />
+
+        <ctrls:LabelWithTag Grid.Row="2" Orientation="Vertical"
+                            TagContent="Works:">
+            <ctrls:LabelWithTag.TextContent>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                    <DockPanel LastChildFill="True" >
+                        <Grid DockPanel.Dock="Left">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBox Grid.Row="0" AcceptsReturn="True" MinHeight="120" Margin="6"
+                             Text="{Binding AddCommentText}" />
+                            <ctrls:LinkButton Grid.Row="1" Margin="6" HorizontalAlignment="Right"
+                                      Text="Add" Command="{Binding AddCommentCommand}" />
+                        </Grid>
+
+                        <ItemsControl ItemsSource="{Binding TaskItemWithRecord.Records}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderThickness="0,0,0,1" BorderBrush="LightGray" Margin="3" >
+                                        <local:MiniTaskRecordView DataContext="{Binding}" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel IsItemsHost="True" Orientation="Vertical" Margin="6" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </DockPanel>
+                </ScrollViewer>
+
+            </ctrls:LabelWithTag.TextContent>
+        </ctrls:LabelWithTag>
+                            
+
+        <Label Grid.Row="3" Content="Comments:" FontWeight="Bold" />
+        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
+            <DockPanel LastChildFill="True" >
+                <Grid DockPanel.Dock="Bottom">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBox Grid.Row="0" AcceptsReturn="True" MinHeight="120" Margin="6"
+                             Text="{Binding AddCommentText}" />
+                    <ctrls:LinkButton Grid.Row="1" Margin="6" HorizontalAlignment="Right"
+                                      Text="Add" Command="{Binding AddCommentCommand}" />
+                </Grid>
+                
+                <ItemsControl ItemsSource="{Binding TaskItemWithRecord.Comments}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,0,1" BorderBrush="LightGray" Margin="3" >
+                                <local:CommentView DataContext="{Binding}" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel IsItemsHost="True" Orientation="Vertical" Margin="6" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </DockPanel>
+        </ScrollViewer>
 
     </Grid>
 </UserControl>

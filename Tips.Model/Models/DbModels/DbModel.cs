@@ -57,6 +57,59 @@ namespace Tips.Model.Models.DbModels
         public double Value { get; set; }
     }
 
+    public class DbTaskComment 
+    {
+        [NotMapped]
+        public DateTime Day
+        {
+            get { return this.DayTicks.ToDateTime(); }
+            set { this.DayTicks = value.ToTicks(); }
+        }
+        [Column("Day")]
+        public long DayTicks { get; set; }
+
+        public int Id { get; set; }
+
+        public string Text { get; set; }
+
+        public string UserId { get; set; }
+    }
+
+    public class DbTaskRecord 
+    {
+        [NotMapped]
+        public DateTime Day
+        {
+            get { return this.DayTicks.ToDateTime(); }
+            set { this.DayTicks = value.ToTicks(); }
+        }
+        [Column("Day")]
+        public long DayTicks { get; set; }
+
+        public int Id { get; set; }
+
+        public double Value { get; set; }
+
+        public string UserId { get; set; }
+
+        public double WorkValue { get; set; }
+
+    }
+
+    public class DbLinkTaskItemWithRecord
+    {
+        public int TaskItemId { get; set; }
+        [Key]
+        public int TaskRecordId { get; set; }
+    }
+
+    public class DbLinkTaskItemWithComment
+    {
+        public int TaskItemId { get; set; }
+        [Key]
+        public int TaskCommentId { get; set; }
+    }
+
     public class DbLinkProjectWithSprint
     {
         public int ProjectId { get; set; }
@@ -73,7 +126,6 @@ namespace Tips.Model.Models.DbModels
         public int TaskItemId { get; set; }
 
         public int Sort { get; set; }
-
     }
 
 
@@ -121,6 +173,29 @@ namespace Tips.Model.Models.DbModels
             };
         }
 
+        public static DbTaskComment ToDbModel(this ITaskComment @this)
+        {
+            return new DbTaskComment
+            {
+                Id = @this.Id,
+                Day = @this.Day,
+                Text = @this.Text,
+                UserId = @this.Who.Id,
+            };
+        }
+
+        public static DbTaskRecord ToDbModel(this ITaskRecord @this)
+        {
+            return new DbTaskRecord
+            {
+                Id = @this.Id,
+                Day = @this.Day,
+                UserId = @this.Who.Id,
+                Value = @this.Value,
+                WorkValue = @this.WorkValue,
+            };
+        }
+
         public static DbLinkProjectWithSprint ToDbLink(this DbProject @this, DbSprint sprint, int order)
         {
             return new DbLinkProjectWithSprint
@@ -138,6 +213,24 @@ namespace Tips.Model.Models.DbModels
                 SprintId = @this.Id,
                 TaskItemId = taskitem.Id,
                 Sort = order,
+            };
+        }
+
+        public static DbLinkTaskItemWithComment ToDbLink(this DbTaskComment @this, int taskId)
+        {
+            return new DbLinkTaskItemWithComment
+            {
+                TaskItemId = taskId,
+                TaskCommentId = @this.Id,
+            };
+        }
+
+        public static DbLinkTaskItemWithRecord ToDbLink(this DbTaskRecord @this, int taskId)
+        {
+            return new DbLinkTaskItemWithRecord
+            {
+                TaskItemId = taskId,
+                TaskRecordId = @this.Id,
             };
         }
 
@@ -181,6 +274,28 @@ namespace Tips.Model.Models.DbModels
             };
         }
 
+        public static ITaskRecord ToModel(this DbTaskRecord @this, IUser user)
+        {
+            return new TaskRecord
+            {
+                Id = @this.Id,
+                Day = @this.Day,
+                Value = @this.Value,
+                Who = user,
+                WorkValue = @this.WorkValue,
+            };
+        }
+        public static ITaskComment ToModel(this DbTaskComment @this, IUser user)
+        {
+            return new TaskComment
+            {
+                Id = @this.Id,
+                Day = @this.Day,
+                Text = @this.Text,
+                Who = user,
+            };
+        }
+
 
 
 
@@ -200,6 +315,17 @@ namespace Tips.Model.Models.DbModels
                 return datetime.Value.Ticks;
             else
                 return null;
+        }
+
+        public static DateTime ToDateTime(this long ticks)
+        {
+            return
+                new DateTime(ticks);
+        }
+
+        public static long ToTicks(this DateTime datetime)
+        {
+            return datetime.Ticks;
         }
     }
 }

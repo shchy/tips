@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,13 +14,13 @@ namespace Tips.Model.Models
         string Name { get; }
     }
 
-    public interface IResource : IIdentity<int>, INameable
-    {
-        /// <summary>
-        /// V/H
-        /// </summary>
-        double Cost { get; }
-    }
+    //public interface IResource : IIdentity<int>, INameable
+    //{
+    //    /// <summary>
+    //    /// V/H
+    //    /// </summary>
+    //    double Cost { get; }
+    //}
 
     public interface IRange<T>
     {
@@ -32,20 +33,33 @@ namespace Tips.Model.Models
         double Value { get; }
     }
 
+    public interface ITaskComment : IIdentity<int>
+    {
+        DateTime Day { get; }
+        string Text { get; }
+        IUser Who { get; }
+    }
+
     public interface ITaskRecord : IIdentity<int>
     {
-        int TaskId { get; }
         DateTime Day { get; }
         double Value { get; }
         double WorkValue { get; }
-        IResource Who { get; }
+        IUser Who { get; }
+    }
+
+    public interface ITaskWithRecord
+    {
+        ITaskItem TaskItem { get; }
+        IEnumerable<ITaskComment> Comments { get; }
+        IEnumerable<ITaskRecord> Records { get; }
     }
 
     public interface IPlan : IIdentity<int>
     {
         DateTime Day { get; }
         double Value { get; }
-        IResource Who { get; }
+        IUser Who { get; }
     }
 
     public interface ISprint : IIdentity<int>, INameable, IRange<DateTime?>
@@ -145,4 +159,62 @@ namespace Tips.Model.Models
         public double Value { get; set; }
     }
 
+    [PropertyChanged.ImplementPropertyChanged]
+    public class TaskWithRecord : ITaskWithRecord
+    {
+        [JsonConverter(typeof(ConcreteConverter<List<TaskComment>>))]
+        public IEnumerable<ITaskComment> Comments { get; set; }
+
+        [JsonConverter(typeof(ConcreteConverter<List<TaskRecord>>))]
+        public IEnumerable<ITaskRecord> Records { get; set; }
+
+        [JsonConverter(typeof(ConcreteConverter<TaskItem>))]
+        public ITaskItem TaskItem { get; set; }
+    }
+
+    public class TaskRecord : ITaskRecord
+    {
+        public DateTime Day { get; set; }
+
+        public int Id { get; set; }
+
+        public double Value { get; set; }
+
+        [JsonConverter(typeof(ConcreteConverter<User>))]
+        public IUser Who { get; set; }
+
+        public double WorkValue { get; set; }
+    }
+
+    [PropertyChanged.ImplementPropertyChanged]
+    public class TaskComment : ITaskComment
+    {
+        public DateTime Day { get; set; }
+
+        public int Id { get; set; }
+
+        public string Text { get; set; }
+
+        [JsonConverter(typeof(ConcreteConverter<User>))]
+        public IUser Who { get; set; }
+    }
+
+
+    // todo toFile
+    public class ConcreteConverter<T> : JsonConverter
+    {
+        public override bool CanConvert(Type objectType) => true;
+
+        public override object ReadJson(JsonReader reader,
+         Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            return serializer.Deserialize<T>(reader);
+        }
+
+        public override void WriteJson(JsonWriter writer,
+            object value, JsonSerializer serializer)
+        {
+            serializer.Serialize(writer, value);
+        }
+    }
 }

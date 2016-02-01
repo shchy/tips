@@ -24,4 +24,10 @@ namespace Tips.Core.Events
         public IUser AuthUser { get; set; }
         public Action<IUser> Callback { get; set; }
     }
+
+    public class AddOrder<T,With>
+    {
+        public T Model { get; set; }
+        public With WithIn { get; set; }
+    }
 }

@@ -66,6 +66,23 @@ namespace Tips.Model.Context
                 });
         }
 
+
+        public IEnumerable<ITaskWithRecord> GetTaskRecords(Func<ITaskWithRecord, bool> predicate = null)
+        {
+            return
+                Get("api/tasks/", json =>
+                {
+                    //Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+                    //serializer.Converters.Add(new DTOJsonConverter());
+                    //Interfaces.IEntity entity = serializer.Deserialize(jsonReader);
+
+                    return
+                        JsonConvert.DeserializeObject<List<TaskWithRecord>>(json)
+                        .Where(predicate)
+                        .ToArray();
+                });
+        }
+
         public void AddUser(IUser user)
         {
             PostAsJson("api/users/", () =>
@@ -82,58 +99,92 @@ namespace Tips.Model.Context
             });
         }
 
+        public void AddTaskComment(ITaskComment comment, int taskId)
+        {
+            PostAsJson("api/task/comment/", () =>
+            {
+                //return new { Comment = comment, TaskId = taskId };
+                return new { comment, taskId };
+            });
+        }
+
+        public void AddTaskRecord(ITaskRecord record, int taskId)
+        {
+            PostAsJson("api/task/record/", () =>
+            {
+                return new { record, taskId };
+            });
+        }
+
+
+
         T Get<T>(string api, Func<string, T> getter)
         {
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(this.baseUrl);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                SetAuth(client);
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(this.baseUrl);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    SetAuth(client);
 
-                var response = client.GetAsync(api);
-                response.Wait();
-                response.Result.EnsureSuccessStatusCode();
-                var body = response.Result.Content.ReadAsStringAsync();
-                body.Wait();
-                return getter(body.Result);
+                    var response = client.GetAsync(api);
+                    response.Wait();
+                    response.Result.EnsureSuccessStatusCode();
+                    var body = response.Result.Content.ReadAsStringAsync();
+                    body.Wait();
+                    return getter(body.Result);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
         
         T PostAsJson<T>(string api, Func<object> getPostData, Func<string, T> getter = null)
         {
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(this.baseUrl);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                SetAuth(client);
-
-                var model = getPostData();
-
-                var json =
-                    JsonConvert.SerializeObject(
-                        model,
-                        Formatting.Indented,
-                        new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }
-                      );
-                var content = new ByteArrayContent(Encoding.UTF8.GetBytes(json));
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                var response = client.PostAsync(api, content);
-                response.Wait();
-                response.Result.EnsureSuccessStatusCode();
-
-                if (getter == null)
+                using (var client = new HttpClient())
                 {
-                    return default(T);
-                }
+                    client.BaseAddress = new Uri(this.baseUrl);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var body = response.Result.Content.ReadAsStringAsync();
-                body.Wait();
-                return getter(body.Result);
+                    SetAuth(client);
+
+                    var model = getPostData();
+
+                    var json =
+                        JsonConvert.SerializeObject(
+                            model,
+                            Formatting.Indented,
+                            new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }
+                          );
+                    var content = new ByteArrayContent(Encoding.UTF8.GetBytes(json));
+                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                    var response = client.PostAsync(api, content);
+                    response.Wait();
+                    response.Result.EnsureSuccessStatusCode();
+
+                    if (getter == null)
+                    {
+                        return default(T);
+                    }
+
+                    var body = response.Result.Content.ReadAsStringAsync();
+                    body.Wait();
+                    return getter(body.Result);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 

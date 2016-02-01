@@ -28,7 +28,24 @@ namespace Tips.Core.Controllers
             this.eventAgg.GetEvent<AddProjectEvent>().Subscribe(AddProject, true);
             this.eventAgg.GetEvent<GetProjectEvent>().Subscribe(GetProject, true);
             this.eventAgg.GetEvent<UpdateProjectEvent>().Subscribe(UpdateProject, true);
-            
+            this.eventAgg.GetEvent<GetTaskWithRecordEvent>().Subscribe(GetTaskWithRecord, true);
+            this.eventAgg.GetEvent<AddTaskCommentEvent>().Subscribe(AddTaskComment, true);
+            this.eventAgg.GetEvent<AddTaskRecordEvent>().Subscribe(AddTaskRecord, true);
+        }
+
+        private void AddTaskRecord(AddOrder<ITaskRecord, int> order)
+        {
+            this.context.AddTaskRecord(order.Model, order.WithIn);
+        }
+
+        private void AddTaskComment(AddOrder<ITaskComment, int> order)
+        {
+            this.context.AddTaskComment(order.Model, order.WithIn);
+        }
+
+        private void GetTaskWithRecord(GetOrder<ITaskWithRecord> order)
+        {
+            order.Callback(this.context.GetTaskRecords(order.Predicate));
         }
 
         private void AuthUser(AuthOrder order)

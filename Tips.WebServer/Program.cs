@@ -32,9 +32,9 @@ namespace Tips.WebServer
             {
                 Console.WriteLine("Running port: {0}", port);
                 Console.WriteLine("Started");
-#if DEBUG
-                System.Diagnostics.Process.Start(string.Format("http://localhost:{0}", port));
-#endif
+//#if DEBUG
+//                System.Diagnostics.Process.Start(string.Format("http://localhost:{0}", port));
+//#endif
                 _quitEvent.WaitOne();
             }
         }

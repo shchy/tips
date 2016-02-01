@@ -34,6 +34,17 @@ namespace Tips.Core.Events
     {
     }
 
+    public class GetTaskWithRecordEvent : PubSubEvent<GetOrder<ITaskWithRecord>>
+    {
+    }
+
+    public class AddTaskCommentEvent : PubSubEvent<AddOrder<ITaskComment, int>>
+    {
+    }
+
+    public class AddTaskRecordEvent : PubSubEvent<AddOrder<ITaskRecord, int>>
+    {
+    }
 
 
     public static class PubSubEventExtention
@@ -78,6 +89,15 @@ namespace Tips.Core.Events
                 : Enumerable.Empty<TReturn>();
         }
 
-        
+        public static void Publish<T,With>(this PubSubEvent<AddOrder<T,With>> @this, T model, With with)
+        {
+            var order = new AddOrder<T, With>
+            {
+                Model = model,
+                WithIn = with,
+            };
+            @this.Publish(order);
+        }
+
     }
 }

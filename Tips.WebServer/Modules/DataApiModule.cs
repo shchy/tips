@@ -22,7 +22,6 @@ namespace Tips.WebServer.Modules
         {
             this.RequiresAuthentication();
             
-
             Get["/users/"] = _ =>
             {
                 var users =
@@ -32,18 +31,24 @@ namespace Tips.WebServer.Modules
                     Response.AsJson(users.ToArray());
             };
 
+            Get["/projects/"] = _ =>
+            {
+                return
+                    Response.AsJson(eventAgg.GetEvent<GetProjectEvent>().Get(p => true).ToArray());
+            };
+
+            Get["/tasks/"] = _ =>
+            {
+                return
+                    Response.AsJson(eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(p => true).ToArray());
+            };
+
             Post["/users/"] = _ =>
             {
                 var model = this.Bind<User>();
                 eventAgg.GetEvent<AddUserEvent>().Publish(model);
 
                 return HttpStatusCode.OK;
-            };
-
-            Get["/projects/"] = _ =>
-            {
-                return
-                    Response.AsJson(eventAgg.GetEvent<GetProjectEvent>().Get(p => true).ToArray());
             };
 
             Post["/projects/"] = _ =>
@@ -55,8 +60,37 @@ namespace Tips.WebServer.Modules
                 project.On(eventAgg.GetEvent<UpdateProjectEvent>().Publish);
 
                 return project.IsSomething ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
-
             };
+
+            Post["/task/comment/"] = _ =>
+            {
+                //var model = this.Bind<AddTaskComment>();
+                var json = this.Request.Body.ToStreamString();
+                var model = JsonConvert.DeserializeObject<AddTaskComment>(json);
+                eventAgg.GetEvent<AddTaskCommentEvent>().Publish(model.Comment, model.TaskId);
+
+                return HttpStatusCode.OK;
+            };
+            Post["/task/record/"] = _ =>
+            {
+                //var model = this.Bind<AddTaskRecord>();
+                var model = JsonConvert.DeserializeObject<AddTaskRecord>(this.Request.Body.ToStreamString());
+                eventAgg.GetEvent<AddTaskRecordEvent>().Publish(model.Record, model.TaskId);
+
+                return HttpStatusCode.OK;
+            };
+        }
+
+        class AddTaskComment
+        {
+            public int TaskId { get; set; }
+            public TaskComment Comment { get; set; }
+        }
+
+        class AddTaskRecord
+        {
+            public int TaskId { get; set; }
+            public TaskRecord Record { get; set; }
 
         }
     }

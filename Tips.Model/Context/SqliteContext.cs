@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.SQLite;
 using System.IO;
@@ -18,6 +19,10 @@ namespace Tips.Model.Context
         DbSet<DbProject> Projects { get; }
         DbSet<DbSprint> Sprints { get; }
         DbSet<DbTaskItem> TaskItems { get; }
+        DbSet<DbTaskComment> TaskComments { get; }
+        DbSet<DbTaskRecord> TaskRecords { get; }
+        DbSet<DbLinkTaskItemWithRecord> LinkTaskItemWithRecord { get; }
+        DbSet<DbLinkTaskItemWithComment> LinkTaskItemWithComment { get; }
         DbSet<DbLinkProjectWithSprint> LinkProjectWithSprint { get; }
         DbSet<DbLinkSprintWithTask> LinkSprintWithTaskItem { get; }
     }
@@ -32,6 +37,10 @@ namespace Tips.Model.Context
             if (fileInfo.Exists == false || fileInfo.Length == 0)
             {
                 this.Database.ExecuteSqlCommand(MakeSchema());
+            }
+            else
+            {
+                //new AddTaskRecord().Up();
             }
         }
 
@@ -65,6 +74,21 @@ namespace Tips.Model.Context
             sql += " ,Value REAL";
             sql += " ,PRIMARY KEY (Id)";
             sql += ");";
+            sql += "create table DbTaskComment(";
+            sql += " Id INTEGER";
+            sql += " ,Day INTEGER";
+            sql += " ,UserId TEXT";
+            sql += " ,Text TEXT";
+            sql += " ,PRIMARY KEY (Id)";
+            sql += ");";
+            sql += "create table DbTaskRecord(";
+            sql += " Id INTEGER";
+            sql += " ,Day INTEGER";
+            sql += " ,UserId TEXT";
+            sql += " ,Value REAL";
+            sql += " ,WorkValue REAL";
+            sql += " ,PRIMARY KEY (Id)";
+            sql += ");";
             sql += "create table DbLinkProjectWithSprint(";
             sql += " ProjectId INTEGER";
             sql += " ,SprintId INTEGER";
@@ -76,6 +100,16 @@ namespace Tips.Model.Context
             sql += " ,TaskItemId INTEGER";
             sql += " ,Sort INTEGER";
             sql += " ,PRIMARY KEY (TaskItemId)";
+            sql += ");";
+            sql += "create table DbLinkTaskItemWithRecord(";
+            sql += " TaskItemId INTEGER";
+            sql += " ,TaskRecordId INTEGER";
+            sql += " ,PRIMARY KEY (TaskRecordId)";
+            sql += ");";
+            sql += "create table DbLinkTaskItemWithComment(";
+            sql += " TaskItemId INTEGER";
+            sql += " ,TaskCommentId INTEGER";
+            sql += " ,PRIMARY KEY (TaskCommentId)";
             sql += ");";
             return sql;
         }
@@ -106,9 +140,47 @@ namespace Tips.Model.Context
         public DbSet<DbTaskItem> TaskItems { get; set; }
         public DbSet<DbLinkProjectWithSprint> LinkProjectWithSprint { get; set; }
         public DbSet<DbLinkSprintWithTask> LinkSprintWithTaskItem { get; set; }
-
-        
-
+        public DbSet<DbTaskComment> TaskComments { get; set; }
+        public DbSet<DbTaskRecord> TaskRecords { get; set; }
+        public DbSet<DbLinkTaskItemWithRecord> LinkTaskItemWithRecord { get; set; }
+        public DbSet<DbLinkTaskItemWithComment> LinkTaskItemWithComment { get; set; }
         
     }
+
+    //public partial class AddTaskRecord : DbMigration
+    //{
+    //    public override void Up()
+    //    {
+    //        var sql = string.Empty;
+    //        sql += "create table DbTaskComment(";
+    //        sql += " Id INTEGER";
+    //        sql += " ,DayTicks INTEGER";
+    //        sql += " ,UserId TEXT";
+    //        sql += " ,Text TEXT";
+    //        sql += " ,PRIMARY KEY (Id)";
+    //        sql += ");";
+    //        sql += "create table DbTaskRecord(";
+    //        sql += " Id INTEGER";
+    //        sql += " ,DayTicks INTEGER";
+    //        sql += " ,UserId TEXT";
+    //        sql += " ,Value REAL";
+    //        sql += " ,WorkValue REAL";
+    //        sql += " ,PRIMARY KEY (Id)";
+    //        sql += ");";
+    //        sql += "create table DbLinkTaskItemWithRecord(";
+    //        sql += " TaskId INTEGER";
+    //        sql += " ,TaskRecordId INTEGER";
+    //        sql += " ,PRIMARY KEY (TaskRecordId)";
+    //        sql += ");";
+    //        sql += "create table DbLinkTaskItemWithComment(";
+    //        sql += " TaskId INTEGER";
+    //        sql += " ,TaskCommentId INTEGER";
+    //        sql += " ,PRIMARY KEY (TaskCommentId)";
+    //        sql += ");";
+    //        this.Sql(sql);
+    //    }
+    //    public override void Down()
+    //    {
+    //    }
+    //}
 }

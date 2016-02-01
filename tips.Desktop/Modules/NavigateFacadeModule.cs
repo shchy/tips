@@ -182,26 +182,27 @@ namespace tips.Desktop.Modules
             return query;
         }
 
-        public static IMaybe<ITaskItem> TryToGetProjectInTask(this NavigationContext @this, IEventAggregator eventAgg)
+        public static IMaybe<ITaskWithRecord> TryToGetProjectInTask(this NavigationContext @this, IEventAggregator eventAgg)
         {
             var query =
                 from c in @this.ToMaybe()
-                let find =
-                    from p in c.Parameters
-                    where p.Key == "ProjectId"
-                    select p.Value
-                from v in find.FirstOrNothing()
+                //let find =
+                //    from p in c.Parameters
+                //    where p.Key == "ProjectId"
+                //    select p.Value
+                //from v in find.FirstOrNothing()
                 let findTaskId =
                     from p in c.Parameters
                     where p.Key == "TaskItemId"
                     select p.Value
                 from taskId in findTaskId.FirstOrNothing()
                 let taskx =
-                    from p in eventAgg.GetEvent<GetProjectEvent>().Get(_ => true)
-                    where p.Id == (int)v
-                    from s in p.Sprints
-                    from t in s.Tasks
-                    where t.Id == (int)taskId
+                    //from p in eventAgg.GetEvent<GetProjectEvent>().Get(_ => true)
+                    //where p.Id == (int)v
+                    //from s in p.Sprints
+                    //from t in s.Tasks
+                    from t in eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(_ => true)
+                    where t.TaskItem.Id == (int)taskId
                     select t
                 from t in taskx.FirstOrNothing()
                 select t;

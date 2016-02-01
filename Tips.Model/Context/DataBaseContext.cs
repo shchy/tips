@@ -76,6 +76,32 @@ namespace Tips.Model.Context
             });
         }
 
+        public void AddTaskComment(ITaskComment comment, int taskId)
+        {
+            this.dbContext.Update(db =>
+            {
+                var model = comment.ToDbModel();
+                db.TaskComments.Add(model);
+                db.SaveChanges();
+                var link = model.ToDbLink(taskId);
+                db.LinkTaskItemWithComment.Add(link);
+                db.SaveChanges();
+            });
+        }
+
+        public void AddTaskRecord(ITaskRecord record, int taskId)
+        {
+            this.dbContext.Update(db =>
+            {
+                var model = record.ToDbModel();
+                db.TaskRecords.Add(record.ToDbModel());
+                db.SaveChanges();
+                var link = model.ToDbLink(taskId);
+                db.LinkTaskItemWithRecord.Add(link);
+                db.SaveChanges();
+            });
+        }
+
         public void AddUser(IUser user)
         {
             this.dbContext.Update(db =>
@@ -117,6 +143,36 @@ namespace Tips.Model.Context
                     select p.ToModel(sprints.ToArray());
 
                 return projects.Where(predicate).ToArray();
+            });
+        }
+
+        public IEnumerable<ITaskWithRecord> GetTaskRecords(Func<ITaskWithRecord, bool> predicate = null)
+        {
+            return this.dbContext.Get(db =>
+            {
+                var users = db.Users.ToArray();
+                var query =
+                    from t in db.TaskItems.ToArray()
+                    let rx =
+                        from link in db.LinkTaskItemWithRecord.ToArray()
+                        where link.TaskItemId == t.Id
+                        from r in db.TaskRecords.ToArray()
+                        where r.Id == link.TaskRecordId
+                        select r
+                    let cx =
+                        from link in db.LinkTaskItemWithComment.ToArray()
+                        where link.TaskItemId == t.Id
+                        from c in db.TaskComments.ToArray()
+                        where c.Id == link.TaskCommentId
+                        select c
+                    select new TaskWithRecord
+                    {
+                        TaskItem = t.ToModel(),
+                        Comments = cx.Select(c => c.ToModel(users.FirstOrDefault(u => u.Id == c.UserId))).ToArray(),
+                        Records = rx.Select(r => r.ToModel(users.FirstOrDefault(u => u.Id == r.UserId))).ToArray(),
+                    };
+
+                return query.Where(predicate).ToArray();
             });
         }
 

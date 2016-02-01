@@ -125,6 +125,9 @@
     <Compile Include="ViewModels\ProjectViewModel.cs" />
     <Compile Include="ViewModels\TaskItemViewModel.cs" />
     <Compile Include="ViewModels\TopMenuViewModel.cs" />
+    <Compile Include="Views\CommentView.xaml.cs">
+      <DependentUpon>CommentView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\LabelWithTag.xaml.cs">
       <DependentUpon>LabelWithTag.xaml</DependentUpon>
     </Compile>
@@ -139,6 +142,9 @@
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MiniTaskRecordView.xaml.cs">
+      <DependentUpon>MiniTaskRecordView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProjectCardView.xaml.cs">
       <DependentUpon>ProjectCardView.xaml</DependentUpon>
@@ -167,6 +173,10 @@
     <Compile Include="Views\TopMenuView.xaml.cs">
       <DependentUpon>TopMenuView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\CommentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Controls\LabelWithTag.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -202,6 +212,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\MiniTaskRecordView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ProjectCardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
