@@ -16,6 +16,7 @@ namespace tips.Desktop.ViewModels
         private IEventAggregator eventAgg;
 
         public DelegateCommand ToEditBacklogCommand { get; private set; }
+        public DelegateCommand<ITaskItem> SelectTaskCommand { get; private set; } 
         public IProject Project { get; private set; }
 
         public ProjectInBacklogViewModel(IEventAggregator eventAgg)
@@ -25,6 +26,19 @@ namespace tips.Desktop.ViewModels
                 new DelegateCommand(()=> 
                     eventAgg.GetEvent<NavigateInProjectViewEvent>()
                         .Publish(ViewNames.PROJECT_IN_BACKLOG_EDIT, new NavigateParams { {"ProjectId", this.Project.Id } }));
+            this.SelectTaskCommand =
+                new DelegateCommand<ITaskItem>(SelectTask);
+        }
+
+        private void SelectTask(ITaskItem model)
+        {
+            eventAgg.GetEvent<NavigateInProjectViewEvent>()
+                        .Publish(ViewNames.PROJECT_IN_TASKITEM
+                            , new NavigateParams
+                            {
+                                { "ProjectId", this.Project.Id },
+                                { "TaskItemId", model.Id }
+                            });
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)

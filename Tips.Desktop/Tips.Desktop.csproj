@@ -123,6 +123,7 @@
     <Compile Include="ViewModels\ProjectInBacklogViewModel.cs" />
     <Compile Include="ViewModels\ProjectsViewModel.cs" />
     <Compile Include="ViewModels\ProjectViewModel.cs" />
+    <Compile Include="ViewModels\TaskItemViewModel.cs" />
     <Compile Include="ViewModels\TopMenuViewModel.cs" />
     <Compile Include="Views\Controls\LabelWithTag.xaml.cs">
       <DependentUpon>LabelWithTag.xaml</DependentUpon>
@@ -159,6 +160,9 @@
     </Compile>
     <Compile Include="Views\SprintView.xaml.cs">
       <DependentUpon>SprintView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TaskItemView.xaml.cs">
+      <DependentUpon>TaskItemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TopMenuView.xaml.cs">
       <DependentUpon>TopMenuView.xaml</DependentUpon>
@@ -223,6 +227,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SprintView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TaskItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

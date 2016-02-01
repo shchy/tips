@@ -37,6 +37,7 @@ namespace tips.Desktop.Modules
             this.container.RegisterType<object, ProjectView>(ViewNames.PROJECT);
             this.container.RegisterType<object, ProjectInBacklogView>(ViewNames.PROJECT_IN_BACKLOG);
             this.container.RegisterType<object, ProjectInBacklogEditView>(ViewNames.PROJECT_IN_BACKLOG_EDIT);
+            this.container.RegisterType<object, TaskItemView>(ViewNames.PROJECT_IN_TASKITEM);
 
             this.eventAgg.GetEvent<NavigateEvent>().Subscribe(Navigate, true);
             this.eventAgg.GetEvent<NavigateInProjectViewEvent>().Subscribe(NavigateInProjectView, true);
@@ -82,7 +83,7 @@ namespace tips.Desktop.Modules
         public static readonly string CREATE_PROJECT = typeof(CreateProjectView).ToString();
         public static readonly string PROJECT_IN_BACKLOG = typeof(ProjectInBacklogView).ToString();
         public static readonly string PROJECT_IN_BACKLOG_EDIT = typeof(ProjectInBacklogEditView).ToString();
-
+        public static readonly string PROJECT_IN_TASKITEM = typeof(TaskItemView).ToString();
     }
 
     class RegionNames 
@@ -178,6 +179,32 @@ namespace tips.Desktop.Modules
                     select p
                 from p in projects.FirstOrNothing()
                 select p;
+            return query;
+        }
+
+        public static IMaybe<ITaskItem> TryToGetProjectInTask(this NavigationContext @this, IEventAggregator eventAgg)
+        {
+            var query =
+                from c in @this.ToMaybe()
+                let find =
+                    from p in c.Parameters
+                    where p.Key == "ProjectId"
+                    select p.Value
+                from v in find.FirstOrNothing()
+                let findTaskId =
+                    from p in c.Parameters
+                    where p.Key == "TaskItemId"
+                    select p.Value
+                from taskId in findTaskId.FirstOrNothing()
+                let taskx =
+                    from p in eventAgg.GetEvent<GetProjectEvent>().Get(_ => true)
+                    where p.Id == (int)v
+                    from s in p.Sprints
+                    from t in s.Tasks
+                    where t.Id == (int)taskId
+                    select t
+                from t in taskx.FirstOrNothing()
+                select t;
             return query;
         }
     }

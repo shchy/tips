@@ -61,6 +61,29 @@ namespace tips.Desktop.Views.Controls
         public static readonly DependencyProperty CommandProperty =
             DependencyProperty.Register("Command", typeof(ICommand), typeof(LinkButton), new PropertyMetadata(null, OnChangedCommand));
 
+
+
+        public object CommandParameter
+        {
+            get { return (object)GetValue(CommandParameterProperty); }
+            set { SetValue(CommandParameterProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CommandParameter.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CommandParameterProperty =
+            DependencyProperty.Register("CommandParameter", typeof(object), typeof(LinkButton), new PropertyMetadata(null, OnChangedCommandParameter));
+
+
+        private static void OnChangedCommandParameter(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var @this = d as LinkButton;
+            if (@this == null)
+            {
+                return;
+            }
+            @this.link.CommandParameter = @this.CommandParameter;
+        }
+
         private static void OnChangedCommand(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var @this = d as LinkButton;

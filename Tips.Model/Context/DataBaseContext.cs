@@ -22,8 +22,6 @@ namespace Tips.Model.Context
             this.dbContext = dbContext;
         }
 
-
-
         public void AddProject(IProject project)
         {
             this.dbContext.Update(db =>

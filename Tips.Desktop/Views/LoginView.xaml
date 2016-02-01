@@ -11,7 +11,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <ctrls:LabelWithTag Grid.Row="0"
+        <ctrls:LabelWithTag Grid.Row="0" Margin="6"
                             Orientation="Horizontal">
             <ctrls:LabelWithTag.TagContent>
                 <TextBlock Text="Id:" VerticalAlignment="Center" MinWidth="60" />
@@ -20,7 +20,7 @@
                 <TextBox Text="{Binding Id}" VerticalAlignment="Center" MinWidth="80" />
             </ctrls:LabelWithTag.TextContent>
         </ctrls:LabelWithTag>
-        <ctrls:LabelWithTag Grid.Row="1"
+        <ctrls:LabelWithTag Grid.Row="1" Margin="6"
                             Orientation="Horizontal">
             <ctrls:LabelWithTag.TagContent>
                 <TextBlock Text="Password:" VerticalAlignment="Center" MinWidth="60" />
@@ -29,7 +29,7 @@
                 <TextBox Text="{Binding Password}" VerticalAlignment="Center" MinWidth="80" />
             </ctrls:LabelWithTag.TextContent>
         </ctrls:LabelWithTag>
-        <ctrls:LinkButton Grid.Row="2"
+        <ctrls:LinkButton Grid.Row="2" HorizontalAlignment="Right" Margin="6"
                             Text="Login"
                           Command="{Binding LoginCommand}" />
 
