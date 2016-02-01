@@ -116,6 +116,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Modules\NavigateFacadeModule.cs" />
+    <Compile Include="Modules\NotifyUser.cs" />
+    <Compile Include="ViewModels\AddTaskRecordViewModel.cs" />
     <Compile Include="ViewModels\CreateProjectViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ProjectCardViewModel.cs" />
@@ -125,6 +127,12 @@
     <Compile Include="ViewModels\ProjectViewModel.cs" />
     <Compile Include="ViewModels\TaskItemViewModel.cs" />
     <Compile Include="ViewModels\TopMenuViewModel.cs" />
+    <Compile Include="Views\AddTaskRecordView.xaml.cs">
+      <DependentUpon>AddTaskRecordView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AskUserView.xaml.cs">
+      <DependentUpon>AskUserView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CommentView.xaml.cs">
       <DependentUpon>CommentView.xaml</DependentUpon>
     </Compile>
@@ -173,6 +181,14 @@
     <Compile Include="Views\TopMenuView.xaml.cs">
       <DependentUpon>TopMenuView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\AddTaskRecordView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AskUserView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CommentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

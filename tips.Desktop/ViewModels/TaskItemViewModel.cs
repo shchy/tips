@@ -20,6 +20,30 @@ namespace tips.Desktop.ViewModels
         {
             this.eventAgg = eventAgg;
             this.AddCommentCommand = new DelegateCommand(AddComment);
+            this.AddRecordCommand = new DelegateCommand(AddRecord);
+        }
+
+        private void AddRecord()
+        {
+            //ITaskRecord;
+            var vm = new AddTaskRecordViewModel();
+            eventAgg.GetEvent<AskUserEvent>().Publish(
+                new AskUserOrder
+                {
+                    ViewModel = vm,
+                });
+
+            var record = new TaskRecord
+            {
+                Day = DateTime.Now, // todo 
+                Who = eventAgg.GetEvent<GetAuthUserEvent>().Get().Return(),
+                Value = vm.Value,
+                WorkValue = vm.WorkValue,
+            };
+            eventAgg.GetEvent<AddTaskRecordEvent>().Publish(record, this.TaskItemWithRecord.TaskItem.Id);
+
+            eventAgg.GetEvent<NavigateInProjectViewEvent>().Publish(ViewNames.PROJECT_IN_TASKITEM
+                , new NavigateParams { { "TaskItemId", this.TaskItemWithRecord.TaskItem.Id } });
         }
 
         private void AddComment()
@@ -39,6 +63,7 @@ namespace tips.Desktop.ViewModels
         public DelegateCommand AddCommentCommand { get; private set; }
         public string AddCommentText { get; set; }
         public ITaskWithRecord TaskItemWithRecord { get; private set; }
+        public DelegateCommand AddRecordCommand { get; private set; }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {

@@ -25,18 +25,10 @@
         <ctrls:LabelWithTag Grid.Row="2" Orientation="Vertical"
                             TagContent="Works:">
             <ctrls:LabelWithTag.TextContent>
-                <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
                     <DockPanel LastChildFill="True" >
-                        <Grid DockPanel.Dock="Left">
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <TextBox Grid.Row="0" AcceptsReturn="True" MinHeight="120" Margin="6"
-                             Text="{Binding AddCommentText}" />
-                            <ctrls:LinkButton Grid.Row="1" Margin="6" HorizontalAlignment="Right"
-                                      Text="Add" Command="{Binding AddCommentCommand}" />
-                        </Grid>
+                        <ctrls:LinkButton Margin="6" DockPanel.Dock="Left" VerticalAlignment="Center"
+                                    Text="Add" Command="{Binding AddRecordCommand}" />
 
                         <ItemsControl ItemsSource="{Binding TaskItemWithRecord.Records}">
                             <ItemsControl.ItemTemplate>
@@ -48,7 +40,7 @@
                             </ItemsControl.ItemTemplate>
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel IsItemsHost="True" Orientation="Vertical" Margin="6" />
+                                    <StackPanel IsItemsHost="True" Orientation="Horizontal" Margin="6" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>

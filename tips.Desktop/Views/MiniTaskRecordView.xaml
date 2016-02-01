@@ -7,6 +7,21 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Viewbox Grid.Row="0" Grid.ColumnSpan="2">
+            <Label Content="○" />
+        </Viewbox>
+        <Label Grid.Row="1" Grid.Column="0" 
+               Content="{Binding Who.Name}" />
+        <Label Grid.Row="1" Grid.Column="1" 
+               Content="{Binding Value}" ContentStringFormat="{}{0:0pt}" />
+
     </Grid>
 </UserControl>

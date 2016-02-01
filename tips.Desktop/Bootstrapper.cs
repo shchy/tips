@@ -69,6 +69,7 @@ namespace tips.Desktop
             var catalog = (this.ModuleCatalog as ModuleCatalog);
             catalog.AddModule(typeof(ServiceModule));
             catalog.AddModule(typeof(NavigateFacadeModule));
+            catalog.AddModule(typeof(NotifyUser));
         }
 
     }
