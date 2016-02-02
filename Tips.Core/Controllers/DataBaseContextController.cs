@@ -1,5 +1,5 @@
-﻿using Microsoft.Practices.Prism.PubSubEvents;
-using Microsoft.Practices.ServiceLocation;
+﻿using Microsoft.Practices.ServiceLocation;
+using Prism.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,14 +14,63 @@ namespace Tips.Core.Controllers
     public class DataBaseContextController
     {
         private IDataBaseContext context;
-        private IEventAggregator ea;
+        private IEventAggregator eventAgg;
 
-        public DataBaseContextController()
+        public DataBaseContextController(
+            IEventAggregator eventAgg
+            , IDataBaseContext context)
         {
-            this.ea = ServiceLocator.Current.GetInstance<IEventAggregator>();
-            this.context = ServiceLocator.Current.GetInstance<IDataBaseContext>();
-            this.ea.GetEvent<GetUserEvent>().Subscribe(a => GetUser(a.Item1, a.Item2), true);
-            this.ea.GetEvent<AddUserEvent>().Subscribe(AddUser, true);
+            this.eventAgg = eventAgg;
+            this.context = context;
+            this.eventAgg.GetEvent<AuthUserEvent>().Subscribe(AuthUser, true);
+            this.eventAgg.GetEvent<GetUserEvent>().Subscribe(GetUser, true);
+            this.eventAgg.GetEvent<AddUserEvent>().Subscribe(AddUser, true);
+            this.eventAgg.GetEvent<AddProjectEvent>().Subscribe(AddProject, true);
+            this.eventAgg.GetEvent<GetProjectEvent>().Subscribe(GetProject, true);
+            this.eventAgg.GetEvent<UpdateProjectEvent>().Subscribe(UpdateProject, true);
+            this.eventAgg.GetEvent<GetTaskWithRecordEvent>().Subscribe(GetTaskWithRecord, true);
+            this.eventAgg.GetEvent<AddTaskCommentEvent>().Subscribe(AddTaskComment, true);
+            this.eventAgg.GetEvent<AddTaskRecordEvent>().Subscribe(AddTaskRecord, true);
+        }
+
+        private void AddTaskRecord(AddOrder<ITaskRecord, int> order)
+        {
+            this.context.AddTaskRecord(order.Model, order.WithIn);
+        }
+
+        private void AddTaskComment(AddOrder<ITaskComment, int> order)
+        {
+            this.context.AddTaskComment(order.Model, order.WithIn);
+        }
+
+        private void GetTaskWithRecord(GetOrder<ITaskWithRecord> order)
+        {
+            order.Callback(this.context.GetTaskRecords(order.Predicate));
+        }
+
+        private void AuthUser(AuthOrder order)
+        {
+            order.Callback(this.context.AuthUser(order.AuthUser));
+        }
+
+        private void UpdateProject(IProject model)
+        {
+            this.context.AddProject(model);
+        }
+
+        private void GetProject(GetOrder<IProject> order)
+        {
+            order.Callback(this.context.GetProjects(order.Predicate));
+        }
+
+        private void AddProject(AddProjectOrder order)
+        {
+            var model = new Project
+            {
+                Name = order.Name,
+                Describe = order.Describe,
+            };
+            this.context.AddProject(model);
         }
 
         private void AddUser(IUser user)
@@ -29,9 +78,10 @@ namespace Tips.Core.Controllers
             this.context.AddUser(user);
         }
 
-        private void GetUser(Action<IEnumerable<IUser>> callback, Func<IUser, bool> predicate)
+
+        private void GetUser(GetOrder<IUser> order)
         {
-            callback(this.context.GetUser(predicate));
+            order.Callback(this.context.GetUser(order.Predicate));
         }
     }
 }

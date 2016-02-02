@@ -9,42 +9,13 @@ namespace Tips.Model.Context
 {
     public interface IDataBaseContext
     {
-        IEnumerable<IUser> GetUser();
-        IEnumerable<IUser> GetUser(Func<IUser,bool> predicate);
+        IUser AuthUser(IUser authUser);
         void AddUser(IUser user);
+        IEnumerable<IUser> GetUser(Func<IUser, bool> predicate = null);
+        void AddProject(IProject project);
+        IEnumerable<IProject> GetProjects(Func<IProject, bool> predicate = null);
+        IEnumerable<ITaskWithRecord> GetTaskRecords(Func<ITaskWithRecord, bool> predicate = null);
+        void AddTaskComment(ITaskComment comment, int taskId);
+        void AddTaskRecord(ITaskRecord record, int taskId);
     }
-
-    public class InMemoryDataBaseContext : IDataBaseContext
-    {
-        private IDictionary<string, IUser> users;
-
-        public InMemoryDataBaseContext()
-        {
-            this.users = new Dictionary<string,IUser>();
-            var defaultUser = new User { Id = "admin", Password = "admin", Role = UserRole.Admin, Name = "administrator" };
-            this.users.Add(new KeyValuePair<string, IUser>(defaultUser.Id, defaultUser));
-        }
-
-        public void AddUser(IUser user)
-        {
-            if (this.users.ContainsKey(user.Id))
-            {
-                throw new Exception("mou iruyo");
-            }
-            users.Add(user.Id, user);
-        }
-
-        public IEnumerable<IUser> GetUser()
-        {
-            return
-                GetUser(_ => true);
-        }
-
-        public IEnumerable<IUser> GetUser(Func<IUser, bool> predicate)
-        {
-            return
-                this.users.Values.Where(predicate).ToArray();
-        }
-    }
-
 }
