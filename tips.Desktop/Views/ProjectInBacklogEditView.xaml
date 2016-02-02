@@ -17,7 +17,7 @@
                  Text="{Binding EditText}"/>
 
         <ctrls:LinkButton Grid.Row="2" HorizontalAlignment="Right" Margin="6"
-                          Text="Save"
+                          Content="Save"
                           Command="{Binding SaveCommand}" />
 
     </Grid>

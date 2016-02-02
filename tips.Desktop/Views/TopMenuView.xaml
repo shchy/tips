@@ -12,8 +12,8 @@
     </UserControl.Resources>
     <Grid>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-            <ctrls:LinkButton Text="Home" Command="{Binding ToHomeCommand}" />
-            <ctrls:LinkButton Text="{Binding Project.Name}" Command="{Binding ToProjectHomeCommand}" />
+            <ctrls:LinkButton Content="Home" Command="{Binding ToHomeCommand}" />
+            <ctrls:LinkButton Content="{Binding Project.Name}" Command="{Binding ToProjectHomeCommand}" />
         </StackPanel>
         
     </Grid>

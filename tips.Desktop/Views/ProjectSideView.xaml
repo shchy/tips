@@ -10,11 +10,11 @@
     </UserControl.Resources>
     <Grid>
         <StackPanel Orientation="Vertical" Margin="6">
-            <ctrls:LinkButton Text="Backlog" Command="{Binding ToBacklogCommand}" />
-            <ctrls:LinkButton Text="Board" />
-            <ctrls:LinkButton Text="Issues" />
-            <ctrls:LinkButton Text="Bugs" />
-            <ctrls:LinkButton Text="Record" />
+            <ctrls:LinkButton Content="Backlog" Command="{Binding ToBacklogCommand}" />
+            <ctrls:LinkButton Content="Board" />
+            <ctrls:LinkButton Content="Issues" />
+            <ctrls:LinkButton Content="Bugs" />
+            <ctrls:LinkButton Content="Record" />
         </StackPanel>
     </Grid>
 </UserControl>

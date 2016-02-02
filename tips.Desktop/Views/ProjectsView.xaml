@@ -13,7 +13,7 @@
         </Grid.RowDefinitions>
 
         <ctrls:LinkButton 
-            Text="Create New Project" 
+            Content="Create New Project" 
             Height="20" 
             HorizontalAlignment="Center"
             Command="{Binding CreateProjectCommand}"/>

@@ -15,7 +15,7 @@
         <Label Grid.Row="0" Content="Backlog" FontWeight="Bold" FontSize="16" />
         
         <ctrls:LinkButton Grid.Row="0" HorizontalAlignment="Right" Margin="6"
-                          Text="edit" Command="{Binding ToEditBacklogCommand}"  />
+                          Content="edit" Command="{Binding ToEditBacklogCommand}"  />
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding Project.Sprints}">

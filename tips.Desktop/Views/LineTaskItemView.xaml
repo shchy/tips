@@ -28,7 +28,7 @@
                             Orientation="Horizontal"
                             TagContent="" >
             <ctrls:LabelWithTag.TextContent>
-                <ctrls:LinkButton Text="{Binding Name}" 
+                <ctrls:LinkButton Content="{Binding Name}" 
                                   Command="{Binding Path=DataContext.SelectTaskCommand
                                             , RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ProjectInBacklogView}}}"
                                   CommandParameter="{Binding}" />

@@ -23,7 +23,7 @@
             <ctrls:LabelWithTag.TextContent>
                 <ctrls:LinkButton
                           Command="{Binding SelectProjectCommand}"
-                          Text="{Binding Project.Name}"  />
+                          Content="{Binding Project.Name}"  />
             </ctrls:LabelWithTag.TextContent>
         </ctrls:LabelWithTag>
         

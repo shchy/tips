@@ -30,7 +30,7 @@
             </ctrls:LabelWithTag.TextContent>
         </ctrls:LabelWithTag>
         <ctrls:LinkButton Grid.Row="2" HorizontalAlignment="Right" Margin="6"
-                            Text="Login"
+                          Content="Login" IsDefault="True"
                           Command="{Binding LoginCommand}" />
 
     </Grid>
