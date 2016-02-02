@@ -1,10 +1,10 @@
 ﻿using Microsoft.Practices.Unity;
 using Prism.Unity;
-using tips.Desktop.Views;
+using Tips.Desktop.Views;
 using System.Windows;
 using Tips.Model.Context;
 using Prism.Modularity;
-using tips.Desktop.Modules;
+using Tips.Desktop.Modules;
 using Prism.Events;
 using Tips.Core.Services;
 using System.IO;
@@ -13,7 +13,7 @@ using System.Data.Entity;
 using Tips.Core.Events;
 using Tips.Model.Models;
 
-namespace tips.Desktop
+namespace Tips.Desktop
 {
     class Bootstrapper : UnityBootstrapper
     {

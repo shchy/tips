@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using tips.Desktop.Modules;
+using Tips.Desktop.Modules;
 using Tips.Core.Events;
 using Prism.Regions;
 
-namespace tips.Desktop.ViewModels
+namespace Tips.Desktop.ViewModels
 {
     [PropertyChanged.ImplementPropertyChanged]
     public class CreateProjectViewModel : BindableBase, Prism.Regions.INavigationAware

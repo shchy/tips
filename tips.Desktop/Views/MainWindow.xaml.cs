@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace tips.Desktop.Views
+namespace Tips.Desktop.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

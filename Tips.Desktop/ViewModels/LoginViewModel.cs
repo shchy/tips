@@ -4,11 +4,11 @@ using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using tips.Desktop.Modules;
+using Tips.Desktop.Modules;
 using Tips.Core.Events;
 using Tips.Model.Models;
 
-namespace tips.Desktop.ViewModels
+namespace Tips.Desktop.ViewModels
 {
     public class LoginViewModel : BindableBase
     {

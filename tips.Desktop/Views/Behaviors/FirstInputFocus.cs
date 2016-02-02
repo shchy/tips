@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace tips.Desktop.Views.Behaviors
+namespace Tips.Desktop.Views.Behaviors
 {
     public class FirstInputFocus
     {

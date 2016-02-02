@@ -12,7 +12,7 @@ using Tips.Core.Controllers;
 using Tips.Model.Context;
 using Tips.Model.Models;
 
-namespace tips.Desktop.Modules
+namespace Tips.Desktop.Modules
 {
     public class ServiceModule : IModule
     {

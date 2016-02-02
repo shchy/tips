@@ -9,11 +9,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using tips.Desktop.Views;
+using Tips.Desktop.Views;
 using Tips.Core.Events;
 using Tips.Model.Models;
 
-namespace tips.Desktop.Modules
+namespace Tips.Desktop.Modules
 {
     public class NavigateFacadeModule : IModule
     {

@@ -6,12 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Data;
-using tips.Desktop.Modules;
+using Tips.Desktop.Modules;
 using Tips.Core.Events;
 using Tips.Model.Models;
 using System.Globalization;
 
-namespace tips.Desktop.ViewModels
+namespace Tips.Desktop.ViewModels
 {
     [PropertyChanged.ImplementPropertyChanged]
     public class TaskItemViewModel : BindableBase, INavigationAware

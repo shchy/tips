@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace tips.Desktop.Views.Behaviors
+namespace Tips.Desktop.Views.Behaviors
 {
     public class SelectAllWhenFocus
     {

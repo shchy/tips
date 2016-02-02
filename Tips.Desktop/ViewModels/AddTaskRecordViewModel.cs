@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace tips.Desktop.ViewModels
+namespace Tips.Desktop.ViewModels
 {
     public class AddTaskRecordViewModel : BindableBase
     {

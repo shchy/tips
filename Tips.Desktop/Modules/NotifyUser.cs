@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using tips.Desktop.Views;
+using Tips.Desktop.Views;
 
-namespace tips.Desktop.Modules
+namespace Tips.Desktop.Modules
 {
     public class NotifyUser : IModule
     {

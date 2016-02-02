@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace tips.Desktop.Views
+namespace Tips.Desktop.Views
 {
     /// <summary>
     /// Interaction logic for AddTaskRecordView.xaml

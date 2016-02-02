@@ -1,7 +1,7 @@
-﻿<Application x:Class="tips.Desktop.App"
+﻿<Application x:Class="Tips.Desktop.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:tips.Desktop">
+             xmlns:local="clr-namespace:Tips.Desktop">
     <Application.Resources>
          
     </Application.Resources>

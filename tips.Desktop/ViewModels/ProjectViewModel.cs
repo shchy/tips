@@ -5,10 +5,10 @@ using Prism.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using tips.Desktop.Modules;
+using Tips.Desktop.Modules;
 using Tips.Model.Models;
 
-namespace tips.Desktop.ViewModels
+namespace Tips.Desktop.ViewModels
 {
     [PropertyChanged.ImplementPropertyChanged]
     public class ProjectViewModel : BindableBase, INavigationAware

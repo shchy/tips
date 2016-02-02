@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tips.Model", "Tips.Model\Ti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tips.GitServer", "Tips.GitServer\Tips.GitServer.csproj", "{B8DF0707-25F8-4221-9A59-23D6006B5752}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tips.Desktop", "tips.Desktop\tips.Desktop.csproj", "{99C9E82C-C594-446D-AA59-8FFBC43AD226}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tips.Desktop", "tips.Desktop\Tips.Desktop.csproj", "{99C9E82C-C594-446D-AA59-8FFBC43AD226}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tips.WebServer", "Tips.WebServer\Tips.WebServer.csproj", "{0F01197F-DB86-4595-B6BF-1CC53814F83D}"
 EndProject
