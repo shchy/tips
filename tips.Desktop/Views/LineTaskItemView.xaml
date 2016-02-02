@@ -24,16 +24,10 @@
                             TagContent="Pt."
                             TextContent="{Binding Value}" />
 
-        <ctrls:LabelWithTag Grid.Column="2"
-                            Orientation="Horizontal"
-                            TagContent="" >
-            <ctrls:LabelWithTag.TextContent>
-                <ctrls:LinkButton Content="{Binding Name}" 
-                                  Command="{Binding Path=DataContext.SelectTaskCommand
-                                            , RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ProjectInBacklogView}}}"
-                                  CommandParameter="{Binding}" />
-            </ctrls:LabelWithTag.TextContent>
-        </ctrls:LabelWithTag>
-
+        <ctrls:LinkButton Grid.Column="2"
+                          Content="{Binding Name}" 
+                        Command="{Binding Path=DataContext.SelectTaskCommand
+                                , RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:ProjectInBacklogView}}}"
+                        CommandParameter="{Binding}" />
     </Grid>
 </UserControl>

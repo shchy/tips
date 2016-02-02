@@ -32,10 +32,13 @@ namespace Tips.WebServer
             {
                 Console.WriteLine("Running port: {0}", port);
                 Console.WriteLine("Started");
-//#if DEBUG
-//                System.Diagnostics.Process.Start(string.Format("http://localhost:{0}", port));
-//#endif
+#if DEBUG
+                var a = System.Diagnostics.Process.GetProcessesByName("tips.Desktop");
+                a.ForEach(x => x.CloseMainWindow());
+                System.Diagnostics.Process.Start("../../../tips.Desktop/bin/Debug\\tips.Desktop.exe");
+#endif
                 _quitEvent.WaitOne();
+
             }
         }
     }

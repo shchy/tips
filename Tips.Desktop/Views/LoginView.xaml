@@ -3,35 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"             
              xmlns:ctrls="clr-namespace:tips.Desktop.Views.Controls"
-             prism:ViewModelLocator.AutoWireViewModel="True">
-    <Grid VerticalAlignment="Center" HorizontalAlignment="Center" >
-        <Grid.RowDefinitions >
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:b="clr-namespace:tips.Desktop.Views.Behaviors"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             MaxWidth="240"
+             b:FirstInputFocus.IsEnable="True">
+    <StackPanel VerticalAlignment="Center" 
+                Grid.IsSharedSizeScope="True">
 
-        <ctrls:LabelWithTag Grid.Row="0" Margin="6"
-                            Orientation="Horizontal">
-            <ctrls:LabelWithTag.TagContent>
-                <TextBlock Text="Id:" VerticalAlignment="Center" MinWidth="60" />
-            </ctrls:LabelWithTag.TagContent>
-            <ctrls:LabelWithTag.TextContent>
-                <TextBox Text="{Binding Id}" VerticalAlignment="Center" MinWidth="120" />
-            </ctrls:LabelWithTag.TextContent>
-        </ctrls:LabelWithTag>
-        <ctrls:LabelWithTag Grid.Row="1" Margin="6"
-                            Orientation="Horizontal">
-            <ctrls:LabelWithTag.TagContent>
-                <TextBlock Text="Password:" VerticalAlignment="Center" MinWidth="60" />
-            </ctrls:LabelWithTag.TagContent>
-            <ctrls:LabelWithTag.TextContent>
-                <TextBox Text="{Binding Password}" VerticalAlignment="Center" MinWidth="120" />
-            </ctrls:LabelWithTag.TextContent>
-        </ctrls:LabelWithTag>
+        <ctrls:TextBoxWithTag Grid.Row="0" Margin="6" x:Name="id"
+                              Tag="Id:"
+                              Text="{Binding Id,UpdateSourceTrigger=PropertyChanged}" />
+
+        <ctrls:TextBoxWithTag Grid.Row="1" Margin="6"
+                              Tag="Password:"
+                              Text="{Binding Password,UpdateSourceTrigger=PropertyChanged}" />
+        
         <ctrls:LinkButton Grid.Row="2" HorizontalAlignment="Right" Margin="6"
-                          Content="Login" IsDefault="True"
-                          Command="{Binding LoginCommand}" />
+                Content="Login" IsDefault="True"
+                Command="{Binding LoginCommand}" />
 
-    </Grid>
+    </StackPanel>
 </UserControl>

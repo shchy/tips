@@ -90,12 +90,12 @@ namespace tips.Desktop.Views.Controls
             if (@this.Orientation == Orientation.Vertical)
             {
                 @this.tag.Padding = new Thickness(LabelDefaultPadding.Left, LabelDefaultPadding.Top, LabelDefaultPadding.Right, 0);
-                @this.text.Padding = new Thickness(LabelDefaultPadding.Left, 0, LabelDefaultPadding.Right, LabelDefaultPadding.Bottom);
+                @this.text.Margin = new Thickness(LabelDefaultPadding.Left, 0, LabelDefaultPadding.Right, LabelDefaultPadding.Bottom);
             }
             else
             {
                 @this.tag.Padding = LabelDefaultPadding;
-                @this.text.Padding = LabelDefaultPadding;
+                @this.text.Margin = LabelDefaultPadding;
             }
 
             @this.stack.Orientation = @this.Orientation;

@@ -133,6 +133,8 @@
     <Compile Include="Views\AskUserView.xaml.cs">
       <DependentUpon>AskUserView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Behaviors\FirstInputFocus.cs" />
+    <Compile Include="Views\Behaviors\SelectAllWhenFocus.cs" />
     <Compile Include="Views\CommentView.xaml.cs">
       <DependentUpon>CommentView.xaml</DependentUpon>
     </Compile>
@@ -141,6 +143,9 @@
     </Compile>
     <Compile Include="Views\Controls\LinkButton.xaml.cs">
       <DependentUpon>LinkButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\TextBoxWithTag.xaml.cs">
+      <DependentUpon>TextBoxWithTag.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CreateProjectView.xaml.cs">
       <DependentUpon>CreateProjectView.xaml</DependentUpon>
@@ -198,6 +203,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\LinkButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\TextBoxWithTag.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

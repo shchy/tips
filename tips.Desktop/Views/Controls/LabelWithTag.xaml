@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:tips.Desktop.Views.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300" >
     <StackPanel x:Name="stack" >
         <Label x:Name="tag" FontWeight="Bold" />
-        <Label x:Name="text"  />
+        <ContentPresenter x:Name="text" />
     </StackPanel>
 </UserControl>
