@@ -5,9 +5,11 @@ using Prism.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Data;
 using tips.Desktop.Modules;
 using Tips.Core.Events;
 using Tips.Model.Models;
+using System.Globalization;
 
 namespace tips.Desktop.ViewModels
 {
@@ -40,10 +42,10 @@ namespace tips.Desktop.ViewModels
                 Value = vm.Value,
                 WorkValue = vm.WorkValue,
             };
-            eventAgg.GetEvent<AddTaskRecordEvent>().Publish(record, this.TaskItemWithRecord.TaskItem.Id);
+            eventAgg.GetEvent<AddTaskRecordEvent>().Publish(record, this.TaskItemWithRecord.Id);
 
             eventAgg.GetEvent<NavigateInProjectViewEvent>().Publish(ViewNames.PROJECT_IN_TASKITEM
-                , new NavigateParams { { "TaskItemId", this.TaskItemWithRecord.TaskItem.Id } });
+                , new NavigateParams { { "TaskItemId", this.TaskItemWithRecord.Id } });
         }
 
         private void AddComment()
@@ -54,10 +56,10 @@ namespace tips.Desktop.ViewModels
                 Text = this.AddCommentText,
                 Who = this.eventAgg.GetEvent<GetAuthUserEvent>().Get().Return(),
             };
-            eventAgg.GetEvent<AddTaskCommentEvent>().Publish(comment, this.TaskItemWithRecord.TaskItem.Id);
+            eventAgg.GetEvent<AddTaskCommentEvent>().Publish(comment, this.TaskItemWithRecord.Id);
 
             eventAgg.GetEvent<NavigateInProjectViewEvent>().Publish(ViewNames.PROJECT_IN_TASKITEM
-                , new NavigateParams { { "TaskItemId", this.TaskItemWithRecord.TaskItem.Id } });
+                , new NavigateParams { { "TaskItemId", this.TaskItemWithRecord.Id } });
         }
 
         public DelegateCommand AddCommentCommand { get; private set; }
@@ -79,6 +81,26 @@ namespace tips.Desktop.ViewModels
             this.AddCommentText = string.Empty;
             var query = navigationContext.TryToGetProjectInTask(eventAgg);
             query.On(x => TaskItemWithRecord = x);
+        }
+    }
+
+    public class RecordValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var records = value as IEnumerable<ITaskRecord>;
+            if (records == null )
+            {
+                return value;
+            }
+
+            return
+                records.Sum(x => x.Value);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -4,9 +4,14 @@
              xmlns:prism="http://prismlibrary.com/"             
              xmlns:ctrls="clr-namespace:tips.Desktop.Views.Controls"
              xmlns:local="clr-namespace:tips.Desktop.Views"
+             xmlns:vm="clr-namespace:tips.Desktop.ViewModels"
              prism:ViewModelLocator.AutoWireViewModel="True">
+    <UserControl.Resources>
+        <vm:RecordValueConverter x:Key="sumRecordValue" />
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -16,43 +21,41 @@
 
         <ctrls:LabelWithTag Grid.Row="0" Orientation="Horizontal"
                             TagContent="Subject:"
-                            TextContent="{Binding TaskItemWithRecord.TaskItem.Name}" />
+                            TextContent="{Binding TaskItemWithRecord.Name}" />
 
         <ctrls:LabelWithTag Grid.Row="1" Orientation="Horizontal"
                             TagContent="Value:"
-                            TextContent="{Binding TaskItemWithRecord.TaskItem.Value, StringFormat={}{0:0pt}}" />
+                            TextContent="{Binding TaskItemWithRecord.Value, StringFormat={}{0:0pt}}" />
 
-        <ctrls:LabelWithTag Grid.Row="2" Orientation="Vertical"
-                            TagContent="Works:">
-            <ctrls:LabelWithTag.TextContent>
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
-                    <DockPanel LastChildFill="True" >
-                        <ctrls:LinkButton Margin="6" DockPanel.Dock="Left" VerticalAlignment="Center"
+        <ctrls:LabelWithTag Grid.Row="2" Orientation="Horizontal"
+                            TagContent="Works:"
+                            TextContent="{Binding TaskItemWithRecord.Records, Converter={StaticResource sumRecordValue}, StringFormat={}{0:0pt}}">
+        </ctrls:LabelWithTag>
+
+        <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+            <DockPanel LastChildFill="True" >
+                <ctrls:LinkButton Margin="6" DockPanel.Dock="Left" VerticalAlignment="Center"
                                     Content="Add" Command="{Binding AddRecordCommand}" />
 
-                        <ItemsControl ItemsSource="{Binding TaskItemWithRecord.Records}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderThickness="0,0,0,1" BorderBrush="LightGray" Margin="3" >
-                                        <local:MiniTaskRecordView DataContext="{Binding}" />
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel IsItemsHost="True" Orientation="Horizontal" Margin="6" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </DockPanel>
-                </ScrollViewer>
-
-            </ctrls:LabelWithTag.TextContent>
-        </ctrls:LabelWithTag>
-                            
-
-        <Label Grid.Row="3" Content="Comments:" FontWeight="Bold" />
-        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding TaskItemWithRecord.Records}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,0,1" BorderBrush="LightGray" Margin="3" >
+                                <local:MiniTaskRecordView DataContext="{Binding}" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel IsItemsHost="True" Orientation="Horizontal" Margin="6" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </DockPanel>
+        </ScrollViewer>
+        
+        <Label Grid.Row="4" Content="Comments:" FontWeight="Bold" />
+        <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="Auto">
             <DockPanel LastChildFill="True" >
                 <Grid DockPanel.Dock="Bottom">
                     <Grid.RowDefinitions>

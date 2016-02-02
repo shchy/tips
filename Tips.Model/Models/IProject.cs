@@ -48,9 +48,8 @@ namespace Tips.Model.Models
         IUser Who { get; }
     }
 
-    public interface ITaskWithRecord
+    public interface ITaskWithRecord : ITaskItem
     {
-        ITaskItem TaskItem { get; }
         IEnumerable<ITaskComment> Comments { get; }
         IEnumerable<ITaskRecord> Records { get; }
     }
@@ -160,7 +159,7 @@ namespace Tips.Model.Models
     }
 
     [PropertyChanged.ImplementPropertyChanged]
-    public class TaskWithRecord : ITaskWithRecord
+    public class TaskWithRecord : TaskItem, ITaskWithRecord
     {
         [JsonConverter(typeof(ConcreteConverter<List<TaskComment>>))]
         public IEnumerable<ITaskComment> Comments { get; set; }
@@ -168,8 +167,19 @@ namespace Tips.Model.Models
         [JsonConverter(typeof(ConcreteConverter<List<TaskRecord>>))]
         public IEnumerable<ITaskRecord> Records { get; set; }
 
-        [JsonConverter(typeof(ConcreteConverter<TaskItem>))]
-        public ITaskItem TaskItem { get; set; }
+        public static ITaskWithRecord Create(ITaskItem source
+            , IEnumerable<ITaskRecord> records
+            , IEnumerable<ITaskComment> comments)
+        {
+            return new TaskWithRecord
+            {
+                Id = source.Id,
+                Name = source.Name,
+                Value = source.Value,
+                Records = records,
+                Comments = comments,
+            };
+        }
     }
 
     public class TaskRecord : ITaskRecord

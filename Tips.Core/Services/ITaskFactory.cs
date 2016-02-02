@@ -131,10 +131,10 @@ namespace Tips.Core.Services
             var name = line.TrimStart().TrimStart('-');
 
             {
-                var reg = new Regex(@"(@(\d+)pt|@(\d+))",
+                var reg = new Regex(@"(@(\d+\.\d+)pt|@(\d+\.\d+))|((@(\d+)pt|@(\d+)))",
                     RegexOptions.IgnoreCase | RegexOptions.Singleline);
                 var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
-                var values = findedList.Select(x=>TryToInt(x.TrimStart('@').Replace("pt", string.Empty))).ToArray();
+                var values = findedList.Select(x=> TryToDouble(x.TrimStart('@').Replace("pt", string.Empty))).ToArray();
 
                 if (values.Any())
                     task.Value = values.Max();
@@ -212,11 +212,17 @@ namespace Tips.Core.Services
             return model;
         }
 
-
         private int TryToInt(string arg)
         {
-            int v = 0;
+            var v = 0;
             int.TryParse(arg, out v);
+            return v;
+        }
+
+        private double TryToDouble(string arg)
+        {
+            var v = 0.0;
+            double.TryParse(arg, out v);
             return v;
         }
 

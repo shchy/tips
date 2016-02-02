@@ -165,12 +165,10 @@ namespace Tips.Model.Context
                         from c in db.TaskComments.ToArray()
                         where c.Id == link.TaskCommentId
                         select c
-                    select new TaskWithRecord
-                    {
-                        TaskItem = t.ToModel(),
-                        Comments = cx.Select(c => c.ToModel(users.FirstOrDefault(u => u.Id == c.UserId))).ToArray(),
-                        Records = rx.Select(r => r.ToModel(users.FirstOrDefault(u => u.Id == r.UserId))).ToArray(),
-                    };
+                    select TaskWithRecord.Create(
+                        t.ToModel()
+                        , rx.Select(r => r.ToModel(users.FirstOrDefault(u => u.Id == r.UserId))).ToArray()
+                        , cx.Select(c => c.ToModel(users.FirstOrDefault(u => u.Id == c.UserId))).ToArray());
 
                 return query.Where(predicate).ToArray();
             });

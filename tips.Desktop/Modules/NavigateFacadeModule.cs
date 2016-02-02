@@ -166,6 +166,31 @@ namespace tips.Desktop.Modules
 
         public static IMaybe<IProject> TryToGetProject(this NavigationContext @this, IEventAggregator eventAgg)
         {
+            // hack BindするためにSprintのITaskItemをITaskWithRecordに差し替える。
+
+            var taskWithRecords = eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(_ => true).ToArray();
+            var getWithTask = Fn.New((ITaskItem t) =>
+            {
+                var finded = taskWithRecords.FirstOrDefault(x => x.Id == t.Id);
+                if (finded == null)
+                {
+                    return t;
+                }
+                return finded;
+            });
+            var toWithRecords = Fn.New((ISprint s) =>
+            {
+                var sprint = s as Sprint;
+                sprint.Tasks =
+                    sprint.Tasks.Select(getWithTask).ToArray();
+                return sprint;
+            });
+            var toWithRecordsProject = Fn.New((IProject p) =>
+            {
+                p.Sprints = p.Sprints.Select(toWithRecords).ToArray();
+                return p;
+            });
+
             var query =
                 from c in @this.ToMaybe()
                 let find =
@@ -178,6 +203,7 @@ namespace tips.Desktop.Modules
                     where p.Id == (int)v
                     select p
                 from p in projects.FirstOrNothing()
+                let withP = toWithRecordsProject(p)
                 select p;
             return query;
         }
@@ -202,7 +228,7 @@ namespace tips.Desktop.Modules
                     //from s in p.Sprints
                     //from t in s.Tasks
                     from t in eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(_ => true)
-                    where t.TaskItem.Id == (int)taskId
+                    where t.Id == (int)taskId
                     select t
                 from t in taskx.FirstOrNothing()
                 select t;

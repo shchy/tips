@@ -5,8 +5,11 @@ using Prism.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Data;
 using tips.Desktop.Modules;
 using Tips.Model.Models;
+using System.Globalization;
+using System.Windows.Media;
 
 namespace tips.Desktop.ViewModels
 {
@@ -57,5 +60,40 @@ namespace tips.Desktop.ViewModels
         }
     }
 
-    
+    public class TaskStatusColor : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var taskWithRecord = value as ITaskWithRecord;
+            if (taskWithRecord == null)
+            {
+                return value;
+            }
+
+            // todo ステータスをenumで定義する
+            // todo ステータスに変換する部分は専用クラスを用意する
+            var totalValue = taskWithRecord.Value;
+
+            var currentValue =
+                taskWithRecord.Records.Sum(x => x.Value);
+            var isComplete = totalValue <= currentValue;
+            if (isComplete)
+            {
+                return Brushes.YellowGreen;
+            }
+            else
+            {
+                return Brushes.Transparent;
+            }
+
+
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

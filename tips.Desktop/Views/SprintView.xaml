@@ -5,8 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:views="clr-namespace:tips.Desktop.Views"
              xmlns:ctrls="clr-namespace:tips.Desktop.Views.Controls"
+             xmlns:vm="clr-namespace:tips.Desktop.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <vm:TaskStatusColor x:Key="taskColor" />
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -37,7 +41,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="LightGray" BorderThickness="0,1,0,0" >
-                        <views:LineTaskItemView DataContext="{Binding}"  />
+                        <views:LineTaskItemView DataContext="{Binding}" Background="{Binding Converter={StaticResource taskColor}}"  />
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
