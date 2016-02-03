@@ -89,13 +89,17 @@ namespace Tips.Desktop.Views.Controls
             var @this = (d as LabelWithTag);
             if (@this.Orientation == Orientation.Vertical)
             {
-                @this.tag.Padding = new Thickness(LabelDefaultPadding.Left, LabelDefaultPadding.Top, LabelDefaultPadding.Right, 0);
-                @this.text.Margin = new Thickness(LabelDefaultPadding.Left, 0, LabelDefaultPadding.Right, LabelDefaultPadding.Bottom);
+                //@this.tag.Padding = new Thickness(LabelDefaultPadding.Left, LabelDefaultPadding.Top, LabelDefaultPadding.Right, 0);
+                //@this.text.Margin = new Thickness(LabelDefaultPadding.Left, 0, LabelDefaultPadding.Right, LabelDefaultPadding.Bottom);
+                @this.tag.VerticalAlignment = VerticalAlignment.Stretch;
+                @this.text.VerticalAlignment = VerticalAlignment.Stretch;
             }
             else
             {
-                @this.tag.Padding = LabelDefaultPadding;
-                @this.text.Margin = LabelDefaultPadding;
+                //@this.tag.Padding = LabelDefaultPadding;
+                //@this.text.Margin = LabelDefaultPadding;
+                @this.tag.VerticalAlignment = VerticalAlignment.Center;
+                @this.text.VerticalAlignment = VerticalAlignment.Center;
             }
 
             @this.stack.Orientation = @this.Orientation;

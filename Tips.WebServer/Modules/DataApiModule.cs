@@ -20,7 +20,9 @@ namespace Tips.WebServer.Modules
 {
     public class DataApiModule : NancyModule
     {
-        string httpFolder = "img/userIcons/";
+        // todo パスはコンストラクタで
+        static string httpFolder = "img/userIcons/";
+
         public DataApiModule(IEventAggregator eventAgg) : base("/api/")
         {
             this.RequiresAuthentication();
@@ -44,7 +46,16 @@ namespace Tips.WebServer.Modules
             Get["/tasks/"] = _ =>
             {
                 return
-                    Response.AsJson(eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(p => true).ToArray());
+                    Response.AsJson(
+                        eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(p => true).Select(t=>
+                        {
+                            (t as TaskWithRecord).Records = t.Records.Select(r =>
+                                {
+                                    (r as TaskRecord).Who = AddIconFilePath(this.Request.Url, r.Who);
+                                    return r;
+                                }).ToArray();
+                            return t;
+                        }).ToArray());
             };
 
             Post["/users/"] = _ =>
@@ -110,15 +121,7 @@ namespace Tips.WebServer.Modules
             };
         }
 
-        private IUser AddIconFilePath(Url url, IUser user)
-        {
-            var iconUri =
-                new Uri(
-                    new Uri(url.SiteBase)
-                    , Path.Combine(httpFolder, user.Id + ".png"));
-            (user as User).IconFile = iconUri.ToString();
-            return user;
-        }
+        
 
         class AddTaskComment
         {
@@ -132,8 +135,18 @@ namespace Tips.WebServer.Modules
             public TaskRecord Record { get; set; }
         }
 
-        
+        public static IUser AddIconFilePath(Url url, IUser user)
+        {
+            var iconUri =
+                new Uri(
+                    new Uri(url.SiteBase)
+                    , Path.Combine(httpFolder, user.Id + ".png"));
+            (user as User).IconFile = iconUri.ToString();
+            return user;
+        }
     }
+
+
 
     public class LoginApiModule : NancyModule
     {
@@ -149,7 +162,7 @@ namespace Tips.WebServer.Modules
                     .FirstOrDefault();
 
                 return
-                    Response.AsJson(user, HttpStatusCode.OK);
+                    Response.AsJson(DataApiModule.AddIconFilePath(Request.Url, user), HttpStatusCode.OK);
             };
         }
 

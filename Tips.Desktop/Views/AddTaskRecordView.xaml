@@ -20,10 +20,10 @@
         
         <ctrls:TextBoxWithTag Grid.Row="1" 
                               Tag="Value:"
-                              Text="{Binding Value}" />
+                              Text="{Binding Value, UpdateSourceTrigger=LostFocus}" />
 
         <ctrls:TextBoxWithTag Grid.Row="2" 
                               Tag="WorkValue:"
-                              Text="{Binding WorkValue}"/>
+                              Text="{Binding WorkValue, UpdateSourceTrigger=LostFocus}"/>
     </Grid>
 </UserControl>

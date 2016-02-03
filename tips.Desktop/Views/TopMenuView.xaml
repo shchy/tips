@@ -16,7 +16,13 @@
             <ctrls:LinkButton Content="{Binding Project.Name}" Command="{Binding ToProjectHomeCommand}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-            <ctrls:LinkButton Content="{Binding MySelf.Name}" Command="{Binding ToUserCommand}" />
+            <Button Command="{Binding ToUserCommand}" MaxHeight="24" >
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ctrls:UserIcon Source="{Binding MySelf.IconFile}" />
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </StackPanel>
         
         

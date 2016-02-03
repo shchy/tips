@@ -37,9 +37,16 @@ namespace Tips.Desktop.Views.Controls
         {
             var size =
                 Math.Min(this.ActualHeight, this.ActualWidth);
+            if (size == 0)
+            {
+                return;
+            }
+
+            //this.Width = size;
+            //this.Height = size;
             var radius = size / 2.0;
-            var centerX = size / 2.0;
-            var centerY = size / 2.0;
+            var centerX = this.ActualWidth / 2.0;
+            var centerY = this.ActualHeight / 2.0;
 
             var clipGeometry =
                 new EllipseGeometry(

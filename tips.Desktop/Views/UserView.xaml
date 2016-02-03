@@ -11,7 +11,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ctrls:UserIcon Grid.Row="0"
+        <ctrls:UserIcon Grid.Row="0" MaxHeight="120"
                Source="{Binding User.IconFile}"/>
 
         <ctrls:LinkButton Grid.Row="1" VerticalAlignment="Center"
