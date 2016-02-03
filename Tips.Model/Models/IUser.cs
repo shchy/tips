@@ -37,5 +37,6 @@ namespace Tips.Model.Models
         public UserRole Role { get; set; }
 
         public string IconFile { get; set; }
+
     }
 }

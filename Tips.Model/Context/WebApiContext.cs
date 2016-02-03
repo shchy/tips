@@ -91,6 +91,24 @@ namespace Tips.Model.Context
             });
         }
 
+
+        public void AddUserIcon(IUser user, byte[] iconImage)
+        {
+            PostAsJson("api/users/withIcon/", () =>
+            {
+                var base64String = 
+                    Convert.ToBase64String(
+                        iconImage
+                        , 0, iconImage.Length);
+
+                return new AddUserWithIcon
+                {
+                    UserId = user.Id,
+                    Base64BytesByImage = base64String,
+                };
+            });
+        }
+
         public void AddProject(IProject project)
         {
             PostAsJson("api/projects/", () =>

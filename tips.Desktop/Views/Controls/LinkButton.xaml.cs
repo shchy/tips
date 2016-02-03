@@ -49,7 +49,7 @@ namespace Tips.Desktop.Views.Controls
         //public static readonly DependencyProperty TextProperty =
         //    DependencyProperty.Register("Text", typeof(string), typeof(LinkButton), new PropertyMetadata(string.Empty, OnChangedText));
 
-        
+
 
         //public ICommand Command
         //{

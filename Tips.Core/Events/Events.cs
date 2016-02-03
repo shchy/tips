@@ -21,6 +21,10 @@ namespace Tips.Core.Events
     {
     }
 
+    public class AddUserIconEvent : PubSubEvent<AddUserWithIcon>
+    {
+    }
+
 
     public class AddProjectEvent : PubSubEvent<AddProjectOrder>
     {

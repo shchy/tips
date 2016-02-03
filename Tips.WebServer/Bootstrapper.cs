@@ -34,6 +34,7 @@ namespace Tips.WebServer
             nancyConventions.StaticContentsConventions.AddDirectory("css", @"content/css");
             nancyConventions.StaticContentsConventions.AddDirectory("fonts", @"content/fonts");
             nancyConventions.StaticContentsConventions.AddDirectory("js", @"content/js");
+            nancyConventions.StaticContentsConventions.AddDirectory("img", @"content/img");
         }
 
         /// <summary>
@@ -94,6 +95,7 @@ namespace Tips.WebServer
                 select ev;
             isNothingAdmin.On(ev => ev.GetEvent<AddUserEvent>().Publish(new User { Id = "admin", Name = "Admin", Password = "admin", Role = UserRole.Admin }));
 
+            Nancy.Json.JsonSettings.MaxJsonLength = int.MaxValue;
 
             base.ApplicationStartup(container, pipelines);
         }

@@ -7,7 +7,7 @@
              xmlns:b="clr-namespace:Tips.Desktop.Views.Behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid VerticalAlignment="Center" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" SharedSizeGroup="Label" />
             <ColumnDefinition />

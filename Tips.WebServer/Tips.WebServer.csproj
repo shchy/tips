@@ -114,6 +114,7 @@
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.99.0\lib\net451\System.Data.SQLite.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -188,7 +189,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="content\img\userIcons\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tips.Core\Tips.Core.csproj">
       <Project>{e379bd80-bb57-4c4d-8f92-ff09210dcbed}</Project>

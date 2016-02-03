@@ -169,7 +169,7 @@ namespace Tips.Model.Models.DbModels
                 Name = @this.Name,
                 Password = @this.Password,
                 Role = @this.Role,
-                IconFile = @this.IconFile
+                IconFile = @this.IconFile,
             };
         }
 

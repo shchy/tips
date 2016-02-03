@@ -15,6 +15,10 @@
             <ctrls:LinkButton Content="Home" Command="{Binding ToHomeCommand}" />
             <ctrls:LinkButton Content="{Binding Project.Name}" Command="{Binding ToProjectHomeCommand}" />
         </StackPanel>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <ctrls:LinkButton Content="{Binding MySelf.Name}" Command="{Binding ToUserCommand}" />
+        </StackPanel>
+        
         
     </Grid>
 </UserControl>

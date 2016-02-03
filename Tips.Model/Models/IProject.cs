@@ -210,6 +210,12 @@ namespace Tips.Model.Models
         public IUser Who { get; set; }
     }
 
+    public class AddUserWithIcon
+    {
+        public string UserId { get; set; }
+        public string Base64BytesByImage { get; set; }
+    }
+
 
     // todo toFile
     public class ConcreteConverter<T> : JsonConverter

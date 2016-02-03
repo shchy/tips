@@ -27,13 +27,16 @@ namespace Tips.Desktop.ViewModels
 
         private void AddRecord()
         {
-            //ITaskRecord;
             var vm = new AddTaskRecordViewModel();
-            eventAgg.GetEvent<AskUserEvent>().Publish(
-                new AskUserOrder
-                {
-                    ViewModel = vm,
-                });
+            var order = new AskUserOrder
+            {
+                ViewModel = vm,
+            };
+            eventAgg.GetEvent<AskUserEvent>().Publish(order);
+            if (order.IsOk == false)
+            {
+                return;
+            }
 
             var record = new TaskRecord
             {

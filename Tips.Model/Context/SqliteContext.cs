@@ -30,19 +30,20 @@ namespace Tips.Model.Context
     public class SqliteContext : DbContext, IDataSource
     {
         public SqliteContext(string dbPath)
-            //: base(new SQLiteConnection { ConnectionString = string.Format("Data Source={0}", dbPath) }, true)
+            : base(new SQLiteConnection { ConnectionString = string.Format("Data Source={0}", dbPath) }, true)
         {
             // memo this.Database.Existsだとファイルが勝手に生成されるため、スキーマが作成済かどうか判断できないのでこうする
-            //var fileInfo = new FileInfo(dbPath);
-            //if (fileInfo.Exists == false || fileInfo.Length == 0)
-            //{
-            //    this.Database.ExecuteSqlCommand(MakeSchema());
-            //}
-            //else
-            //{
-            //    //new UserDetailsMigration().Up();
-            //    //this.SaveChanges();
-            //}
+            var fileInfo = new FileInfo(dbPath);
+            if (fileInfo.Exists == false || fileInfo.Length == 0)
+            {
+                this.Database.ExecuteSqlCommand(MakeSchema());
+            }
+            else
+            {
+                //this.Database.ExecuteSqlCommand("alter table DbUser drop column IconFile TEXT;");
+                //this.SaveChanges();
+
+            }
         }
 
         
@@ -151,16 +152,14 @@ namespace Tips.Model.Context
         
     }
 
-    public partial class UserDetailsMigration : DbMigration
-    {
-        public override void Up()
-        {
-            var sql = string.Empty;
-            sql += "alter table DbUser add column IconFile TEXT;";
-            this.Sql(sql);
-        }
-        public override void Down()
-        {
-        }
-    }
+    //public partial class UserDetailsMigration : DbMigration
+    //{
+        
+    //    public override void Up()
+    //    {
+    //    }
+    //    public override void Down()
+    //    {
+    //    }
+    //}
 }

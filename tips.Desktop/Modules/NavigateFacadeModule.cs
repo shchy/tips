@@ -32,6 +32,7 @@ namespace Tips.Desktop.Modules
         {
             this.container.RegisterType<object, LoginView>(ViewNames.ROOT);
             this.container.RegisterType<object, TopMenuView>(typeof(TopMenuView).ToString());
+            this.container.RegisterType<object, UserView>(ViewNames.USER);
             this.container.RegisterType<object, ProjectsView>(ViewNames.PROJECTS);
             this.container.RegisterType<object, CreateProjectView>(ViewNames.CREATE_PROJECT);
             this.container.RegisterType<object, ProjectView>(ViewNames.PROJECT);
@@ -79,6 +80,7 @@ namespace Tips.Desktop.Modules
     {
         public static readonly string ROOT = typeof(LoginView).ToString();
         public static readonly string PROJECTS = typeof(ProjectsView).ToString();
+        public static readonly string USER = typeof(UserView).ToString();
         public static readonly string PROJECT = typeof(ProjectView).ToString();
         public static readonly string CREATE_PROJECT = typeof(CreateProjectView).ToString();
         public static readonly string PROJECT_IN_BACKLOG = typeof(ProjectInBacklogView).ToString();
@@ -232,6 +234,20 @@ namespace Tips.Desktop.Modules
                     select t
                 from t in taskx.FirstOrNothing()
                 select t;
+            return query;
+        }
+
+        public static IMaybe<IUser> TryToGetUser(this NavigationContext @this, IEventAggregator eventAgg)
+        {
+            var query =
+                from c in @this.ToMaybe()
+                let findUserId =
+                    from p in c.Parameters
+                    where p.Key == "UserId"
+                    select p.Value
+                from userId in findUserId.FirstOrNothing()
+                from user in eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == userId.ToString()).FirstOrNothing()
+                select user;
             return query;
         }
     }

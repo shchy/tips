@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +18,9 @@ namespace Tips.Model.Context
 
     {
         private IDataBaseSource<TSource> dbContext;
+        // todo パスはコンストラクタでもらう
+        string saveLocalFolder = "./content/img/userIcons/";
+
 
         public DataBaseContext(IDataBaseSource<TSource> dbContext)
         {
@@ -109,6 +114,19 @@ namespace Tips.Model.Context
                 var model = user.ToDbModel();
                 db.Users.Add(model);
             });
+        }
+
+        public void AddUserIcon(IUser user, byte[] iconImage)
+        {
+            // todo imgフォルダへの保存は別クラス化
+            var converter = new ImageConverter();
+            var img = converter.ConvertFrom(iconImage) as Image;
+            var savePath = Path.Combine(saveLocalFolder, user.Id + ".png");
+            if (Directory.Exists(saveLocalFolder) == false)
+            {
+                Directory.CreateDirectory(saveLocalFolder);
+            }
+            img.Save(savePath);
         }
 
         public IUser AuthUser(IUser authUser)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Practices.Unity;
+using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Modularity;
@@ -26,6 +27,21 @@ namespace Tips.Desktop.Modules
         public void Initialize()
         {
             this.eventAgg.GetEvent<AskUserEvent>().Subscribe(AskUser, true);
+            this.eventAgg.GetEvent<SelectFileEvent>().Subscribe(SelectFile, true);
+        }
+
+        private void SelectFile(Action<string> callback)
+        {
+            var dialog = new OpenFileDialog();
+            var isOk = dialog.ShowDialog() ?? false;
+            if (isOk == false)
+            {
+                callback(null);
+            }
+            else
+            {
+                callback(dialog.FileName);
+            }
         }
 
         private void AskUser(AskUserOrder order)
@@ -53,6 +69,7 @@ namespace Tips.Desktop.Modules
     }
 
     public class AskUserEvent : PubSubEvent<AskUserOrder> { }
+    public class SelectFileEvent : PubSubEvent<Action<string>> { }
 
     public class AskUserOrder
     {

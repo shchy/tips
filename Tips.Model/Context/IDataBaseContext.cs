@@ -11,6 +11,7 @@ namespace Tips.Model.Context
     {
         IUser AuthUser(IUser authUser);
         void AddUser(IUser user);
+        void AddUserIcon(IUser user, byte[] iconImage);
         void AddProject(IProject project);
         void AddTaskComment(ITaskComment comment, int taskId);
         void AddTaskRecord(ITaskRecord record, int taskId);
