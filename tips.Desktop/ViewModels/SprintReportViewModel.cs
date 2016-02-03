@@ -24,7 +24,11 @@ namespace Tips.Desktop.ViewModels
             this.debug = debug;
         }
 
-        public GraphModel GraphModel { get; private set; }
+        public IGraphModel GraphModel { get; private set; }
+        public double MaxX { get; private set; }
+        public double MaxY { get; private set; }
+        public double MinX { get; private set; }
+        public double MinY { get; private set; }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
@@ -58,7 +62,33 @@ namespace Tips.Desktop.ViewModels
                         Ev = gx.Select(x => x.Ev).Foldl(Enumerable.Empty<IGraphPoint>(), (a, x) => this.debug.Merge(a, x)).ToArray(),
                         Ac = gx.Select(x => x.Ac).Foldl(Enumerable.Empty<IGraphPoint>(), (a, x) => this.debug.Merge(a, x)).ToArray(),
                     };
-                this.GraphModel = merged;
+
+                var stacked =
+                    new GraphModel
+                    {
+                        Pv = this.debug.ToStacked(merged.Pv).ToArray(),
+                        Ev = this.debug.ToStacked(merged.Ev).ToArray(),
+                        Ac = this.debug.ToStacked(merged.Ac).ToArray(),
+                    };
+
+                this.GraphModel = stacked;
+
+                var points =
+                    this.GraphModel.Pv
+                    .Concat(this.GraphModel.Ev)
+                    .Concat(this.GraphModel.Ac).ToArray();
+
+                if (points.Any()==false)
+                {
+                    return;
+                }
+                this.MinX = points.Min(x => x.Day).AddHours(-1).ToOADate();
+                this.MaxX = points.Max(x => x.Day).AddHours(+1).ToOADate();
+                //var minY = points.Min(x => x.Value);
+                var maxY = points.Max(x => x.Value);
+                this.MinY = 0;
+                this.MaxY = maxY * 1.1;
+
             });
             
         }

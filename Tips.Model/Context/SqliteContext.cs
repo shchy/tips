@@ -40,7 +40,7 @@ namespace Tips.Model.Context
             }
             else
             {
-                //this.Database.ExecuteSqlCommand("alter table DbUser drop column IconFile TEXT;");
+                //this.Database.ExecuteSqlCommand("alter table DbUser add column IconFile TEXT;");
                 //this.SaveChanges();
 
             }

@@ -2,8 +2,20 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"             
+             xmlns:sparrow="http://sparrowtoolkit.codeplex.com/wpf"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <Grid>
-            
+        <sparrow:SparrowChart Margin="6">
+            <sparrow:SparrowChart.XAxis>
+                <sparrow:DateTimeXAxis Interval="1" StringFormat="yyyy/MM/dd" MinValue="{Binding MinX}" MaxValue="{Binding MaxX}"  />
+            </sparrow:SparrowChart.XAxis>
+            <sparrow:SparrowChart.YAxis>
+                <sparrow:LinearYAxis Interval="1" MinValue="{Binding MinY}" MaxValue="{Binding MaxY}" />
+            </sparrow:SparrowChart.YAxis>
+            <sparrow:LineSeries PointsSource="{Binding GraphModel.Pv}" XPath="Day" YPath="Value" />
+            <sparrow:LineSeries PointsSource="{Binding GraphModel.Ev}" XPath="Day" YPath="Value" />
+            <sparrow:LineSeries PointsSource="{Binding GraphModel.Ac}" XPath="Day" YPath="Value" />
+
+        </sparrow:SparrowChart>
     </Grid>
 </UserControl>

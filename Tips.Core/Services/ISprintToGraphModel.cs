@@ -11,6 +11,7 @@ namespace Tips.Core.Services
     {
         IGraphModel Make(ISprint sprint);
         IEnumerable<IGraphPoint> Merge(IEnumerable<IGraphPoint> x, IEnumerable<IGraphPoint> y);
+        IEnumerable<IGraphPoint> ToStacked(IEnumerable<IGraphPoint> x);
     }
 
     public class SprintToGraphModel : ISprintToGraphModel
@@ -88,6 +89,18 @@ namespace Tips.Core.Services
                 dx
                 .Select(a => new GraphPoint { Day = new DateTime(a.Key.Item1, a.Key.Item2, a.Key.Item3), Value = a.Value })
                 .ToArray();
+        }
+
+        public IEnumerable<IGraphPoint> ToStacked(IEnumerable<IGraphPoint> xs)
+        {
+            var ordered = xs.OrderBy(x => x.Day).ToArray();
+            var stacked = 
+                ordered.Scan(new GraphPoint() as IGraphPoint, (a, x) =>
+                {
+                    (x as GraphPoint).Value += a.Value;
+                    return x;
+                }, x => x);
+            return stacked;
         }
     }
 }
