@@ -10,7 +10,6 @@ namespace Tips.Model.Models.DbModels
 {
     public class DbUser : User
     {
-
     }
 
     public class DbProject 
@@ -170,6 +169,7 @@ namespace Tips.Model.Models.DbModels
                 Name = @this.Name,
                 Password = @this.Password,
                 Role = @this.Role,
+                IconFile = @this.IconFile
             };
         }
 
@@ -195,6 +195,8 @@ namespace Tips.Model.Models.DbModels
                 WorkValue = @this.WorkValue,
             };
         }
+
+
 
         public static DbLinkProjectWithSprint ToDbLink(this DbProject @this, DbSprint sprint, int order)
         {

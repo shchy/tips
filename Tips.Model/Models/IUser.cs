@@ -17,6 +17,7 @@ namespace Tips.Model.Models
         string Name { get; }
         string Password { get; }
         UserRole Role { get; }
+        string IconFile { get; }
     }
 
     public enum UserRole
@@ -34,5 +35,7 @@ namespace Tips.Model.Models
         public string Password { get; set; }
 
         public UserRole Role { get; set; }
+
+        public string IconFile { get; set; }
     }
 }

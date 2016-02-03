@@ -182,6 +182,7 @@ namespace Tips.Model.Models
         }
     }
 
+
     public class TaskRecord : ITaskRecord
     {
         public DateTime Day { get; set; }

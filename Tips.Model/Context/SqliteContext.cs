@@ -30,19 +30,22 @@ namespace Tips.Model.Context
     public class SqliteContext : DbContext, IDataSource
     {
         public SqliteContext(string dbPath)
-            : base(new SQLiteConnection { ConnectionString = string.Format("Data Source={0}", dbPath) }, true)
+            //: base(new SQLiteConnection { ConnectionString = string.Format("Data Source={0}", dbPath) }, true)
         {
             // memo this.Database.Existsだとファイルが勝手に生成されるため、スキーマが作成済かどうか判断できないのでこうする
-            var fileInfo = new FileInfo(dbPath);
-            if (fileInfo.Exists == false || fileInfo.Length == 0)
-            {
-                this.Database.ExecuteSqlCommand(MakeSchema());
-            }
-            else
-            {
-                //new AddTaskRecord().Up();
-            }
+            //var fileInfo = new FileInfo(dbPath);
+            //if (fileInfo.Exists == false || fileInfo.Length == 0)
+            //{
+            //    this.Database.ExecuteSqlCommand(MakeSchema());
+            //}
+            //else
+            //{
+            //    //new UserDetailsMigration().Up();
+            //    //this.SaveChanges();
+            //}
         }
+
+        
 
         string MakeSchema()
         {
@@ -53,6 +56,7 @@ namespace Tips.Model.Context
             sql += " ,Name TEXT not null";
             sql += " ,Password TEXT not null";
             sql += " ,Role INTEGER";
+            sql += " ,IconFile TEXT";
             sql += " ,PRIMARY KEY (Id)";
             sql += ");";
             sql += "create table DbProject(";
@@ -147,40 +151,16 @@ namespace Tips.Model.Context
         
     }
 
-    //public partial class AddTaskRecord : DbMigration
-    //{
-    //    public override void Up()
-    //    {
-    //        var sql = string.Empty;
-    //        sql += "create table DbTaskComment(";
-    //        sql += " Id INTEGER";
-    //        sql += " ,DayTicks INTEGER";
-    //        sql += " ,UserId TEXT";
-    //        sql += " ,Text TEXT";
-    //        sql += " ,PRIMARY KEY (Id)";
-    //        sql += ");";
-    //        sql += "create table DbTaskRecord(";
-    //        sql += " Id INTEGER";
-    //        sql += " ,DayTicks INTEGER";
-    //        sql += " ,UserId TEXT";
-    //        sql += " ,Value REAL";
-    //        sql += " ,WorkValue REAL";
-    //        sql += " ,PRIMARY KEY (Id)";
-    //        sql += ");";
-    //        sql += "create table DbLinkTaskItemWithRecord(";
-    //        sql += " TaskId INTEGER";
-    //        sql += " ,TaskRecordId INTEGER";
-    //        sql += " ,PRIMARY KEY (TaskRecordId)";
-    //        sql += ");";
-    //        sql += "create table DbLinkTaskItemWithComment(";
-    //        sql += " TaskId INTEGER";
-    //        sql += " ,TaskCommentId INTEGER";
-    //        sql += " ,PRIMARY KEY (TaskCommentId)";
-    //        sql += ");";
-    //        this.Sql(sql);
-    //    }
-    //    public override void Down()
-    //    {
-    //    }
-    //}
+    public partial class UserDetailsMigration : DbMigration
+    {
+        public override void Up()
+        {
+            var sql = string.Empty;
+            sql += "alter table DbUser add column IconFile TEXT;";
+            this.Sql(sql);
+        }
+        public override void Down()
+        {
+        }
+    }
 }

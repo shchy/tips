@@ -11,11 +11,13 @@ namespace Tips.Model.Context
     {
         IUser AuthUser(IUser authUser);
         void AddUser(IUser user);
-        IEnumerable<IUser> GetUser(Func<IUser, bool> predicate = null);
         void AddProject(IProject project);
-        IEnumerable<IProject> GetProjects(Func<IProject, bool> predicate = null);
-        IEnumerable<ITaskWithRecord> GetTaskRecords(Func<ITaskWithRecord, bool> predicate = null);
         void AddTaskComment(ITaskComment comment, int taskId);
         void AddTaskRecord(ITaskRecord record, int taskId);
+
+        IEnumerable<IUser> GetUser(Func<IUser, bool> predicate = null);
+        IEnumerable<IProject> GetProjects(Func<IProject, bool> predicate = null);
+        IEnumerable<ITaskWithRecord> GetTaskRecords(Func<ITaskWithRecord, bool> predicate = null);
+
     }
 }
