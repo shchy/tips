@@ -39,6 +39,7 @@ namespace Tips.Desktop.Modules
             this.container.RegisterType<object, ProjectInBacklogView>(ViewNames.PROJECT_IN_BACKLOG);
             this.container.RegisterType<object, ProjectInBacklogEditView>(ViewNames.PROJECT_IN_BACKLOG_EDIT);
             this.container.RegisterType<object, TaskItemView>(ViewNames.PROJECT_IN_TASKITEM);
+            this.container.RegisterType<object, SprintReportView>(ViewNames.PROJECT_IN_SPRINT_REPORT);
 
             this.eventAgg.GetEvent<NavigateEvent>().Subscribe(Navigate, true);
             this.eventAgg.GetEvent<NavigateInProjectViewEvent>().Subscribe(NavigateInProjectView, true);
@@ -86,6 +87,9 @@ namespace Tips.Desktop.Modules
         public static readonly string PROJECT_IN_BACKLOG = typeof(ProjectInBacklogView).ToString();
         public static readonly string PROJECT_IN_BACKLOG_EDIT = typeof(ProjectInBacklogEditView).ToString();
         public static readonly string PROJECT_IN_TASKITEM = typeof(TaskItemView).ToString();
+        public static readonly string PROJECT_IN_SPRINT_REPORT = typeof(SprintReportView).ToString();
+
+        
     }
 
     class RegionNames 
@@ -248,6 +252,25 @@ namespace Tips.Desktop.Modules
                 from userId in findUserId.FirstOrNothing()
                 from user in eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == userId.ToString()).FirstOrNothing()
                 select user;
+            return query;
+        }
+
+        public static IMaybe<IEnumerable<ISprint>> TryToGetSprints(this NavigationContext @this, IEventAggregator eventAgg)
+        {
+            var query =
+                from p in @this.TryToGetProject(eventAgg)
+                from c in @this.ToMaybe()
+                let findSprintIds =
+                    from p in c.Parameters
+                    where p.Key == "SprintIds"
+                    select p.Value
+                from sprintIds in findSprintIds.FirstOrNothing()
+                let ids = sprintIds as IEnumerable<int>
+                let sprints =
+                    from s in p.Sprints
+                    where ids.Contains( s.Id )
+                    select s
+                select sprints.ToArray() as IEnumerable<ISprint>;
             return query;
         }
     }

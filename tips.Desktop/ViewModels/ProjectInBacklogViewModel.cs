@@ -19,6 +19,7 @@ namespace Tips.Desktop.ViewModels
         private IEventAggregator eventAgg;
 
         public DelegateCommand ToEditBacklogCommand { get; private set; }
+        public DelegateCommand<ISprint> ToSprintGraphCommand { get; private set; } 
         public DelegateCommand<ITaskItem> SelectTaskCommand { get; private set; } 
         public IProject Project { get; private set; }
 
@@ -31,6 +32,20 @@ namespace Tips.Desktop.ViewModels
                         .Publish(ViewNames.PROJECT_IN_BACKLOG_EDIT, new NavigateParams { {"ProjectId", this.Project.Id } }));
             this.SelectTaskCommand =
                 new DelegateCommand<ITaskItem>(SelectTask);
+            this.ToSprintGraphCommand =
+                new DelegateCommand<ISprint>(ToSprintGraph);
+        }
+
+        private void ToSprintGraph(ISprint model)
+        {
+            eventAgg.GetEvent<NavigateInProjectViewEvent>()
+                        .Publish(ViewNames.PROJECT_IN_SPRINT_REPORT
+                            , new NavigateParams
+                            {
+                                { "ProjectId", this.Project.Id },
+                                { "SprintIds", new [] { model.Id } }
+                            });
+
         }
 
         private void SelectTask(ITaskItem model)

@@ -39,18 +39,15 @@ namespace Tips.Desktop
 
             this.Container.RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager());
 
-
-            //var dbPath =
-            //    Path.Combine(
-            //        Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
-            //        , "db");
-            //this.Container.RegisterType<IDataSource, SqliteContext>(
-            //    new InjectionConstructor(dbPath));
-
-            //this.Container.RegisterType<IDataBaseSource<SqliteContext>, DataBaseSource<SqliteContext>>(
-            //    new InjectionConstructor(Fn.New(()=> Container.Resolve<IDataSource>() as SqliteContext)));
-
-            //this.Container.RegisterType<IDataBaseContext, DataBaseContext<SqliteContext>>();
+            // todo たぶんこれはWeb側でやるべき
+            this.Container.RegisterType<ISprintToGraphModel, SprintToGraphModel>(
+                new InjectionConstructor(Fn.New((DateTime day) => 
+                    day.DayOfWeek == DayOfWeek.Monday
+                    || day.DayOfWeek == DayOfWeek.Tuesday
+                    || day.DayOfWeek == DayOfWeek.Wednesday
+                    || day.DayOfWeek == DayOfWeek.Thursday
+                    || day.DayOfWeek == DayOfWeek.Friday)));
+            
             this.Container.RegisterType<IDataBaseContext, WebApiContext>(
                 new InjectionConstructor(
                     "http://localhost:9876/"

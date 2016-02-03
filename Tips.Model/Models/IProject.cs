@@ -217,6 +217,42 @@ namespace Tips.Model.Models
     }
 
 
+
+    public interface IGraphPoint
+    {
+        DateTime Day { get; }
+        double Value { get; }
+    }
+
+    public interface IGraphModel
+    {
+        IEnumerable<IGraphPoint> Pv { get; }
+        IEnumerable<IGraphPoint> Ev { get; }
+        IEnumerable<IGraphPoint> Ac { get; }
+    }
+
+    public class GraphPoint : IGraphPoint
+    {
+        public DateTime Day { get; set; }
+
+        public double Value { get; set; }
+    }
+
+    public class GraphModel : IGraphModel
+    {
+        public IEnumerable<IGraphPoint> Ac { get; set; }
+
+        public IEnumerable<IGraphPoint> Ev { get; set; }
+
+        public IEnumerable<IGraphPoint> Pv { get; set; }
+        public GraphModel()
+        {
+            this.Ac = Enumerable.Empty<IGraphPoint>();
+            this.Ev = Enumerable.Empty<IGraphPoint>();
+            this.Pv = Enumerable.Empty<IGraphPoint>();
+        }
+    }
+
     // todo toFile
     public class ConcreteConverter<T> : JsonConverter
     {

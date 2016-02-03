@@ -20,7 +20,7 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
             <ctrls:LabelWithTag
                 Orientation="Horizontal"
-                TagContent="Name"
+                TagContent="SprintName"
                 TextContent="{Binding Name}" />
             <ctrls:LabelWithTag
                 Orientation="Horizontal"
@@ -35,6 +35,10 @@
                     </StackPanel>
                 </ctrls:LabelWithTag.TextContent>
             </ctrls:LabelWithTag>
+            <ctrls:LinkButton Content="Graph" 
+                                Command="{Binding Path=DataContext.ToSprintGraphCommand
+                                    , RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type views:ProjectInBacklogView}}}"
+                                CommandParameter="{Binding}" />
         </StackPanel>
 
         <ItemsControl Grid.Row="1" ItemsSource="{Binding Tasks}" >

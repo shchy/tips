@@ -126,6 +126,7 @@
     <Compile Include="ViewModels\ProjectInBacklogViewModel.cs" />
     <Compile Include="ViewModels\ProjectsViewModel.cs" />
     <Compile Include="ViewModels\ProjectViewModel.cs" />
+    <Compile Include="ViewModels\SprintReportViewModel.cs" />
     <Compile Include="ViewModels\TaskItemViewModel.cs" />
     <Compile Include="ViewModels\TopMenuViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
@@ -181,6 +182,9 @@
     </Compile>
     <Compile Include="Views\ProjectView.xaml.cs">
       <DependentUpon>ProjectView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SprintReportView.xaml.cs">
+      <DependentUpon>SprintReportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SprintView.xaml.cs">
       <DependentUpon>SprintView.xaml</DependentUpon>
@@ -274,6 +278,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ProjectView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SprintReportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
