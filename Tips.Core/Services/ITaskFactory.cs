@@ -49,7 +49,7 @@ namespace Tips.Core.Services
                 string.Format(@"- {0} {1} {2}"
                     , model.Id.ToString("[00]")
                     , model.Name
-                    , string.Format("@{0}pt",  model.Value));
+                    , model.Value.HasValue ? string.Format("@{0}pt",  model.Value) : "");
         }
 
         public IEnumerable<ISprint> Make(string text)

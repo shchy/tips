@@ -22,9 +22,10 @@
             <oxy:LineSeries StrokeThickness="3" Color="LightBlue" Title="SPI"
                             ItemsSource="{Binding Spi}" 
                             DataFieldX="Day" DataFieldY="Value" />
-            <oxy:LineSeries StrokeThickness="3" Color="Red" Title="CPI"
+            <oxy:LineSeries StrokeThickness="3" Color="GreenYellow" Title="CPI"
                             ItemsSource="{Binding Cpi}" 
                             DataFieldX="Day" DataFieldY="Value" />
+
         </oxy:Plot.Series>
 
     </oxy:Plot>

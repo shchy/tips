@@ -30,7 +30,7 @@ namespace Tips.Model.Models
 
     public interface ITaskItem : IIdentity<int>, INameable
     {
-        double Value { get; }
+        double? Value { get; }
     }
 
     public interface ITaskComment : IIdentity<int>
@@ -102,7 +102,7 @@ namespace Tips.Model.Models
                         {
                             Id = t["id"].Value<int>(),
                             Name = t["name"].Value<string>(),
-                            Value = t["value"].Value<double>(),
+                            Value = t["value"].Value<double?>(),
                         }
                     let s = new Sprint
                     {
@@ -155,7 +155,7 @@ namespace Tips.Model.Models
 
         public string Name { get; set; }
 
-        public double Value { get; set; }
+        public double? Value { get; set; }
     }
 
     [PropertyChanged.ImplementPropertyChanged]

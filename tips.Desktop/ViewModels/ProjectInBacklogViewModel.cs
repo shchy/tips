@@ -80,9 +80,9 @@ namespace Tips.Desktop.ViewModels
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var taskWithRecord = value as ITaskWithRecord;
-            if (taskWithRecord == null)
+            if (taskWithRecord == null || taskWithRecord.Value.HasValue==false)
             {
-                return value;
+                return Brushes.Transparent;
             }
 
             // todo ステータスをenumで定義する
@@ -94,7 +94,7 @@ namespace Tips.Desktop.ViewModels
             var isComplete = totalValue <= currentValue;
             if (isComplete)
             {
-                return Brushes.YellowGreen;
+                return Brushes.LightGreen;
             }
             else
             {

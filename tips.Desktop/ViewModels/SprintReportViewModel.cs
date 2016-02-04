@@ -24,7 +24,11 @@ namespace Tips.Desktop.ViewModels
             this.debug = debug;
         }
 
+        public IGraphPoint CPI { get; private set; }
+        public double Late { get; private set; }
         public object PIModel { get; private set; }
+        public double Remaining { get; private set; }
+        public IGraphPoint SPI { get; private set; }
         public object TrendModel { get; private set; }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
@@ -39,6 +43,7 @@ namespace Tips.Desktop.ViewModels
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
             this.TrendModel = null;
+            this.PIModel = null;
 
             var query = navigationContext.TryToGetSprints(this.eventAgg);
             query.On(sx =>
@@ -79,6 +84,7 @@ namespace Tips.Desktop.ViewModels
 
                 this.TrendModel = MakeTrendModel(stacked);
                 this.PIModel = MakePiModel(stacked);
+
             });
             
         }
@@ -114,6 +120,24 @@ namespace Tips.Desktop.ViewModels
 
             var intervalX = (int)Math.Ceiling((maxX - minX).TotalDays / 4);
             var intervalY = (maxY - minY) / 3;
+
+            var now = DateTime.Now;
+            this.SPI = spis.FirstOrDefault(x =>
+                        x.Day.Year == now.Year
+                        && x.Day.Month == now.Month
+                        && x.Day.Day == now.Day);
+            this.CPI = cpis.FirstOrDefault(x =>
+                        x.Day.Year == now.Year
+                        && x.Day.Month == now.Month
+                        && x.Day.Day == now.Day);
+            this.Remaining = stacked.Pv.Max(x => x.Value) - stacked.Ev.Max(x => x.Value);
+            var todayPv = stacked.Pv.Where(x =>
+                        x.Day.Year == now.Year
+                        && x.Day.Month == now.Month
+                        && x.Day.Day == now.Day)
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+            this.Late = (todayPv * this.SPI.Value) - todayPv;
 
             return
                 new

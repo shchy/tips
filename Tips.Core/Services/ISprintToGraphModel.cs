@@ -33,10 +33,37 @@ namespace Tips.Core.Services
             {
                 return new GraphModel();
             }
+            
             // まずは期間を確定させる。
             // 未設定の場合は登録されているメモやレコードから推測する
             var records = tasks.SelectMany(x => x.Records).ToArray();
             var comments = tasks.SelectMany(x => x.Comments).ToArray();
+
+            var pvList = MakePv(sprint, tasks, records, comments);
+            var evList = records.Select(x => new GraphPoint { Day = x.Day, Value = x.Value }).ToArray();
+            var acList = records.Select(x => new GraphPoint { Day = x.Day, Value = x.WorkValue }).ToArray();
+            // 期間未定はPVを計れないので実績に合わせる
+            if (pvList.Any() == false)
+            {
+                pvList = evList.ToArray();
+            }
+
+            return new GraphModel
+            {
+                Pv = pvList,
+                Ac = acList,
+                Ev = evList,
+            };
+        }
+
+        private IEnumerable<IGraphPoint> MakePv(ISprint sprint, ITaskWithRecord[] tasks, ITaskRecord[] records, ITaskComment[] comments)
+        {
+            // 期間未定はPVを計れない
+            if ((sprint.Left.HasValue && sprint.Right.HasValue) == false)
+            {
+                return Enumerable.Empty<IGraphPoint>();
+            }
+
             var dateList = records.Select(x => x.Day).Concat(comments.Select(x => x.Day)).ToArray();
             var left = sprint.Left ?? (dateList.Any() ? dateList.Min() : DateTime.Now);
             var right = sprint.Right ?? (dateList.Any() ? dateList.Max() : DateTime.Now);
@@ -45,30 +72,22 @@ namespace Tips.Core.Services
             // 休日を除く日で総Valueを案分する
             var workDays =
                 (from i in Enumerable.Range(0, (right - left).Days + 1)
-                let day = left.AddDays(i)
-                where this.isWorkday(day)
-                select day).ToArray();
+                 let day = left.AddDays(i)
+                 where this.isWorkday(day)
+                 select day).ToArray();
 
             // 稼働日が無い場合は先頭日に全部押し付ける
-            if(workDays.Any() == false)
+            if (workDays.Any() == false)
             {
                 workDays = new[] { left };
             }
 
             // 計画値の総量
-            var pvAll = tasks.Sum(x => x.Value);
+            var pvAll = tasks.Sum(x => x.Value ?? 0.0);
             // 1日あたりの量
             var pvAve = pvAll / workDays.Length;
             var pvList = workDays.Select(x => new GraphPoint { Day = x, Value = pvAve }).ToArray();
-            var evList = records.Select(x => new GraphPoint { Day = x.Day, Value = x.Value }).ToArray();
-            var acList = records.Select(x => new GraphPoint { Day = x.Day, Value = x.WorkValue }).ToArray();
-
-            return new GraphModel
-            {
-                Pv = pvList,
-                Ac = acList,
-                Ev = evList,
-            };
+            return pvList;
         }
 
         public IEnumerable<IGraphPoint> Merge(IEnumerable<IGraphPoint> x, IEnumerable<IGraphPoint> y)

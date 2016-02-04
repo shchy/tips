@@ -53,7 +53,7 @@ namespace Tips.Model.Models.DbModels
 
         public string Name { get; set; }
 
-        public double Value { get; set; }
+        public double? Value { get; set; }
     }
 
     public class DbTaskComment 
