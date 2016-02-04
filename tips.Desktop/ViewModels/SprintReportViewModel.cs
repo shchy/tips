@@ -24,11 +24,8 @@ namespace Tips.Desktop.ViewModels
             this.debug = debug;
         }
 
-        public IGraphModel GraphModel { get; private set; }
-        public double MaxX { get; private set; }
-        public double MaxY { get; private set; }
-        public double MinX { get; private set; }
-        public double MinY { get; private set; }
+        public object PIModel { get; private set; }
+        public object TrendModel { get; private set; }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
@@ -41,7 +38,7 @@ namespace Tips.Desktop.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            this.GraphModel = null;
+            this.TrendModel = null;
 
             var query = navigationContext.TryToGetSprints(this.eventAgg);
             query.On(sx =>
@@ -63,34 +60,111 @@ namespace Tips.Desktop.ViewModels
                         Ac = gx.Select(x => x.Ac).Foldl(Enumerable.Empty<IGraphPoint>(), (a, x) => this.debug.Merge(a, x)).ToArray(),
                     };
 
+                var allDays = merged.Pv.Concat(merged.Ev).Concat(merged.Ac).Select(x => x.Day).Distinct();
+                var filledBlank =
+                    new GraphModel
+                    {
+                        Pv = this.debug.ToFillBlank(merged.Pv, allDays).ToArray(),
+                        Ev = this.debug.ToFillBlank(merged.Ev, allDays).ToArray(),
+                        Ac = this.debug.ToFillBlank(merged.Ac, allDays).ToArray(),
+                    };
+                    
                 var stacked =
                     new GraphModel
                     {
-                        Pv = this.debug.ToStacked(merged.Pv).ToArray(),
-                        Ev = this.debug.ToStacked(merged.Ev).ToArray(),
-                        Ac = this.debug.ToStacked(merged.Ac).ToArray(),
+                        Pv = this.debug.ToStacked(filledBlank.Pv).ToArray(),
+                        Ev = this.debug.ToStacked(filledBlank.Ev).ToArray(),
+                        Ac = this.debug.ToStacked(filledBlank.Ac).ToArray(),
                     };
 
-                this.GraphModel = stacked;
-
-                var points =
-                    this.GraphModel.Pv
-                    .Concat(this.GraphModel.Ev)
-                    .Concat(this.GraphModel.Ac).ToArray();
-
-                if (points.Any()==false)
-                {
-                    return;
-                }
-                this.MinX = points.Min(x => x.Day).AddHours(-1).ToOADate();
-                this.MaxX = points.Max(x => x.Day).AddHours(+1).ToOADate();
-                //var minY = points.Min(x => x.Value);
-                var maxY = points.Max(x => x.Value);
-                this.MinY = 0;
-                this.MaxY = maxY * 1.1;
-
+                this.TrendModel = MakeTrendModel(stacked);
+                this.PIModel = MakePiModel(stacked);
             });
             
+        }
+
+        private object MakePiModel(GraphModel stacked)
+        {
+            var days =
+                stacked.Pv.Concat(stacked.Ev).Concat(stacked.Ac).Select(x => x.Day).Distinct();
+
+            var pis =
+                from d in days
+                let pv = stacked.Pv.Where(x => x.Day == d).Select(x => x.Value).FirstOrDefault()
+                let ev = stacked.Ev.Where(x => x.Day == d).Select(x => x.Value).FirstOrDefault()
+                let ac = stacked.Ac.Where(x => x.Day == d).Select(x => x.Value).FirstOrDefault()
+                select new { d, spi = ev / pv, cpi = ev / ac };
+            var spis = pis.Select(x => new GraphPoint { Day = x.d, Value = double.IsNaN(x.spi) ? 0.0 : x.spi }).ToArray();
+            var cpis = pis.Select(x => new GraphPoint { Day = x.d, Value = double.IsNaN(x.cpi) ? 0.0 : x.cpi }).ToArray();
+
+
+            var points =
+                spis
+                .Concat(cpis).ToArray();
+
+            if (points.Any() == false)
+            {
+                return null;
+            }
+            var minX = points.Min(x => x.Day).AddDays(-1);
+            var maxX = points.Max(x => x.Day).AddDays(+1);
+            //var minY = points.Min(x => x.Value);
+            var minY = 0;
+            var maxY = points.Max(x => x.Value) * 1.1;
+
+            var intervalX = (int)Math.Ceiling((maxX - minX).TotalDays / 4);
+            var intervalY = (maxY - minY) / 3;
+
+            return
+                new
+                {
+                    MaxX = maxX,
+                    MinX = minX,
+                    MaxY = maxY,
+                    MinY = minY,
+                    IntervalX = intervalX,
+                    IntervalY = intervalY,
+                    Spi = spis,
+                    Cpi = cpis,
+                };
+        }
+
+        private object MakeTrendModel(GraphModel model)
+        {
+
+            var points =
+                model.Pv
+                .Concat(model.Ev)
+                .Concat(model.Ac).ToArray();
+
+            if (points.Any() == false)
+            {
+                return null;
+            }
+
+
+            var minX = points.Min(x => x.Day).AddDays(-1);
+            var maxX = points.Max(x => x.Day).AddDays(+1);
+            //var minY = points.Min(x => x.Value);
+            var minY = 0;
+            var maxY = points.Max(x => x.Value) * 1.1;
+
+            var intervalX = (int)Math.Ceiling((maxX - minX).TotalDays / 4);
+            var intervalY = (maxY - minY) / 3;
+
+            return
+                new
+                {
+                    MaxX = maxX,
+                    MinX = minX,
+                    MaxY = maxY,
+                    MinY = minY,
+                    IntervalX = intervalX,
+                    IntervalY = intervalY,
+                    Pv = model.Pv,
+                    Ev = model.Ev,
+                    Ac = model.Ac,
+                };
         }
     }
 }

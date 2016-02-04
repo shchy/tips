@@ -11,6 +11,7 @@ namespace Tips.Core.Services
     {
         IGraphModel Make(ISprint sprint);
         IEnumerable<IGraphPoint> Merge(IEnumerable<IGraphPoint> x, IEnumerable<IGraphPoint> y);
+        IEnumerable<IGraphPoint> ToFillBlank(IEnumerable<IGraphPoint> x, IEnumerable<DateTime> xs);
         IEnumerable<IGraphPoint> ToStacked(IEnumerable<IGraphPoint> x);
     }
 
@@ -89,6 +90,15 @@ namespace Tips.Core.Services
                 dx
                 .Select(a => new GraphPoint { Day = new DateTime(a.Key.Item1, a.Key.Item2, a.Key.Item3), Value = a.Value })
                 .ToArray();
+        }
+        
+
+        public IEnumerable<IGraphPoint> ToFillBlank(IEnumerable<IGraphPoint> x, IEnumerable<DateTime> xs)
+        {
+            var dx = xs.Select(a => new GraphPoint { Day = a, Value = 0.0 }).ToArray();
+
+            return
+                Merge(x, dx);
         }
 
         public IEnumerable<IGraphPoint> ToStacked(IEnumerable<IGraphPoint> xs)

@@ -10,7 +10,6 @@ namespace Tips.Desktop.Views
         public SprintReportView()
         {
             InitializeComponent();
-
         }
     }
 }
