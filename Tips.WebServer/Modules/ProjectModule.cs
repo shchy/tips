@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
 using Tips.Core.Services;
+using Tips.Model.Models;
 
 namespace Tips.WebServer.Modules
 {
@@ -24,14 +25,40 @@ namespace Tips.WebServer.Modules
             {
                 var id = prms.id;
 
+
+                // hack BindするためにSprintのITaskItemをITaskWithRecordに差し替える。
+
+                var taskWithRecords = eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(_ => true).ToArray();
+                var getWithTask = Fn.New((ITaskItem t) =>
+                {
+                    var finded = taskWithRecords.FirstOrDefault(x => x.Id == t.Id);
+                    if (finded == null)
+                    {
+                        return t;
+                    }
+                    return finded;
+                });
+                var toWithRecords = Fn.New((ISprint s) =>
+                {
+                    var sprint = s as Sprint;
+                    sprint.Tasks =
+                        sprint.Tasks.Select(getWithTask).ToArray();
+                    return sprint;
+                });
+                var toWithRecordsProject = Fn.New((IProject p) =>
+                {
+                    p.Sprints = p.Sprints.Select(toWithRecords).ToArray();
+                    return p;
+                });
+
                 var project =
                     eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrDefault();
-
+                var withRecord = toWithRecordsProject(project);
 
                 var user =
                    eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
 
-                return View["Views/Project", new { Auth = user, Project = project }];
+                return View["Views/Project", new { Auth = user, Project = withRecord }];
             };
 
             Get["/{id}/board"] = prms =>

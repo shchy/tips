@@ -2,8 +2,8 @@
 
 @Section['ProjectContent']
   <div class="row">
-      <textarea class="col-md-10" rows="20" id="edit">@Model.SprintText</textarea>
-      <a id="save" class="btn btn-default pull-right" >Save</a>
+      <textarea class="col-md-12" rows="20" id="edit">@Model.SprintText</textarea>
+      <button id="save" class="btn btn-default pull-right" >Save</button>
   </div>
 @EndSection
 
@@ -25,7 +25,7 @@
               scriptCharset: 'utf-8',
               success : function(data) {
                     // Success
-                    alert("success");
+                    // alert("success");
                     location.href = '@Path['~/project/@Model.Project.Id']';
               },
               error : function(data) {

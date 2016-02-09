@@ -117,7 +117,7 @@ namespace Tips.WebServer.Modules
                 var model = JsonConvert.DeserializeObject<AddTaskRecord>(this.Request.Body.ToStreamString());
                 eventAgg.GetEvent<AddTaskRecordEvent>().Publish(model.Record, model.TaskId);
 
-                return HttpStatusCode.OK;
+                return Response.AsJson(new { }, HttpStatusCode.OK);
             };
         }
 

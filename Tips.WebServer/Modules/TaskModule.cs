@@ -32,7 +32,8 @@ namespace Tips.WebServer.Modules
                     {
                         Auth = user,
                         Task = task,
-                        Progress = (task.Records.Sum(x=>x.Value) / task.Value) * 100.0
+                        Progress = (task.Records.Sum(x=>x.Value) / task.Value) * 100.0,
+                        ProgressValue = task.Records.Sum(x => x.Value),
                     }];
             };
 

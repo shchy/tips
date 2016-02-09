@@ -1,13 +1,12 @@
 @Each.Sprints
-<div class="row listItem">
-  <div class="row">
-    <div class="col-md-5">
-      <h2>@Current.Name</h2>
+<div class="row">
+  <div class="panel panel-default" >
+    <div class="panel-heading">
+      <h3>@Current.Name (@Current.Left.Month;/@Current.Left.Day; - @Current.Right.Month;/@Current.Right.Day;)</h3>
     </div>
-    <div class="col-md-5">
-      <p>@Partial['Views/Date', Current.Left]; ~ @Partial['Views/Date', Current.Right];</p>
+    <div class="panel-body">
+      @Partial['Views/Tasks', Current.Tasks];
     </div>
   </div>
-  @Partial['Views/Tasks', Current.Tasks];
 </div>
 @EndEach

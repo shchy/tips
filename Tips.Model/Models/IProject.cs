@@ -180,6 +180,8 @@ namespace Tips.Model.Models
                 Comments = comments,
             };
         }
+
+        public bool IsCompleted { get { return this.Records.Sum(x => x.Value) >= this.Value; } }
     }
 
 
