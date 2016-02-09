@@ -70,9 +70,12 @@ namespace Tips.Core.Services
 
             // 次にPV（計画）
             // 休日を除く日で総Valueを案分する
-            var workDays =
+            var alldays =
                 (from i in Enumerable.Range(0, (right - left).Days + 1)
                  let day = left.AddDays(i)
+                 select day).ToArray();
+            var workDays =
+                (from day in alldays
                  where this.isWorkday(day)
                  select day).ToArray();
 
@@ -87,7 +90,8 @@ namespace Tips.Core.Services
             // 1日あたりの量
             var pvAve = pvAll / workDays.Length;
             var pvList = workDays.Select(x => new GraphPoint { Day = x, Value = pvAve }).ToArray();
-            return pvList;
+            var inHolidays = alldays.Select(x => new GraphPoint { Day = x, Value = 0.0 }).ToArray();
+            return Merge(pvList, inHolidays);
         }
 
         public IEnumerable<IGraphPoint> Merge(IEnumerable<IGraphPoint> x, IEnumerable<IGraphPoint> y)
@@ -108,6 +112,7 @@ namespace Tips.Core.Services
             return
                 dx
                 .Select(a => new GraphPoint { Day = new DateTime(a.Key.Item1, a.Key.Item2, a.Key.Item3), Value = a.Value })
+                .OrderBy(a=>a.Day)
                 .ToArray();
         }
         

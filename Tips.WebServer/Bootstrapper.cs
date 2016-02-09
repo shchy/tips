@@ -66,6 +66,14 @@ namespace Tips.WebServer
 
             existingContainer.RegisterType<ITaskToTextFactory, TaskToTextFactory>();
 
+            existingContainer.RegisterType<ISprintToGraphModel, SprintToGraphModel>(
+                new InjectionConstructor(Fn.New((DateTime day) =>
+                    day.DayOfWeek == DayOfWeek.Monday
+                    || day.DayOfWeek == DayOfWeek.Tuesday
+                    || day.DayOfWeek == DayOfWeek.Wednesday
+                    || day.DayOfWeek == DayOfWeek.Thursday
+                    || day.DayOfWeek == DayOfWeek.Friday)));
+
             //// ssh git server test
             //var projectPath = @"C:\Users\Shuichi\home\src";
             //var gitPath = @"C:\Users\Shuichi\AppData\Local\Atlassian\SourceTree\git_local\bin";

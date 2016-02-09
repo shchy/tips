@@ -1,0 +1,235 @@
+@Master['Views/ProjectMaster']
+
+
+@Section['Projectcss']
+<style type="text/css">
+<!--
+
+.panel > .panel-heading.spi {
+    background-image: none;
+    background-color: paleturquoise;
+    color: deepskyblue;
+}
+
+.panel > .panel-heading.cpi {
+    background-image: none;
+    background-color: lightsalmon;
+    color: orangered;
+}
+
+.panel > .panel-heading.prg {
+    background-image: none;
+    background-color: lightgreen;
+    color: green;
+}
+
+.panel > .panel-heading.rem {
+    background-image: none;
+    background-color: indianred;
+    color: darkred;
+}
+
+.panel > .panel-heading.avg {
+    background-image: none;
+    background-color: pink;
+    color: palevioletred;
+}
+
+.panel > .panel-body > h1 {
+    margin: 6px 6px;
+}
+.panel > .panel-body > h4 {
+    margin: 6px 6px;
+}
+
+-->
+</style>
+
+@EndSection
+
+@Section['ProjectContent']
+
+
+
+  <div class="row">
+
+    <div class="col-md-3 col-xs-6">
+      <div class="panel panel-default">
+        <div class="panel-heading spi">
+          <h4>SPI</h4>
+        </div>
+        <div class="panel-body">
+          <h1 class="text-center dbl">@Model.Spi.Value;</h1>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-xs-6">
+      <div class="panel panel-default" >
+        <div class="panel-heading cpi">
+          <h4>CPI</h4>
+        </div>
+        <div class="panel-body ">
+          <h1 class="text-center dbl">@Model.Cpi.Value;</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2 col-xs-4">
+      <div class="panel panel-default" >
+        <div class="panel-heading prg">
+          <h4>Progress</h4>
+        </div>
+        <div class="panel-body">
+          <h1 class="text-center dbl">@Model.Progress;</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2 col-xs-4">
+      <div class="panel panel-default" >
+        <div class="panel-heading rem">
+          <h4>Remaining</h4>
+        </div>
+        <div class="panel-body ">
+          <h1 class="text-center dbl">@Model.Remaining;</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2 col-xs-4">
+      <div class="panel panel-default" >
+        <div class="panel-heading avg">
+          <h4>Average</h4>
+        </div>
+        <div class="panel-body ">
+          <h1 class="text-center dbl">@Model.Average;</h1>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-12" >
+      <h3>Trend Chart</h3>
+      <canvas id="trend"  ></canvas>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12" >
+      <h3>PI Chart</h3>
+      <canvas id="pi" ></canvas>
+    </div>
+  </div>
+@EndSection
+
+@Section['ProjectJs']
+<script src="/js/ccchart-min.js"></script>
+<script type="text/javascript">
+  $(function () {
+
+    function toDays(dx){
+      var count = dx.length - 1;
+      var labelcount = 5;
+      var blockSize = parseInt(count / labelcount);
+      for (var i = 1; i < dx.length; i++) {
+        var index = i - 1;
+        if (index % blockSize == 0) {
+            //dx[i] = Date.parse( dx[i] );
+        }else {
+            dx[i] = '';
+        }
+      }
+      return dx;
+    }
+
+    function makeTrendChart(){
+      var trend = {
+
+        "config": {
+          "width": 800,
+          "height": 240,
+          "axisYLen":5,
+          //"title": "Trend Chart",
+          //"subTitle": "",
+          "type": "line",
+          "lineWidth": 4,
+          //"xScaleXOffset": 4,
+          "colorSet":
+                ["lightblue","red","orange"],
+          //"bgGradient": {
+          //        "direction":"vertical",
+          //        "from":"#222",
+          //        "to":"#687478"
+          //      }
+          "bg": "white",
+          //"useMarker": "css-ring",
+          //"markerWidth": 12,
+          "shadows":{
+            "all":['#fff', 0, 0, 0]
+          }
+        },
+
+        "data": [
+          toDays(["X",@Model.Days;]),
+          ["PV",@Model.Trend.Pv;],
+          ["EV",@Model.Trend.Ev;],
+          ["AC",@Model.Trend.Ac;]
+        ]
+      };
+      ccchart.init('trend', trend);
+    }
+    function makePiChart(){
+      var pi = {
+
+        "config": {
+          "width": 800,
+          "height": 240,
+          "axisYLen":5,
+          //"title": "Trend Chart",
+          //"subTitle": "",
+          "type": "line",
+          "lineWidth": 4,
+          //"xScaleXOffset": 4,
+          "colorSet":
+                ["lightblue","red","orange"],
+          //"bgGradient": {
+          //        "direction":"vertical",
+          //        "from":"#222",
+          //        "to":"#687478"
+          //      }
+          "bg": "white",
+          //"useMarker": "css-ring",
+          //"markerWidth": 12,
+          "shadows":{
+            "all":['#fff', 0, 0, 0]
+          }
+        },
+
+        "data": [
+          toDays(["X",@Model.Days;]),
+          ["SPI",@Model.PI.Spi;],
+          ["CPI",@Model.PI.Cpi;]
+        ]
+      };
+      ccchart.init('pi', pi);
+    }
+
+    $( document ).ready( function() {
+      makeTrendChart();
+      makePiChart();
+
+      $('.dbl').each(function(){
+        var n = Number($(this).text());
+        $(this).text(n.toFixed(1));
+      });
+
+
+
+    });
+
+
+  });
+</script>
+@EndSection
