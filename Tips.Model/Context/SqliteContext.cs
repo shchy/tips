@@ -98,23 +98,35 @@ namespace Tips.Model.Context
             sql += " ProjectId INTEGER";
             sql += " ,SprintId INTEGER";
             sql += " ,Sort INTEGER";
+            sql += " ,IsDeleted INTEGER";
             sql += " ,PRIMARY KEY (SprintId)";
+            sql += " ,FOREIGN KEY(ProjectId)REFERENCES DbProject(Id)";
+            sql += " ,FOREIGN KEY(SprintId)REFERENCES DbSprint(Id)";
             sql += ");";
             sql += "create table DbLinkSprintWithTask(";
             sql += " SprintId INTEGER";
             sql += " ,TaskItemId INTEGER";
             sql += " ,Sort INTEGER";
+            sql += " ,IsDeleted INTEGER";
             sql += " ,PRIMARY KEY (TaskItemId)";
+            sql += " ,FOREIGN KEY(SprintId)REFERENCES DbSprint(Id)";
+            sql += " ,FOREIGN KEY(TaskItemId)REFERENCES DbTaskItem(Id)";
             sql += ");";
             sql += "create table DbLinkTaskItemWithRecord(";
             sql += " TaskItemId INTEGER";
             sql += " ,TaskRecordId INTEGER";
+            sql += " ,IsDeleted INTEGER";
             sql += " ,PRIMARY KEY (TaskRecordId)";
+            sql += " ,FOREIGN KEY(TaskItemId)REFERENCES DbTaskItem(Id)";
+            sql += " ,FOREIGN KEY(TaskRecordId)REFERENCES DbTaskRecord(Id)";
             sql += ");";
             sql += "create table DbLinkTaskItemWithComment(";
             sql += " TaskItemId INTEGER";
             sql += " ,TaskCommentId INTEGER";
+            sql += " ,IsDeleted INTEGER";
             sql += " ,PRIMARY KEY (TaskCommentId)";
+            sql += " ,FOREIGN KEY(TaskItemId)REFERENCES DbTaskItem(Id)";
+            sql += " ,FOREIGN KEY(TaskCommentId)REFERENCES DbTaskComment(Id)";
             sql += ");";
             return sql;
         }
@@ -143,10 +155,10 @@ namespace Tips.Model.Context
         public DbSet<DbProject> Projects { get; set; }
         public DbSet<DbSprint> Sprints { get; set; }
         public DbSet<DbTaskItem> TaskItems { get; set; }
-        public DbSet<DbLinkProjectWithSprint> LinkProjectWithSprint { get; set; }
-        public DbSet<DbLinkSprintWithTask> LinkSprintWithTaskItem { get; set; }
         public DbSet<DbTaskComment> TaskComments { get; set; }
         public DbSet<DbTaskRecord> TaskRecords { get; set; }
+        public DbSet<DbLinkProjectWithSprint> LinkProjectWithSprint { get; set; }
+        public DbSet<DbLinkSprintWithTask> LinkSprintWithTaskItem { get; set; }
         public DbSet<DbLinkTaskItemWithRecord> LinkTaskItemWithRecord { get; set; }
         public DbSet<DbLinkTaskItemWithComment> LinkTaskItemWithComment { get; set; }
         

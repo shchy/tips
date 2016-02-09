@@ -1,0 +1,42 @@
+﻿@Master['Views/ProjectMaster']
+
+@Section['ProjectContent']
+  <div class="row">
+      <textarea class="col-md-10" rows="20" id="edit">@Model.SprintText</textarea>
+      <a id="save" class="btn btn-default pull-right" >Save</a>
+  </div>
+@EndSection
+
+@Section['ProjectJs']
+<script type="text/javascript">
+        $(function () {
+          $('#save').click(function(e){
+
+            var jsonData = {
+              edittext : $('#edit').val()
+            };
+            var json = JSON.stringify(jsonData);
+            var url = '@Path['~/project/@Model.Project.Id/save']';
+            $.ajax({
+              type:'post',
+              url:url,
+              data : json,
+              dataType : 'JSON',
+              scriptCharset: 'utf-8',
+              success : function(data) {
+                    // Success
+                    alert("success");
+                    location.href = '@Path['~/project/@Model.Project.Id']';
+              },
+              error : function(data) {
+                  // Error
+                  alert("error");
+                  alert(JSON.stringify(data));
+                  $("#response").html(JSON.stringify(data));
+              }
+            });
+
+          });
+        });
+</script>
+@EndSection

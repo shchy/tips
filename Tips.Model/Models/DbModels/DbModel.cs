@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -98,8 +99,11 @@ namespace Tips.Model.Models.DbModels
     public class DbLinkTaskItemWithRecord
     {
         public int TaskItemId { get; set; }
+        
         [Key]
         public int TaskRecordId { get; set; }
+        public int IsDeleted { get; set; }
+
     }
 
     public class DbLinkTaskItemWithComment
@@ -107,6 +111,8 @@ namespace Tips.Model.Models.DbModels
         public int TaskItemId { get; set; }
         [Key]
         public int TaskCommentId { get; set; }
+        public int IsDeleted { get; set; }
+
     }
 
     public class DbLinkProjectWithSprint
@@ -116,6 +122,7 @@ namespace Tips.Model.Models.DbModels
         public int SprintId { get; set; }
 
         public int Sort { get; set; }
+        public int IsDeleted { get; set; }
     }
 
     public class DbLinkSprintWithTask
@@ -125,6 +132,8 @@ namespace Tips.Model.Models.DbModels
         public int TaskItemId { get; set; }
 
         public int Sort { get; set; }
+        public int IsDeleted { get; set; }
+
     }
 
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Practices.Unity;
 using Nancy.Authentication.Basic;
+using Nancy.Authentication.Forms;
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Unity;
 using Nancy.Conventions;
@@ -47,7 +48,9 @@ namespace Tips.WebServer
 
             // PubSubイベントAggregator
             existingContainer.RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager());
-            existingContainer.RegisterType<IUserValidator, UserValidator>();
+            var authUser = existingContainer.Resolve<UserValidator>();
+            existingContainer.RegisterInstance<IUserValidator>(authUser);
+            existingContainer.RegisterInstance<IUserMapper>(authUser);
 
             var dbPath =
                 Path.Combine(
@@ -82,6 +85,7 @@ namespace Tips.WebServer
         {
             // 認証設定
             EnableBasicAuth(container, pipelines);
+            EnableFormAuth(container, pipelines);
 
             // コントローラー群を起動
             this.controllers = MakeControllers(container).ToArray();
@@ -114,6 +118,18 @@ namespace Tips.WebServer
                     , UserPromptBehaviour.NonAjax);
 
             BasicAuthentication.Enable(pipelines, config);
+        }
+
+        private void EnableFormAuth(IUnityContainer container, IPipelines pipelines)
+        {
+            var formsAuthConfiguration =
+               new FormsAuthenticationConfiguration()
+               {
+                   RedirectUrl = "~/",
+                   UserMapper = container.Resolve<IUserMapper>(),
+               };
+
+            FormsAuthentication.Enable(pipelines, formsAuthConfiguration);
         }
     }
 }

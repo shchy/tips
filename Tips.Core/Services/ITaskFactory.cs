@@ -55,7 +55,7 @@ namespace Tips.Core.Services
         public IEnumerable<ISprint> Make(string text)
         {
             var query =
-                from line in text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                from line in text.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries)
                 let item =
                     from f in new Func<string,object>[] { ToSprint, ToTask }
                     let v = f(line)

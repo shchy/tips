@@ -165,6 +165,7 @@
     <Compile Include="Views\Controls\UserIcon.xaml.cs">
       <DependentUpon>UserIcon.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Converters\NullVisibilityConverter.cs" />
     <Compile Include="Views\CreateProjectView.xaml.cs">
       <DependentUpon>CreateProjectView.xaml</DependentUpon>
     </Compile>
@@ -206,6 +207,9 @@
     </Compile>
     <Compile Include="Views\SprintView.xaml.cs">
       <DependentUpon>SprintView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SystemManageView.xaml.cs">
+      <DependentUpon>SystemManageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TaskItemView.xaml.cs">
       <DependentUpon>TaskItemView.xaml</DependentUpon>
@@ -312,6 +316,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SprintView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SystemManageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

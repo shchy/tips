@@ -110,7 +110,7 @@ namespace Tips.WebServer.Modules
                 var model = JsonConvert.DeserializeObject<AddTaskComment>(json);
                 eventAgg.GetEvent<AddTaskCommentEvent>().Publish(model.Comment, model.TaskId);
 
-                return HttpStatusCode.OK;
+                return Response.AsJson(json, HttpStatusCode.OK);
             };
             Post["/task/record/"] = _ =>
             {

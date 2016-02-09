@@ -1,0 +1,12 @@
+@Each
+  <div class="row">
+
+    <div class="col-md-1">
+      @Current.Value;pt
+    </div>
+    <div class="col-md-9">
+      <a href="~/task/@Current.Id">@Current.Name</a>
+    </div>
+    
+  </div>
+@EndEach

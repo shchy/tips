@@ -1,0 +1,6 @@
+﻿@Master['Views/ProjectMaster']
+
+@Section['ProjectContent']
+      @Partial['Views/Sprint', Model.Project];
+      <a class="btn btn-default pull-right" href="~/project/@Model.Project.Id/edit" >Edit</a>
+@EndSection

@@ -40,6 +40,7 @@ namespace Tips.Desktop.Modules
             this.container.RegisterType<object, ProjectInBacklogEditView>(ViewNames.PROJECT_IN_BACKLOG_EDIT);
             this.container.RegisterType<object, TaskItemView>(ViewNames.PROJECT_IN_TASKITEM);
             this.container.RegisterType<object, SprintReportView>(ViewNames.PROJECT_IN_SPRINT_REPORT);
+            this.container.RegisterType<object, SystemManageView>(ViewNames.SYSTEM_MANAGE);
 
             this.eventAgg.GetEvent<NavigateEvent>().Subscribe(Navigate, true);
             this.eventAgg.GetEvent<NavigateInProjectViewEvent>().Subscribe(NavigateInProjectView, true);
@@ -82,6 +83,7 @@ namespace Tips.Desktop.Modules
         public static readonly string ROOT = typeof(LoginView).ToString();
         public static readonly string PROJECTS = typeof(ProjectsView).ToString();
         public static readonly string USER = typeof(UserView).ToString();
+        public static readonly string SYSTEM_MANAGE = typeof(SystemManageView).ToString();
         public static readonly string PROJECT = typeof(ProjectView).ToString();
         public static readonly string CREATE_PROJECT = typeof(CreateProjectView).ToString();
         public static readonly string PROJECT_IN_BACKLOG = typeof(ProjectInBacklogView).ToString();

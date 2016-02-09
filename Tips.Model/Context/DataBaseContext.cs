@@ -39,6 +39,10 @@ namespace Tips.Model.Context
                 // todo 他プロジェクトのタスクIDを指定されたら困る
                 // todo ViewModel側でIDのマッピングする様にして直接IDをText入力させない様にするのが正しそう
 
+                // todo ↑が解消されれば問題なさそうだけど、EFはIdentityに指定されたIDに値を指定しても勝手に降りなおされてしまう。
+                // todo 知らないIDが指定されてたら事前にnull or zero にしておくのがよさそう。
+                // todo つまり、Linkだけ削除してしまうと以降の更新でずれる。
+
                 // todo 古いリンクの削除と無所属になったデータの削除？
                 // 所属しなくなったTaskLinkの削除
                 var notLinkSprintTask =
@@ -48,7 +52,12 @@ namespace Tips.Model.Context
                     where sLink.SprintId == tLink.SprintId
                     where project.Sprints.SelectMany(x => x.Tasks).Select(x=>x.Id).Contains(tLink.TaskItemId) == false
                     select tLink;
-                notLinkSprintTask.ForEach(x => db.LinkSprintWithTaskItem.Remove(x));
+                notLinkSprintTask.ForEach(x =>
+                {
+                    x.IsDeleted = 1;
+                    db.LinkSprintWithTaskItem.AddOrUpdate(x);
+                });
+                db.SaveChanges();
 
                 // 所属しなくなったSprintLinkの削除
                 var notLinkProjectSprint =
@@ -56,7 +65,12 @@ namespace Tips.Model.Context
                     where sLink.ProjectId == dbModel.Id
                     where project.Sprints.Select(x => x.Id).Contains(sLink.SprintId) == false
                     select sLink;
-                notLinkProjectSprint.ForEach(x=>db.LinkProjectWithSprint.Remove(x));
+                notLinkProjectSprint.ForEach(x=>
+                {
+                    x.IsDeleted = 1;
+                    db.LinkProjectWithSprint.AddOrUpdate(x);
+                });
+                db.SaveChanges();
 
 
                 foreach (var sprint in project.Sprints.Select((v,i)=>new { v,i }))
@@ -67,6 +81,7 @@ namespace Tips.Model.Context
 
                     var linkPtoS = dbModel.ToDbLink(updatedSprint, sprint.i);
                     db.LinkProjectWithSprint.AddOrUpdate(linkPtoS);
+                    db.SaveChanges();
 
                     foreach (var taskItem in sprint.v.Tasks.Select((v, i) => new { v, i }))
                     {
@@ -76,8 +91,10 @@ namespace Tips.Model.Context
 
                         var linkStoT = updatedSprint.ToDbLink(updatedTaskItem, taskItem.i);
                         db.LinkSprintWithTaskItem.AddOrUpdate(linkStoT);
+                        db.SaveChanges();
                     }
                 }
+                db.SaveChanges();
             });
         }
 
@@ -142,6 +159,7 @@ namespace Tips.Model.Context
                     (from s in db.Sprints.ToArray()
                      let tasks = 
                          from link in db.LinkSprintWithTaskItem.ToArray()
+                         where link.IsDeleted == 0
                          where link.SprintId == s.Id
                          from t in db.TaskItems.ToArray()
                          where link.TaskItemId == t.Id
@@ -153,6 +171,7 @@ namespace Tips.Model.Context
                     from p in db.Projects.ToArray()
                     let sprints =
                         from link in db.LinkProjectWithSprint.ToArray()
+                        where link.IsDeleted == 0
                         where link.ProjectId == p.Id
                         from s in buildedSprints.ToArray()
                         where link.SprintId == s.Id
@@ -173,12 +192,14 @@ namespace Tips.Model.Context
                     from t in db.TaskItems.ToArray()
                     let rx =
                         from link in db.LinkTaskItemWithRecord.ToArray()
+                        where link.IsDeleted == 0
                         where link.TaskItemId == t.Id
                         from r in db.TaskRecords.ToArray()
                         where r.Id == link.TaskRecordId
                         select r
                     let cx =
                         from link in db.LinkTaskItemWithComment.ToArray()
+                        where link.IsDeleted == 0
                         where link.TaskItemId == t.Id
                         from c in db.TaskComments.ToArray()
                         where c.Id == link.TaskCommentId

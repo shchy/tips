@@ -1,0 +1,13 @@
+@Each.Sprints
+<div class="row listItem">
+  <div class="row">
+    <div class="col-md-5">
+      <h2>@Current.Name</h2>
+    </div>
+    <div class="col-md-5">
+      <p>@Partial['Views/Date', Current.Left]; ~ @Partial['Views/Date', Current.Right];</p>
+    </div>
+  </div>
+  @Partial['Views/Tasks', Current.Tasks];
+</div>
+@EndEach

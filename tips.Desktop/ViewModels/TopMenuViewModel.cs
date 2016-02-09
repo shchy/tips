@@ -23,7 +23,10 @@ namespace Tips.Desktop.ViewModels
         public DelegateCommand ToUserCommand { get; private set; }
         public DelegateCommand ToProjectHomeCommand { get; private set; }
 
-        
+        public DelegateCommand ToManageCommand { get; private set; }
+        public DelegateCommand ToManageProjectCommand { get; private set; }
+
+
 
         public IProject Project { get; private set; }
         public IUser MySelf { get; private set; }
@@ -43,11 +46,22 @@ namespace Tips.Desktop.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
+            this.Project = null;
+            this.ToManageCommand = null;
+            this.ToManageProjectCommand = null;
+
             var query = navigationContext.TryToGetProject(eventAgg);
-            query.On(project => this.Project = project);
-            query.Or(() => this.Project = null);
+            query.On(project =>
+            {
+                this.Project = project;
+            });
 
             this.MySelf = this.eventAgg.GetEvent<GetAuthUserEvent>().Get().Return();
+            if (this.MySelf != null && this.MySelf.Role == UserRole.Admin)
+            {
+                this.ToManageCommand = new DelegateCommand(() =>
+                    eventAgg.GetEvent<NavigateEvent>().Publish(ViewNames.SYSTEM_MANAGE));
+            }
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)

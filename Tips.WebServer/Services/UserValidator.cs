@@ -8,17 +8,41 @@ using Nancy.Security;
 using Prism.Events;
 using Tips.Core.Events;
 using Tips.Model.Models;
+using Nancy.Authentication.Forms;
+using Nancy;
 
 namespace Tips.WebServer.Services
 {
-    public class UserValidator : IUserValidator
+    public class UserValidator : IUserValidator, IUserMapper
     {
         private IEventAggregator eventAgg;
+        private Dictionary<string, Guid> formAuthCache;
 
         public UserValidator(IEventAggregator eventAgg)
         {
             this.eventAgg = eventAgg;
+            this.formAuthCache = new Dictionary<string, Guid>();
         }
+
+        public IUserIdentity GetUserFromIdentifier(Guid identifier, NancyContext context)
+        {
+            var authed =
+                from u in this.eventAgg.GetEvent<GetUserEvent>().Get(_ => true)
+                let guid = ToGuid(u)
+                where guid == identifier
+                select ToBasicModel(u);
+            return authed.FirstOrDefault();
+        }
+
+        public Guid ToGuid(IUser user)
+        {
+            if (this.formAuthCache.ContainsKey(user.Id) == false)
+            {
+                this.formAuthCache[user.Id] = Guid.NewGuid();
+            }
+            return this.formAuthCache[user.Id];
+        }
+
         public IUserIdentity Validate(string username, string password)
         {
             return

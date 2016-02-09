@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tips.Desktop.Views"
+        xmlns:cnv="clr-namespace:Tips.Desktop.Views.Converters"
         xmlns:vm="clr-namespace:Tips.Desktop.ViewModels"
         mc:Ignorable="d"
         Title="AskUserView" Height="300" Width="300">
@@ -16,7 +17,7 @@
                     </DataTemplate>
                 </ResourceDictionary>
                 <ResourceDictionary>
-                    <local:NullVisibilityConverter x:Key="nullToHidden" />
+                    <cnv:NullVisibilityConverter x:Key="nullToHidden" />
                 </ResourceDictionary>
                 
             </ResourceDictionary.MergedDictionaries>
