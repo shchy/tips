@@ -109,6 +109,15 @@ namespace Tips.WebServer.Modules
                 return
                     Response.AsJson(json, HttpStatusCode.OK);
             };
+
+            Get["/{id}/report"] = prms =>
+            {
+                var id = prms.id;
+
+
+
+                return View["Views/ProjectReport"];
+            };
         }
     }
 }
