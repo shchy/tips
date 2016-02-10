@@ -1,0 +1,326 @@
+@Master['Views/Master']
+
+@Section['css']
+<link href="/css/navbar-fixed-top.css" rel="stylesheet">
+<style type="text/css">
+<!--
+.panel-footer {padding: 1px 15px}
+.panel-footer blockquote{margin: 0px; padding: 0px;}
+-->
+</style>
+@EndSection
+
+@Section['Content']
+
+<!--header-->
+@Partial['Views/MenuBar'];
+
+<div class="container">
+
+    <h1 class="page-header">@Model.Task.Name</h1>
+
+    <div class="row">
+      <div class="col-md-2" >
+        <h4>Progress(@Model.ProgressValue/@Model.Task.Value;pt)</h4>
+      </div>
+      <div class="col-md-10" >
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: @Model.Progress;%;">
+            @Model.Progress;%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2" >
+        <h4>Assign</h4>
+      </div>
+      <div class="col-md-1" >
+        <img src="@Model.Task.Assign.IconFile;" class="img-rounded img-responsive" width="24" />
+      </div>
+      <div class="col-md-2" >
+        @Model.Task.Assign.Name;
+      </div>
+      <div class="col-md-2" ></div>
+      <div class="col-md-4" >
+        <div class="form-inline">
+          <div class="form-group">
+            <input type="text" class="form-control" id="userId"  placeholder="UserId">
+          </div>
+          <button id="assign" class="btn btn-primary">Assign</button>
+          <button id="assignme" class="btn btn-primary" >Mine</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-8">
+        <h2>Comments</h2>
+        @Each.Task.Comments
+          <div class="panel panel-default" >
+            <div class="panel-body comment">
+              @!Current.Text
+            </div>
+            <div class="panel-footer">
+              <blockquote class="blockquote-reverse">
+              @Current.Who.Name; @Current.Day.Month;/@Current.Day.Day; @Current.Day.Hour;:@Current.Day.Minute;
+              </blockquote>
+            </div>
+          </div>
+        @EndEach
+
+        <div class="row">
+          <textArea id="commentText" class="col-md-12" Rows="8"></textarea>
+        </div>
+        <div class="row">
+          <button id="addComment" class="btn btn-default pull-right" >Add Comment</button>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <h2>Works</h2>
+        <ul class="list-group">
+        @Each.Task.Records
+        <li class="list-group-item">
+          <span class="badge">@Current.Value;</span>
+          @Current.Day.Month;/@Current.Day.Day; @Current.Who.Name; @Current.WorkValue;
+        </li>
+        @EndEach
+        </ul>
+        <div class="col-md-12">
+          <div class="form-group">
+              <label >WorkValue:</label>
+              <input type="text" class="form-control" id="workvalue" placeholder="1.0" />
+          </div>
+          <div class="form-group">
+              <label >Progress:</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="progress" placeholder="50.0" value="@Model.Progress" />
+                <div class="input-group-addon">%</div>
+              </div>
+          </div>
+        </div>
+        <button id="addrecord" class="btn btn-default pull-right" >Add Record</button>
+      </div>
+    </div>
+</div>
+@EndSection
+
+@Section['js']
+<script type="text/javascript">
+  $(function () {
+
+    // 検索関数を返す関数
+    var substringMatcher = function(strs) {
+      return function findMatches(q, cb) {
+        var matches, substringRegex;
+
+        // an array that will be populated with substring matches
+        matches = [];
+
+        // regex used to determine if a string contains the substring `q`
+        substrRegex = new RegExp(q, 'i');
+
+        // iterate through the pool of strings and for any string that
+        // contains the substring `q`, add it to the `matches` array
+        $.each(strs, function(i, str) {
+          if (substrRegex.test(str)) {
+            matches.push(str);
+          }
+        });
+
+        cb(matches);
+      };
+    };
+
+    function setupAutoComplete(){
+      getJson('@Path['~/api/users/']', function(data){
+
+        var data =
+          $(data).map(function(){
+            return this.id;
+          });
+
+
+        $('#userId').typeahead({
+          hint: true,
+          highlight: true,
+          minLength: 1
+        },
+        {
+          name: 'userId',
+          source: substringMatcher(data)
+        });
+      });
+    }
+
+    // todo 共通化
+    function getJson(url, callback){
+
+      $.ajax({
+        type:'get',
+        url:url,
+        dataType : 'JSON',
+        scriptCharset: 'utf-8',
+        success : callback,
+        error : function(data) {
+            // Error
+            alert("error");
+            alert(JSON.stringify(data));
+        }
+      });
+    }
+
+
+    $( document ).ready( function() {
+
+      setupAutoComplete();
+
+    });
+
+
+
+    $('.comment').each(function(){
+      var text = $(this).html();
+      text = $.trim(text);
+      text = text.replace(/\r\n/g, "<br />");
+      text = text.replace(/(\n|\r)/g, "<br />");
+      $(this).html(text);
+    });
+
+    function assignTask(userId){
+      var jsonData = {
+        userid:userId
+      };
+      var json = JSON.stringify(jsonData);
+      var url = '@Path['~/task/@Model.Task.Id;/assign']';
+      $.ajax({
+        type:'post',
+        url:url,
+        data : json,
+        dataType : 'JSON',
+        scriptCharset: 'utf-8',
+        success : function(data) {
+              //location.href = '@Path['~/project/@Model.Project.Id']';
+              location.reload();
+        },
+        error : function(data) {
+            // Error
+            alert("error");
+            alert(JSON.stringify(data));
+            $("#response").html(JSON.stringify(data));
+        }
+      });
+    }
+
+    $('#assign').click(function(e){
+      assignTask($('#userId').val());
+    });
+
+    $('#assignme').click(function(e){
+
+      assignTask('@Model.Auth.Id');
+    });
+
+    $('#addrecord').click(function(e){
+
+      var dt = new Date();
+      var now = dt.toLocaleDateString() + " " + dt.toLocaleTimeString();
+      var workvalue = Number($('#workvalue').val());
+      var totalvalue = Number(@Model.Task.Value;);
+      var value = workvalue;
+
+      if (totalvalue != 0) {
+        var progress = Number($('#progress').val());
+        var currentProgress = Number(@Model.Progress;);
+        var diff = (progress - currentProgress) * 0.01;
+        value = diff * totalvalue;
+        if (totalvalue < @Model.ProgressValue + value) {
+          value = totalvalue - @Model.ProgressValue;;
+        }
+      }
+
+      if (workvalue == 0 && value == 0) {
+        return;
+      }
+
+      var jsonData = {
+        taskId:@Model.Task.Id,
+        record : {
+          day: now,
+          value: value,
+          workvalue: workvalue,
+          who:{
+            id:'@Model.Auth.Id',
+            name:'@Model.Auth.Name'
+          }
+        },
+      };
+      var json = JSON.stringify(jsonData);
+      var url = '@Path['~/api/task/record/']';
+      $.ajax({
+        type:'post',
+        url:url,
+        data : json,
+        dataType : 'JSON',
+        scriptCharset: 'utf-8',
+        success : function(data) {
+              //location.href = '@Path['~/project/@Model.Project.Id']';
+              location.reload();
+        },
+        error : function(data) {
+            // Error
+            alert("error");
+            alert(JSON.stringify(data));
+            $("#response").html(JSON.stringify(data));
+        }
+      });
+
+    });
+
+    $('#addComment').click(function(e){
+
+      var dt = new Date();
+      var now = dt.toLocaleDateString() + " " + dt.toLocaleTimeString();
+      var comment = $.trim($('#commentText').val());
+      if (comment == '') {
+        return;
+      }
+
+      var jsonData = {
+        taskId:@Model.Task.Id,
+        comment : {
+          day: now,
+          text: $('#commentText').val(),
+          who:{
+            id:'@Model.Auth.Id',
+            name:'@Model.Auth.Name'
+          }
+        },
+      };
+      var json = JSON.stringify(jsonData);
+      var url = '@Path['~/api/task/comment/']';
+      $.ajax({
+        type:'post',
+        url:url,
+        data : json,
+        dataType : 'JSON',
+        scriptCharset: 'utf-8',
+        success : function(data) {
+              //location.href = '@Path['~/project/@Model.Project.Id']';
+              location.reload();
+        },
+        error : function(data) {
+            // Error
+            alert("error");
+            alert(JSON.stringify(data));
+            $("#response").html(JSON.stringify(data));
+        }
+      });
+
+    });
+  });
+</script>
+@EndSection

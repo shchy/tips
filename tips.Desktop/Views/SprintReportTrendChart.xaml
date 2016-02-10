@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="Tips.Desktop.Views.SprintReportTrendChart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Tips.Desktop.Views"
+             xmlns:ctrls="clr-namespace:Tips.Desktop.Views.Controls"
+             xmlns:oxy="http://oxyplot.org/wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <oxy:Plot Margin="6" 
+              LegendPlacement="Outside" LegendPosition="BottomCenter" LegendOrientation="Horizontal"
+              Background="Transparent"
+              IsMouseWheelEnabled="False">
+        <oxy:Plot.Axes>
+            <oxy:DateTimeAxis Position="Bottom" StringFormat="MM/dd" 
+                            Minimum="{Binding MinX}" Maximum="{Binding MaxX}" />
+            <oxy:LinearAxis Position="Left" StringFormat="0.0pt"
+                            Minimum="{Binding MinY}" Maximum="{Binding MaxY}" />
+        </oxy:Plot.Axes>
+        <oxy:Plot.Series>
+            <oxy:LineSeries StrokeThickness="3" Color="LightBlue" Title="PV"
+                            ItemsSource="{Binding Pv}" 
+                            DataFieldX="Day" DataFieldY="Value" />
+            <oxy:LineSeries StrokeThickness="3" Color="Red" Title="EV"
+                            ItemsSource="{Binding Ev}" 
+                            DataFieldX="Day" DataFieldY="Value" />
+            <oxy:LineSeries StrokeThickness="3" Color="GreenYellow" Title="AC"
+                            ItemsSource="{Binding Ac}" 
+                            DataFieldX="Day" DataFieldY="Value" />
+        </oxy:Plot.Series>
+
+    </oxy:Plot>
+</UserControl>
