@@ -148,6 +148,12 @@ namespace Tips.Model.Models
         public DateTime? Right { get; set; }
 
         public IEnumerable<ITaskItem> Tasks { get; set; }
+
+        // todo razorにするまでViewで計算できないからプロパティ追加
+        public double TotalValue { get { return Tasks.Where(x => x.Value.HasValue).Sum(x => x.Value.Value); } }
+        public double Ev { get { return Tasks.OfType<ITaskWithRecord>().SelectMany(x => x.Records).Sum(x => x.Value); } }
+        public double Remaining { get { return this.TotalValue - this.Ev; } }
+
     }
 
     public class TaskItem : ITaskItem

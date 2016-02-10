@@ -8,6 +8,7 @@
 @Section['ProjectJs']
 <script type="text/javascript">
   $(function () {
+
     $('.task').each(function(){
       var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
       if (isCompleted == false) {
@@ -15,12 +16,23 @@
       }
       $(this).wrap('<s />');
     });
+
     $('.taskicon_done').each(function(){
       var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
       if (isCompleted == false) {
           $(this).hide();
       }else {
           $(this).show();
+      }
+
+    });
+
+    $('.taskicon_ready').each(function(){
+      var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
+      if (isCompleted == false) {
+          $(this).show();
+      }else {
+          $(this).hide();
       }
 
     });

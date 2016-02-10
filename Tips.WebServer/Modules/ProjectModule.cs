@@ -182,6 +182,7 @@ namespace Tips.WebServer.Modules
                 {
                     return t;
                 }
+                (finded as TaskWithRecord).Assign = this.AddIconFilePath(this.Request.Url, finded.Assign);
                 return finded;
             });
             var toWithRecords = Fn.New((ISprint s) =>

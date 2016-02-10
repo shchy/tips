@@ -139,7 +139,7 @@ namespace Tips.Model.Context
             this.dbContext.Update(db =>
             {
                 var model = user.ToDbModel();
-                db.Users.Add(model);
+                db.Users.AddOrUpdate(model);
             });
         }
 

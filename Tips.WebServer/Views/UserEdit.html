@@ -1,0 +1,143 @@
+﻿@Master['Views/UserMaster']
+
+@Section['userContent']
+
+  <div class="page-header">
+      <h2>Edit User</h2>
+  </div>
+
+
+  <div class="form-group">
+    <img src="@Model.IconFile;" class="img-rounded img-responsive" width="128" />
+    <input type="file" id="file" name="file" style="display: none;" accept="image/*">
+    <div class="input-group">
+      <input type="text" class="form-control" id="selectedFile" readonly>
+      <span class="input-group-btn">
+        <button id="selectFile" class="btn btn-default" type="button">ファイル選択</button>
+      </span>
+    </div>
+  </div>
+
+
+  <div class="form-group">
+  	<label for="userId">UserId</label>
+    <input id="userId" type="text" class="form-control" value="@Model.Id;" disabled></input>
+  </div>
+
+  <div class="form-group">
+  	<label for="name">Name</label>
+  	<input id="name" type="text" class="form-control" value="@Model.Name;"></input>
+  </div>
+
+  <div class="form-group">
+  	<label for="password">Password</label>
+  	<input id="password" type="password" class="form-control" value="@Model.Password;"></input>
+  </div>
+
+  <div class="form-group">
+  	<label for="isAdmin">IsAdmin</label>
+    <div class="checkbox">
+      <label>
+        <input id="isAdmin" type="checkbox"> IsAdmin
+      </label>
+    </div>
+  </div>
+
+  <button id="edit" class="btn btn-default pull-right">Edit</button>
+
+
+@EndSection
+
+@Section['userjs']
+<script src="/js/jquery.base64.min.js" ></script>
+<script type="text/javascript">
+
+  $(function () {
+
+    $(document).ready(function(){
+      var isAdmin = '@Model.Role'.toLowerCase() == 'admin';
+      if (isAdmin) {
+        $('#isAdmin').prop('checked', isAdmin);
+      }
+    });
+
+    // todo 共通化
+    function postJson(url, jsonData, callback)
+    {
+      var json = JSON.stringify(jsonData);
+      $.ajax({
+        type:'post',
+        url:url,
+        data : json,
+        dataType : 'JSON',
+        scriptCharset: 'utf-8',
+        success : callback,
+        error : function(data) {
+            // Error
+            alert("error");
+            alert(JSON.stringify(data));
+        }
+      });
+    }
+
+    function update(){
+      var id = $('#userId').val();
+      var name = $('#name').val();
+      var password = $('#password').val();
+      var role = $('#isAdmin').prop('checked') ? 'admin' : 'normal';
+
+      var url = '@Path['~/api/users/']';
+      var jsonData = {
+        id:id,
+        name:name,
+        password:password,
+        role:role,
+      };
+      postJson(url, jsonData, function(data){
+        location.href = '@Path['~/user/@Model.Id;']';
+      });
+    }
+
+
+    $('#edit').click(function(e){
+
+      readFile($('#file')[0], function(base64Text){
+
+        if (base64Text) {
+          var url = '@Path['~/api/users/withIcon/']';
+          var jsonData = {
+            userid:$('#userId').val(),
+            base64bytesbyimage:base64Text
+          };
+          postJson(url, jsonData, function(a){update();});
+        }else {
+          update();
+        }
+      });
+    });
+
+    $('#selectFile').on('click', function() {
+      $('#file').trigger('click');
+    });
+
+    $('#file').change(function() {
+      $('#selectedFile').val($(this).val());
+    });
+
+    function readFile(file, callback)
+    {
+      var isEnable=file.files && file.files[0];
+      if ( isEnable == undefined ) {
+        callback();
+      }
+
+      var r = new FileReader();
+      r.onload = function(e) {
+        var base64String = e.target.result;
+        callback(base64String.split(',')[1]);
+      };
+      r.readAsDataURL( file.files[0] );
+    }
+  });
+</script>
+@EndSection

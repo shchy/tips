@@ -69,8 +69,8 @@ namespace Tips.WebServer.Modules
                 try
                 {
 
-                    var model = this.Bind<AddUserWithIcon>();
-
+                    //var model = this.Bind<AddUserWithIcon>();
+                    var model = JsonConvert.DeserializeObject<AddUserWithIcon>(this.Request.Body.ToStreamString());
                     var targetUser =
                         eventAgg.GetEvent<GetUserEvent>().Get(p => p.Id == model.UserId).FirstOrDefault();
                     if (targetUser == null)
@@ -80,7 +80,7 @@ namespace Tips.WebServer.Modules
 
                     eventAgg.GetEvent<AddUserIconEvent>().Publish(model);
 
-                    return HttpStatusCode.OK;
+                    return Response.AsJson(new { }, HttpStatusCode.OK);
                 }
                 catch (Exception)
                 {
@@ -140,6 +140,8 @@ namespace Tips.WebServer.Modules
     {
         // todo パスはコンストラクタで
         static string httpFolder = "img/userIcons/";
+        static string localFolder = "content/img/userIcons/";
+        static string defaulticon = "default";
 
         public static IUser AddIconFilePath(this NancyModule @this, Url url, IUser user)
         {
@@ -147,10 +149,18 @@ namespace Tips.WebServer.Modules
             {
                 return user;
             }
+
+            var iconname = user.Id;
+
+            if (File.Exists(Path.Combine( localFolder, iconname + ".png")) == false)
+            {
+                iconname = defaulticon;
+            }
+
             var iconUri =
                 new Uri(
                     new Uri(url.SiteBase)
-                    , Path.Combine(httpFolder, user.Id + ".png"));
+                    , Path.Combine(httpFolder, iconname + ".png"));
             (user as User).IconFile = iconUri.ToString();
             return user;
         }

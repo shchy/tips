@@ -2,7 +2,7 @@
 <div class="row">
   <div class="panel panel-default" >
     <div class="panel-heading">
-      <h3>@Current.Name (@Current.Left.Month;/@Current.Left.Day; - @Current.Right.Month;/@Current.Right.Day;)</h3>
+      <h3>@Current.Name (@Current.Left.Month;/@Current.Left.Day; - @Current.Right.Month;/@Current.Right.Day;) Total=@Current.TotalValue;pt Remaining=@Current.Remaining;pt</h3>
     </div>
     <div class="panel-body">
       @Partial['Views/Tasks', Current.Tasks];

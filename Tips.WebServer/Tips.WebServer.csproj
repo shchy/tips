@@ -134,6 +134,7 @@
     <Compile Include="Modules\SystemManageModule.cs" />
     <Compile Include="Modules\TaskModule.cs" />
     <Compile Include="Modules\UserHomeModule.cs" />
+    <Compile Include="Modules\UserModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\UserValidator.cs" />
@@ -196,7 +197,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="content\img\userIcons\" />
+    <None Include="Views\UserMaster.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tips.Core\Tips.Core.csproj">
@@ -314,6 +317,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Views\CreateProject.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="content\img\userIcons\default.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Views\UserEdit.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

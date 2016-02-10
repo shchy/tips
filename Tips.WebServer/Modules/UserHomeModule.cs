@@ -20,11 +20,6 @@ namespace Tips.WebServer.Modules
 
             Get["/"] = prms =>
             {
-                //var roles =
-                //    Context.CurrentUser.Claims
-                //    .Select(x => Enum.Parse(typeof(UserRole), x))
-                //    .OfType<UserRole>();
-
                 var user =
                     eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
 

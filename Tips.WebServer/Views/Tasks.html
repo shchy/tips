@@ -1,7 +1,8 @@
 @Each
   <div class="row">
     <div class="col-md-1">
-      <span class="glyphicon glyphicon-ok taskicon_done"  isCompleted="@Current.IsCompleted;"></span>
+      <span class="glyphicon glyphicon-ok taskicon_done"  isCompleted="@Current.IsCompleted;" style="display:none"></span>
+      <img src="@Current.Assign.IconFile;" class="img-rounded img-responsive taskicon_ready" width="24" isCompleted="@Current.IsCompleted;" style="display:none"/>
     </div>
     <div class="col-md-11">
       <a class="task" href="~/task/@Current.Id" isCompleted="@Current.IsCompleted;">@Current.Name</a>
