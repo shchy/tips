@@ -19,14 +19,41 @@
 
     <h1 class="page-header">@Model.Task.Name</h1>
 
-    <div class="inline-block;">
-      <h2>Progress(@Model.ProgressValue/@Model.Task.Value;pt)</h2>
-      <div class="progress">
-        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: @Model.Progress;%;">
-          @Model.Progress;%
+    <div class="row">
+      <div class="col-md-2" >
+        <h4>Progress(@Model.ProgressValue/@Model.Task.Value;pt)</h4>
+      </div>
+      <div class="col-md-10" >
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: @Model.Progress;%;">
+            @Model.Progress;%
+          </div>
         </div>
       </div>
-    <div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2" >
+        <h4>Assign</h4>
+      </div>
+      <div class="col-md-1" >
+        <img src="@Model.Task.Assign.IconFile;" class="img-rounded img-responsive" width="24" />
+      </div>
+      <div class="col-md-2" >
+        @Model.Task.Assign.Name;
+      </div>
+      <div class="col-md-2" ></div>
+      <div class="col-md-4" >
+        <div class="form-inline">
+          <div class="form-group">
+            <input type="text" class="form-control" id="userId"  placeholder="UserId">
+          </div>
+          <button id="assign" class="btn btn-primary">Assign</button>
+          <button id="assignme" class="btn btn-primary" >Mine</button>
+        </div>
+      </div>
+    </div>
+
 
     <div class="row">
       <div class="col-md-8">
@@ -85,6 +112,76 @@
 <script type="text/javascript">
   $(function () {
 
+    // 検索関数を返す関数
+    var substringMatcher = function(strs) {
+      return function findMatches(q, cb) {
+        var matches, substringRegex;
+
+        // an array that will be populated with substring matches
+        matches = [];
+
+        // regex used to determine if a string contains the substring `q`
+        substrRegex = new RegExp(q, 'i');
+
+        // iterate through the pool of strings and for any string that
+        // contains the substring `q`, add it to the `matches` array
+        $.each(strs, function(i, str) {
+          if (substrRegex.test(str)) {
+            matches.push(str);
+          }
+        });
+
+        cb(matches);
+      };
+    };
+
+    function setupAutoComplete(){
+      getJson('@Path['~/api/users/']', function(data){
+
+        var data =
+          $(data).map(function(){
+            return this.id;
+          });
+
+
+        $('#userId').typeahead({
+          hint: true,
+          highlight: true,
+          minLength: 1
+        },
+        {
+          name: 'userId',
+          source: substringMatcher(data)
+        });
+      });
+    }
+
+    // todo 共通化
+    function getJson(url, callback){
+
+      $.ajax({
+        type:'get',
+        url:url,
+        dataType : 'JSON',
+        scriptCharset: 'utf-8',
+        success : callback,
+        error : function(data) {
+            // Error
+            alert("error");
+            alert(JSON.stringify(data));
+        }
+      });
+    }
+
+
+    $( document ).ready( function() {
+
+      setupAutoComplete();
+
+    });
+
+
+
     $('.comment').each(function(){
       var text = $(this).html();
       text = $.trim(text);
@@ -93,6 +190,39 @@
       $(this).html(text);
     });
 
+    function assignTask(userId){
+      var jsonData = {
+        userid:userId
+      };
+      var json = JSON.stringify(jsonData);
+      var url = '@Path['~/task/@Model.Task.Id;/assign']';
+      $.ajax({
+        type:'post',
+        url:url,
+        data : json,
+        dataType : 'JSON',
+        scriptCharset: 'utf-8',
+        success : function(data) {
+              //location.href = '@Path['~/project/@Model.Project.Id']';
+              location.reload();
+        },
+        error : function(data) {
+            // Error
+            alert("error");
+            alert(JSON.stringify(data));
+            $("#response").html(JSON.stringify(data));
+        }
+      });
+    }
+
+    $('#assign').click(function(e){
+      assignTask($('#userId').val());
+    });
+
+    $('#assignme').click(function(e){
+
+      assignTask('@Model.Auth.Id');
+    });
 
     $('#addrecord').click(function(e){
 

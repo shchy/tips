@@ -15,6 +15,7 @@ namespace Tips.Model.Context
         void AddProject(IProject project);
         void AddTaskComment(ITaskComment comment, int taskId);
         void AddTaskRecord(ITaskRecord record, int taskId);
+        void AddTaskToUser(IUser user, int taskId);
 
         IEnumerable<IUser> GetUser(Func<IUser, bool> predicate = null);
         IEnumerable<IProject> GetProjects(Func<IProject, bool> predicate = null);

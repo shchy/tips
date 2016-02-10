@@ -52,9 +52,9 @@ namespace Tips.WebServer
             existingContainer.RegisterInstance<IUserValidator>(authUser);
             existingContainer.RegisterInstance<IUserMapper>(authUser);
 
-            var dbPath =
+            var dbPath = 
                 Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+                    Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location)
                     , "db");
             existingContainer.RegisterType<IDataSource, SqliteContext>(
                 new InjectionConstructor(dbPath));

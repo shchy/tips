@@ -99,7 +99,7 @@ namespace Tips.Model.Models.DbModels
     public class DbLinkTaskItemWithRecord
     {
         public int TaskItemId { get; set; }
-        
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Key]
         public int TaskRecordId { get; set; }
         public int IsDeleted { get; set; }
@@ -109,6 +109,7 @@ namespace Tips.Model.Models.DbModels
     public class DbLinkTaskItemWithComment
     {
         public int TaskItemId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Key]
         public int TaskCommentId { get; set; }
         public int IsDeleted { get; set; }
@@ -118,6 +119,7 @@ namespace Tips.Model.Models.DbModels
     public class DbLinkProjectWithSprint
     {
         public int ProjectId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Key]
         public int SprintId { get; set; }
 
@@ -128,10 +130,21 @@ namespace Tips.Model.Models.DbModels
     public class DbLinkSprintWithTask
     {
         public int SprintId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Key]
         public int TaskItemId { get; set; }
 
         public int Sort { get; set; }
+        public int IsDeleted { get; set; }
+
+    }
+
+    public class DbLinkUserWithTaskItem
+    {
+        public string UserId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key]
+        public int TaskItemId { get; set; }
         public int IsDeleted { get; set; }
 
     }
@@ -242,6 +255,15 @@ namespace Tips.Model.Models.DbModels
             {
                 TaskItemId = taskId,
                 TaskRecordId = @this.Id,
+            };
+        }
+
+        public static DbLinkUserWithTaskItem ToDbLink(this IUser @this, int taskId)
+        {
+            return new DbLinkUserWithTaskItem
+            {
+                TaskItemId = taskId,
+                UserId = @this.Id,
             };
         }
 

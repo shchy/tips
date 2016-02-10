@@ -98,7 +98,7 @@ namespace Tips.WebServer.Modules
 
                 project.On(eventAgg.GetEvent<UpdateProjectEvent>().Publish);
 
-                return project.IsSomething ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
+                return Response.AsJson(new { }, project.IsSomething ? HttpStatusCode.OK : HttpStatusCode.InternalServerError);
             };
 
             Post["/task/comment/"] = _ =>
@@ -143,6 +143,10 @@ namespace Tips.WebServer.Modules
 
         public static IUser AddIconFilePath(this NancyModule @this, Url url, IUser user)
         {
+            if (user == null)
+            {
+                return user;
+            }
             var iconUri =
                 new Uri(
                     new Uri(url.SiteBase)

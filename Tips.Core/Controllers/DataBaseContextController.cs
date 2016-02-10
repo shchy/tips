@@ -32,6 +32,12 @@ namespace Tips.Core.Controllers
             this.eventAgg.GetEvent<GetTaskWithRecordEvent>().Subscribe(GetTaskWithRecord, true);
             this.eventAgg.GetEvent<AddTaskCommentEvent>().Subscribe(AddTaskComment, true);
             this.eventAgg.GetEvent<AddTaskRecordEvent>().Subscribe(AddTaskRecord, true);
+            this.eventAgg.GetEvent<AddUserToTaskEvent>().Subscribe(AddUserToTask, true);
+        }
+
+        private void AddUserToTask(AddOrder<IUser, int> order)
+        {
+            this.context.AddTaskToUser(order.Model, order.WithIn);
         }
 
         private void AddUserIcon(AddUserWithIcon order)

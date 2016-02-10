@@ -29,10 +29,7 @@ namespace Tips.WebServer.Modules
             Get["/{id}"] = prms =>
             {
                 var id = prms.id;
-
-
                 
-
                 var project =
                     eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrDefault();
                 var withRecord = ToWithRecordsProject(project);
@@ -41,6 +38,11 @@ namespace Tips.WebServer.Modules
                    eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
 
                 return View["Views/Project", new { Auth = user, Project = withRecord }];
+            };
+
+            Get["/create"] = prms =>
+            {
+                return View["Views/CreateProject"];
             };
 
             Get["/{id}/board"] = prms =>

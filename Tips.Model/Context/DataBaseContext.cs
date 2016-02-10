@@ -116,10 +116,20 @@ namespace Tips.Model.Context
             this.dbContext.Update(db =>
             {
                 var model = record.ToDbModel();
-                db.TaskRecords.Add(record.ToDbModel());
+                db.TaskRecords.Add(model);
                 db.SaveChanges();
                 var link = model.ToDbLink(taskId);
                 db.LinkTaskItemWithRecord.Add(link);
+                db.SaveChanges();
+            });
+        }
+
+        public void AddTaskToUser(IUser user, int taskId)
+        {
+            this.dbContext.Update(db =>
+            {
+                var link = user.ToDbLink(taskId);
+                db.LinkUserWithTaskItem.AddOrUpdate(link);
                 db.SaveChanges();
             });
         }
@@ -204,10 +214,18 @@ namespace Tips.Model.Context
                         from c in db.TaskComments.ToArray()
                         where c.Id == link.TaskCommentId
                         select c
+                    let ax =
+                        from link in db.LinkUserWithTaskItem.ToArray()
+                        where link.IsDeleted == 0
+                        where link.TaskItemId == t.Id
+                        from u in users
+                        where u.Id == link.UserId
+                        select u
                     select TaskWithRecord.Create(
                         t.ToModel()
                         , rx.Select(r => r.ToModel(users.FirstOrDefault(u => u.Id == r.UserId))).ToArray()
-                        , cx.Select(c => c.ToModel(users.FirstOrDefault(u => u.Id == c.UserId))).ToArray());
+                        , cx.Select(c => c.ToModel(users.FirstOrDefault(u => u.Id == c.UserId))).ToArray()
+                        , ax.FirstOrDefault());
 
                 return query.Where(predicate).ToArray();
             });

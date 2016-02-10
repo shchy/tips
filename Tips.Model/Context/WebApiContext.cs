@@ -224,5 +224,9 @@ namespace Tips.Model.Context
             PostAsJson<object>(api, getPostData, null);
         }
 
+        public void AddTaskToUser(IUser user, int taskId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

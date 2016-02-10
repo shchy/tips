@@ -52,6 +52,7 @@ namespace Tips.Model.Models
     {
         IEnumerable<ITaskComment> Comments { get; }
         IEnumerable<ITaskRecord> Records { get; }
+        IUser Assign { get; }
     }
 
     public interface IPlan : IIdentity<int>
@@ -169,7 +170,8 @@ namespace Tips.Model.Models
 
         public static ITaskWithRecord Create(ITaskItem source
             , IEnumerable<ITaskRecord> records
-            , IEnumerable<ITaskComment> comments)
+            , IEnumerable<ITaskComment> comments
+            , IUser assign)
         {
             return new TaskWithRecord
             {
@@ -178,10 +180,13 @@ namespace Tips.Model.Models
                 Value = source.Value,
                 Records = records,
                 Comments = comments,
+                Assign = assign,
             };
         }
 
         public bool IsCompleted { get { return this.Records.Sum(x => x.Value) >= this.Value; } }
+
+        public IUser Assign { get; set; }
     }
 
 

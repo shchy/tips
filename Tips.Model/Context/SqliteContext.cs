@@ -25,6 +25,9 @@ namespace Tips.Model.Context
         DbSet<DbLinkTaskItemWithComment> LinkTaskItemWithComment { get; }
         DbSet<DbLinkProjectWithSprint> LinkProjectWithSprint { get; }
         DbSet<DbLinkSprintWithTask> LinkSprintWithTaskItem { get; }
+        DbSet<DbLinkUserWithTaskItem> LinkUserWithTaskItem { get; }
+
+
     }
 
     public class SqliteContext : DbContext, IDataSource
@@ -40,9 +43,17 @@ namespace Tips.Model.Context
             }
             else
             {
-                //this.Database.ExecuteSqlCommand("alter table DbUser add column IconFile TEXT;");
+                //var sql = string.Empty;
+                //sql += "create table DbLinkUserWithTaskItem(";
+                //sql += " UserId TEXT";
+                //sql += " ,TaskItemId INTEGER";
+                //sql += " ,IsDeleted INTEGER";
+                //sql += " ,PRIMARY KEY (TaskItemId)";
+                //sql += " ,FOREIGN KEY(UserId)REFERENCES DbUser(Id)";
+                //sql += " ,FOREIGN KEY(TaskItemId)REFERENCES DbTaskItem(Id)";
+                //sql += ");";
+                //this.Database.ExecuteSqlCommand(sql);
                 //this.SaveChanges();
-
             }
         }
 
@@ -128,6 +139,15 @@ namespace Tips.Model.Context
             sql += " ,FOREIGN KEY(TaskItemId)REFERENCES DbTaskItem(Id)";
             sql += " ,FOREIGN KEY(TaskCommentId)REFERENCES DbTaskComment(Id)";
             sql += ");";
+            sql += "create table DbLinkUserWithTaskItem(";
+            sql += " UserId TEXT";
+            sql += " ,TaskItemId INTEGER";
+            sql += " ,IsDeleted INTEGER";
+            sql += " ,PRIMARY KEY (TaskItemId)";
+            sql += " ,FOREIGN KEY(UserId)REFERENCES DbUser(Id)";
+            sql += " ,FOREIGN KEY(TaskItemId)REFERENCES DbTaskItem(Id)";
+            sql += ");";
+            
             return sql;
         }
 
@@ -161,12 +181,13 @@ namespace Tips.Model.Context
         public DbSet<DbLinkSprintWithTask> LinkSprintWithTaskItem { get; set; }
         public DbSet<DbLinkTaskItemWithRecord> LinkTaskItemWithRecord { get; set; }
         public DbSet<DbLinkTaskItemWithComment> LinkTaskItemWithComment { get; set; }
-        
+        public DbSet<DbLinkUserWithTaskItem> LinkUserWithTaskItem { get; set; }
+
     }
 
     //public partial class UserDetailsMigration : DbMigration
     //{
-        
+
     //    public override void Up()
     //    {
     //    }

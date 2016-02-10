@@ -51,6 +51,11 @@ namespace Tips.Core.Events
     }
 
 
+    public class AddUserToTaskEvent : PubSubEvent<AddOrder<IUser, int>>
+    {
+    }
+
+
     public static class PubSubEventExtention
     {
         public static IMaybe<TReturn> Get<TReturn>(this PubSubEvent<Action<TReturn>> @this)
