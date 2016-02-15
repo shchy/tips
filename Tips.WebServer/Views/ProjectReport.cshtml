@@ -1,0 +1,297 @@
+@using System;
+@using System.Linq;
+@using System.Collections;
+@using System.Collections.Generic;
+@using Tips.Model.Models;
+
+@{
+  Layout = "ProjectMaster.cshtml";
+}
+
+
+@section Projectcss{
+<style type="text/css">
+<!--
+
+.panel > .panel-heading.spi {
+    background-image: none;
+    background-color: paleturquoise;
+    color: deepskyblue;
+}
+
+.panel > .panel-heading.cpi {
+    background-image: none;
+    background-color: lightsalmon;
+    color: orangered;
+}
+
+.panel > .panel-heading.prg {
+    background-image: none;
+    background-color: lightgreen;
+    color: green;
+}
+
+.panel > .panel-heading.rem {
+    background-image: none;
+    background-color: indianred;
+    color: darkred;
+}
+
+.panel > .panel-heading.avg {
+    background-image: none;
+    background-color: pink;
+    color: palevioletred;
+}
+
+.panel > .panel-body > h1 {
+    margin: 6px 6px;
+}
+.panel > .panel-body > h4 {
+    margin: 6px 6px;
+}
+
+-->
+</style>
+
+}
+
+
+<div class="row">
+
+  <div class="col-md-3 col-xs-6">
+    <div class="panel panel-default">
+      <div class="panel-heading spi">
+        <h4>SPI</h4>
+      </div>
+      <div class="panel-body">
+        <h1 id="spi" class="text-center dbl"></h1>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-xs-6">
+    <div class="panel panel-default" >
+      <div class="panel-heading cpi">
+        <h4>CPI</h4>
+      </div>
+      <div class="panel-body ">
+        <h1 id="cpi" class="text-center dbl"></h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-2 col-xs-4">
+    <div class="panel panel-default" >
+      <div class="panel-heading prg">
+        <h4>Progress</h4>
+      </div>
+      <div class="panel-body">
+        <h1 id="progress" class="text-center dbl"></h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-2 col-xs-4">
+    <div class="panel panel-default" >
+      <div class="panel-heading rem">
+        <h4>Remaining</h4>
+      </div>
+      <div class="panel-body ">
+        <h1 id="remaining" class="text-center dbl"></h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-2 col-xs-4">
+    <div class="panel panel-default" >
+      <div class="panel-heading avg">
+        <h4>Average</h4>
+      </div>
+      <div class="panel-body ">
+        <h1 id="average" class="text-center dbl"></h1>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="row">
+  <div class="col-md-12" >
+    <h3>Trend Chart</h3>
+    <canvas id="trend"  ></canvas>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12" >
+    <h3>PI Chart</h3>
+    <canvas id="pi" ></canvas>
+  </div>
+</div>
+
+
+@section ProjectJs{
+<script src="/js/ccchart-min.js"></script>
+<script type="text/javascript">
+  $(function () {
+    @{
+      var findToday = new Func<IGraphPoint,bool>(x => x.Day <= DateTime.Now);
+      var selectTasks = new Func<ISprint,IEnumerable<ITaskItem>>(x => x.Tasks);
+      var filterTask = new Func<ITaskItem,bool>(x=>x.Value.HasValue);
+      var selectValue = new Func<ITaskItem,double>(x=>x.Value.Value);
+      var selectTaskRecords = new Func<ITaskWithRecord,IEnumerable<ITaskRecord>>(x => x.Records);
+      var selectRecordValue = new Func<ITaskRecord,double>(x=>x.Value);
+      var selectPointValue = new Func<IGraphPoint,double>(x=>x.Value);
+      var selectPointDay = new Func<IGraphPoint,string>(x => string.Format("'{0}'", x.Day.ToString("yyyy/MM/dd")));
+
+      var spi = Enumerable.FirstOrDefault(Enumerable.Reverse(Model.PiChartModel.Item1),findToday);
+      var cpi = Enumerable.FirstOrDefault(Enumerable.Reverse(Model.PiChartModel.Item2),findToday);
+      var totalValue = Enumerable.Sum(Enumerable.Where(Enumerable.SelectMany(Model.Project.Sprints,selectTasks),filterTask),selectValue);
+      var progressValue =
+          Enumerable.Sum(
+            Enumerable.SelectMany(
+              Enumerable.OfType<ITaskWithRecord>(
+                Enumerable.SelectMany(Model.Project.Sprints, selectTasks))
+              , selectTaskRecords)
+            , selectRecordValue);
+      var toDayPv =
+          Enumerable.FirstOrDefault(
+            Enumerable.Select(
+              Enumerable.Where(
+                Enumerable.Reverse(Model.TrendChartModel.Pv)
+                , findToday)
+              , selectPointValue));
+      var progress = progressValue - toDayPv;
+      var remaining = totalValue - progressValue;
+      var average = (totalValue - progressValue) / Model.WorkDays;
+
+
+      var days = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.TrendChartModel.Pv,selectPointDay)));
+
+      var pvx = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.TrendChartModel.Pv,selectPointValue)));
+      var evx = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.TrendChartModel.Ev,selectPointValue)));
+      var acx = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.TrendChartModel.Ac,selectPointValue)));
+
+      var spix = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.PiChartModel.Item1,selectPointValue)));
+      var cpix = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.PiChartModel.Item2,selectPointValue)));
+    }
+
+    function toDays(dx){
+      var count = dx.length - 1;
+      var labelcount = 5;
+      var blockSize = parseInt(count / labelcount);
+      for (var i = 1; i < dx.length; i++) {
+        var index = i - 1;
+        if (index % blockSize == 0) {
+            //dx[i] = Date.parse( dx[i] );
+        }else {
+            dx[i] = '';
+        }
+      }
+      return dx;
+    }
+
+    function makeTrendChart(){
+      var dx = ["X",@days];
+      var pv = ["PV",@pvx];
+      var ev = ["EV",@evx];
+      var ac = ["AC",@acx];
+
+      var trend = {
+
+        "config": {
+          "width": 800,
+          "height": 240,
+          "axisYLen":5,
+          //"title": "Trend Chart",
+          //"subTitle": "",
+          "type": "line",
+          "lineWidth": 4,
+          //"xScaleXOffset": 4,
+          "colorSet":
+                ["lightblue","red","orange"],
+          //"bgGradient": {
+          //        "direction":"vertical",
+          //        "from":"#222",
+          //        "to":"#687478"
+          //      }
+          "bg": "white",
+          //"useMarker": "css-ring",
+          //"markerWidth": 12,
+          "shadows":{
+            "all":['#fff', 0, 0, 0]
+          }
+        },
+
+        "data": [
+          toDays(dx),
+          pv,
+          ev,
+          ac
+        ]
+      };
+      ccchart.init('trend', trend);
+    }
+    function makePiChart(){
+
+      var dx = ["X",@days];
+      var spi = ["SPI",@spix];
+      var cpi = ["CPI",@cpix];
+
+      var pi = {
+
+        "config": {
+          "width": 800,
+          "height": 240,
+          "axisYLen":5,
+          //"title": "Trend Chart",
+          //"subTitle": "",
+          "type": "line",
+          "lineWidth": 4,
+          //"xScaleXOffset": 4,
+          "colorSet":
+                ["lightblue","red","orange"],
+          //"bgGradient": {
+          //        "direction":"vertical",
+          //        "from":"#222",
+          //        "to":"#687478"
+          //      }
+          "bg": "white",
+          //"useMarker": "css-ring",
+          //"markerWidth": 12,
+          "shadows":{
+            "all":['#fff', 0, 0, 0]
+          }
+        },
+
+        "data": [
+          toDays(dx),
+          spi,
+          cpi
+        ]
+      };
+      ccchart.init('pi', pi);
+    }
+
+    $( document ).ready( function() {
+
+      @if (spi != null) {
+        <text>$('#spi').text('@spi.Value');</text>
+      }
+      @if (cpi != null) {
+        <text>$('#cpi').text('@cpi.Value');</text>
+      }
+      $('#progress').text('@progress');
+      $('#remaining').text('@remaining');
+      $('#average').text('@average');
+
+      makeTrendChart();
+      makePiChart();
+
+      $('.dbl').each(function(){
+        var n = Number($(this).text());
+        $(this).text(n.toFixed(1));
+      });
+    });
+  });
+</script>
+}

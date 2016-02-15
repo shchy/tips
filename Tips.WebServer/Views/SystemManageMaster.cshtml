@@ -1,6 +1,9 @@
-﻿@Master['Views/Master']
+@{
+  Layout = "Master.cshtml";
+}
 
-@Section['css']
+
+@section css{
 <link href="/css/navbar-fixed-top.css" rel="stylesheet">
 <style type="text/css">
 <!--
@@ -8,12 +11,11 @@
 .panel-footer blockquote{margin: 0px; padding: 0px;}
 -->
 </style>
-@EndSection
+}
 
-@Section['Content']
 
 <!--header-->
-@Partial['Views/MenuBar'];
+@Html.Partial("MenuBar", Model)
 
 <div class="container">
     <div class="page-header">
@@ -28,12 +30,12 @@
         </ul>
       </div>
       <div class="col-md-10">
-        @Section['sysContent'];
+        @RenderBody()
       </div>
     </div>
 </div>
-@EndSection
 
-@Section['js']
-  @Section['sysjs'];
-@EndSection
+
+@section js{
+  @RenderSection("sysjs", false)
+}

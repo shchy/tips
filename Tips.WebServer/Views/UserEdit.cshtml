@@ -1,54 +1,56 @@
-﻿@Master['Views/UserMaster']
+﻿@{
+  Layout = "UserMaster.cshtml";
+}
 
-@Section['userContent']
 
-  <div class="page-header">
-      <h2>Edit User</h2>
+
+<div class="page-header">
+    <h2>Edit User</h2>
+</div>
+
+
+<div class="form-group">
+  <img src="@Model.IconFile" class="img-rounded img-responsive" width="128" />
+  <input type="file" id="file" name="file" style="display: none;" accept="image/*">
+  <div class="input-group">
+    <input type="text" class="form-control" id="selectedFile" readonly>
+    <span class="input-group-btn">
+      <button id="selectFile" class="btn btn-default" type="button">ファイル選択</button>
+    </span>
   </div>
+</div>
 
 
-  <div class="form-group">
-    <img src="@Model.IconFile;" class="img-rounded img-responsive" width="128" />
-    <input type="file" id="file" name="file" style="display: none;" accept="image/*">
-    <div class="input-group">
-      <input type="text" class="form-control" id="selectedFile" readonly>
-      <span class="input-group-btn">
-        <button id="selectFile" class="btn btn-default" type="button">ファイル選択</button>
-      </span>
-    </div>
+<div class="form-group">
+	<label for="userId">UserId</label>
+  <input id="userId" type="text" class="form-control" value="@Model.Id" disabled></input>
+</div>
+
+<div class="form-group">
+	<label for="name">Name</label>
+	<input id="name" type="text" class="form-control" value="@Model.Name"></input>
+</div>
+
+<div class="form-group">
+	<label for="password">Password</label>
+	<input id="password" type="password" class="form-control" value="@Model.Password"></input>
+</div>
+
+<div class="form-group">
+	<label for="isAdmin">IsAdmin</label>
+  <div class="checkbox">
+    <label>
+      <input id="isAdmin" type="checkbox"> IsAdmin
+    </label>
   </div>
+</div>
+
+<button id="edit" class="btn btn-default pull-right">Edit</button>
 
 
-  <div class="form-group">
-  	<label for="userId">UserId</label>
-    <input id="userId" type="text" class="form-control" value="@Model.Id;" disabled></input>
-  </div>
-
-  <div class="form-group">
-  	<label for="name">Name</label>
-  	<input id="name" type="text" class="form-control" value="@Model.Name;"></input>
-  </div>
-
-  <div class="form-group">
-  	<label for="password">Password</label>
-  	<input id="password" type="password" class="form-control" value="@Model.Password;"></input>
-  </div>
-
-  <div class="form-group">
-  	<label for="isAdmin">IsAdmin</label>
-    <div class="checkbox">
-      <label>
-        <input id="isAdmin" type="checkbox"> IsAdmin
-      </label>
-    </div>
-  </div>
-
-  <button id="edit" class="btn btn-default pull-right">Edit</button>
 
 
-@EndSection
-
-@Section['userjs']
+@section userjs{
 <script src="/js/jquery.base64.min.js" ></script>
 <script type="text/javascript">
 
@@ -86,7 +88,7 @@
       var password = $('#password').val();
       var role = $('#isAdmin').prop('checked') ? 'admin' : 'normal';
 
-      var url = '@Path['~/api/users/']';
+      var url = '@Url.Content("~/api/users/")';
       var jsonData = {
         id:id,
         name:name,
@@ -94,7 +96,7 @@
         role:role,
       };
       postJson(url, jsonData, function(data){
-        location.href = '@Path['~/user/@Model.Id;']';
+        location.href = '@Url.Content(string.Format("~/user/{0}", @Model.Id))';
       });
     }
 
@@ -104,7 +106,7 @@
       readFile($('#file')[0], function(base64Text){
 
         if (base64Text) {
-          var url = '@Path['~/api/users/withIcon/']';
+          var url = '@Url.Content("~/api/users/withIcon/")';
           var jsonData = {
             userid:$('#userId').val(),
             base64bytesbyimage:base64Text
@@ -140,4 +142,4 @@
     }
   });
 </script>
-@EndSection
+}

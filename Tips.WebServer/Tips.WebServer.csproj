@@ -205,7 +205,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Views\UserMaster.html">
+    <None Include="Views\UserMaster.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -268,32 +268,32 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Views\ProjectEdit.html">
+    <None Include="Views\ProjectEdit.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Views\ProjectInTask.html">
+    <None Include="Views\ProjectInTask.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Views\SystemManageMaster.html">
+    <None Include="Views\SystemManageMaster.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Views\SystemManageUser.html">
+    <None Include="Views\SystemManageUser.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Views\SystemManageUserAdd.html">
+    <None Include="Views\SystemManageUserAdd.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Views\ProjectReport.html">
+    <None Include="Views\ProjectReport.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -329,7 +329,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Views\UserEdit.html">
+    <None Include="Views\UserEdit.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

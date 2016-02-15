@@ -1,0 +1,66 @@
+@{
+  Layout = "Master.cshtml";
+}
+
+@section css{
+  <link href="/css/navbar-fixed-top.css" rel="stylesheet">
+}
+
+<!--header-->
+
+@Html.Partial("MenuBar.cshtml", Model)
+
+<div class="container">
+  <div class="page-header">
+      <h2>New Project</h2>
+  </div>
+
+  <div class="form-group">
+  	<label for="name">Name</label>
+  	<input id="name" type="text" class="form-control" placeholder="project name">
+  </div>
+
+  <div class="form-group">
+  	<label for="describe">description</label>
+  	<textArea id="describe" rows="5" class="form-control" placeholder="description" ></textArea>
+  </div>
+
+  <button id="add" class="btn btn-default pull-right">Add</button>
+
+</div>
+
+@section js{
+<script type="text/javascript">
+  $(function () {
+
+    $('#add').click(function(e){
+      var name = $('#name').val();
+      var describe = $('#describe').val();
+
+      var jsonData = {
+        id:0,
+        name:name,
+        describe:describe,
+        sprints:[],
+      };
+      var json = JSON.stringify(jsonData);
+      var url = '@Url.Content("~/api/projects/")';
+      $.ajax({
+        type:'post',
+        url:url,
+        data : json,
+        dataType : 'JSON',
+        scriptCharset: 'utf-8',
+        success : function(data) {
+              location.href = '@Url.Content("~/home/")';
+        },
+        error : function(data) {
+            // Error
+            alert("error");
+            alert(JSON.stringify(data));
+        }
+      });
+    });
+  });
+</script>
+}

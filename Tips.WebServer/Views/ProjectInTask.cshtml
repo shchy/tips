@@ -1,6 +1,8 @@
-@Master['Views/Master']
+@{
+  Layout = "Master.cshtml";
+}
 
-@Section['css']
+@section css{
 <link href="/css/navbar-fixed-top.css" rel="stylesheet">
 <style type="text/css">
 <!--
@@ -8,12 +10,12 @@
 .panel-footer blockquote{margin: 0px; padding: 0px;}
 -->
 </style>
-@EndSection
+}
 
-@Section['Content']
+
 
 <!--header-->
-@Partial['Views/MenuBar'];
+@Html.Partial("Views/MenuBar", Model)
 
 <div class="container">
 
@@ -21,12 +23,12 @@
 
     <div class="row">
       <div class="col-md-2" >
-        <h4>Progress(@Model.ProgressValue/@Model.Task.Value;pt)</h4>
+        <h4>Progress(@Model.ProgressValue/@Model.Task.Value pt)</h4>
       </div>
       <div class="col-md-10" >
         <div class="progress">
-          <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: @Model.Progress;%;">
-            @Model.Progress;%
+          <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: @Model.Progress%;">
+            @Model.Progress%
           </div>
         </div>
       </div>
@@ -37,10 +39,14 @@
         <h4>Assign</h4>
       </div>
       <div class="col-md-1" >
-        <img src="@Model.Task.Assign.IconFile;" class="img-rounded img-responsive" width="24" />
+        @if(Model.Task.Assign != null){
+          <img src="@Model.Task.Assign.IconFile" class="img-rounded img-responsive" width="24" />
+        }
       </div>
       <div class="col-md-2" >
-        @Model.Task.Assign.Name;
+        @if(Model.Task.Assign != null){
+          @Model.Task.Assign.Name
+        }
       </div>
       <div class="col-md-2" ></div>
       <div class="col-md-4" >
@@ -58,18 +64,19 @@
     <div class="row">
       <div class="col-md-8">
         <h2>Comments</h2>
-        @Each.Task.Comments
+        @foreach(var comment in Model.Task.Comments){
+
           <div class="panel panel-default" >
             <div class="panel-body comment">
-              @!Current.Text
+              @comment.Text
             </div>
             <div class="panel-footer">
               <blockquote class="blockquote-reverse">
-              @Current.Who.Name; @Current.Day.Month;/@Current.Day.Day; @Current.Day.Hour;:@Current.Day.Minute;
+                @comment.Who.Name @comment.Day.Month/@comment.Day.Day @comment.Day.Hour:@comment.Day.Minute
               </blockquote>
             </div>
           </div>
-        @EndEach
+        }
 
         <div class="row">
           <textArea id="commentText" class="col-md-12" Rows="8"></textarea>
@@ -82,12 +89,13 @@
       <div class="col-md-4">
         <h2>Works</h2>
         <ul class="list-group">
-        @Each.Task.Records
-        <li class="list-group-item">
-          <span class="badge">@Current.Value;</span>
-          @Current.Day.Month;/@Current.Day.Day; @Current.Who.Name; @Current.WorkValue;
-        </li>
-        @EndEach
+        @foreach(var record in Model.Task.Records){
+          <li class="list-group-item">
+            <span class="badge">@record.Value</span>
+            @record.Day.Month/@record.Day.Day @record.Who.Name @record.WorkValue
+          </li>
+        }
+
         </ul>
         <div class="col-md-12">
           <div class="form-group">
@@ -106,9 +114,9 @@
       </div>
     </div>
 </div>
-@EndSection
 
-@Section['js']
+
+@section js{
 <script type="text/javascript">
   $(function () {
 
@@ -136,7 +144,7 @@
     };
 
     function setupAutoComplete(){
-      getJson('@Path['~/api/users/']', function(data){
+      getJson('@Url.Content("~/api/users/")', function(data){
 
         var data =
           $(data).map(function(){
@@ -195,7 +203,7 @@
         userid:userId
       };
       var json = JSON.stringify(jsonData);
-      var url = '@Path['~/task/@Model.Task.Id;/assign']';
+      var url = '@Url.Content(string.Format("~/task/{0}/assign",@Model.Task.Id))';
       $.ajax({
         type:'post',
         url:url,
@@ -203,7 +211,6 @@
         dataType : 'JSON',
         scriptCharset: 'utf-8',
         success : function(data) {
-              //location.href = '@Path['~/project/@Model.Project.Id']';
               location.reload();
         },
         error : function(data) {
@@ -229,16 +236,16 @@
       var dt = new Date();
       var now = dt.toLocaleDateString() + " " + dt.toLocaleTimeString();
       var workvalue = Number($('#workvalue').val());
-      var totalvalue = Number(@Model.Task.Value;);
+      var totalvalue = Number(@Model.Task.Value);
       var value = workvalue;
 
       if (totalvalue != 0) {
         var progress = Number($('#progress').val());
-        var currentProgress = Number(@Model.Progress;);
+        var currentProgress = Number(@Model.Progress);
         var diff = (progress - currentProgress) * 0.01;
         value = diff * totalvalue;
         if (totalvalue < @Model.ProgressValue + value) {
-          value = totalvalue - @Model.ProgressValue;;
+          value = totalvalue - @Model.ProgressValue;
         }
       }
 
@@ -259,7 +266,7 @@
         },
       };
       var json = JSON.stringify(jsonData);
-      var url = '@Path['~/api/task/record/']';
+      var url = '@Url.Content("~/api/task/record/")';
       $.ajax({
         type:'post',
         url:url,
@@ -267,7 +274,6 @@
         dataType : 'JSON',
         scriptCharset: 'utf-8',
         success : function(data) {
-              //location.href = '@Path['~/project/@Model.Project.Id']';
               location.reload();
         },
         error : function(data) {
@@ -301,7 +307,7 @@
         },
       };
       var json = JSON.stringify(jsonData);
-      var url = '@Path['~/api/task/comment/']';
+      var url = '@Url.Content("~/api/task/comment/")';
       $.ajax({
         type:'post',
         url:url,
@@ -309,7 +315,6 @@
         dataType : 'JSON',
         scriptCharset: 'utf-8',
         success : function(data) {
-              //location.href = '@Path['~/project/@Model.Project.Id']';
               location.reload();
         },
         error : function(data) {
@@ -323,4 +328,4 @@
     });
   });
 </script>
-@EndSection
+}

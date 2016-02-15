@@ -1,14 +1,15 @@
-﻿@Master['Views/ProjectMaster']
+﻿@{
+  Layout = "ProjectMaster.cshtml";
+}
 
-@Section['ProjectContent']
-      @Partial['Views/Sprint', Model.Project];
-      <a class="btn btn-default pull-right" href="~/project/@Model.Project.Id/edit" >Edit</a>
-@EndSection
 
-@Section['ProjectJs']
+@Html.Partial("Sprint.cshtml", Model.Project)
+<a class="btn btn-default pull-right" href="~/project/@Model.Project.Id/edit" >Edit</a>
+
+
+@section ProjectJs{
 <script type="text/javascript">
   $(function () {
-
     $('.task').each(function(){
       var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
       if (isCompleted == false) {
@@ -16,7 +17,6 @@
       }
       $(this).wrap('<s />');
     });
-
     $('.taskicon_done').each(function(){
       var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
       if (isCompleted == false) {
@@ -24,19 +24,17 @@
       }else {
           $(this).show();
       }
-
     });
 
-    $('.taskicon_ready').each(function(){
-      var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
-      if (isCompleted == false) {
-          $(this).show();
-      }else {
-          $(this).hide();
-      }
+    $('.taskicon_ready').each(function () {
+        var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
+        if (isCompleted == false) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
 
     });
-
   });
 </script>
-@EndSection
+}
