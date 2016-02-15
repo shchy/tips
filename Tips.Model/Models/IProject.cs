@@ -190,7 +190,7 @@ namespace Tips.Model.Models
             };
         }
 
-        public bool IsCompleted { get { return this.Records.Sum(x => x.Value) >= this.Value; } }
+        public bool IsCompleted { get { return this.Value.HasValue && this.Records.Sum(x => x.Value) >= this.Value.Value; } }
 
         public IUser Assign { get; set; }
     }

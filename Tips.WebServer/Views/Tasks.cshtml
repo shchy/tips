@@ -1,14 +1,15 @@
 @foreach(var item in Model){
+  var isCompleted = item.IsCompleted.ToString();
   <div class="row">
     <div class="col-md-1">
-      <span class="glyphicon glyphicon-ok taskicon_done"  isCompleted="@item.IsCompleted;" style="display:none"></span>
+      <span class="glyphicon glyphicon-ok taskicon_done"  isCompleted="@isCompleted" style="display:none"></span>
     @if(item.Assign!=null)
     {
-        <img src="@item.Assign.IconFile" class="img-rounded img-responsive taskicon_ready" width="24" isCompleted="@item.IsCompleted;" style="display:none" />
+      <img src="@item.Assign.IconFile" class="img-rounded img-responsive taskicon_ready" width="24" isCompleted="@isCompleted" style="display:none" />
     }
     </div>
     <div class="col-md-11">
-      <a class="task" href="~/task/@item.Id" isCompleted="@item.IsCompleted;">@item.Name</a>
+      <a class="task" href="~/task/@item.Id" isCompleted="@isCompleted">@item.Name</a>
     </div>
   </div>
 }

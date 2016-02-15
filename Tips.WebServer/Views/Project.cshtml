@@ -10,30 +10,33 @@
 @section ProjectJs{
 <script type="text/javascript">
   $(function () {
-    $('.task').each(function(){
-      var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
-      if (isCompleted == false) {
-        return;
-      }
-      $(this).wrap('<s />');
-    });
-    $('.taskicon_done').each(function(){
-      var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
-      if (isCompleted == false) {
-          $(this).hide();
-      }else {
-          $(this).show();
-      }
-    });
 
-    $('.taskicon_ready').each(function () {
+    $(document).ready(function(){
+      $('.task').each(function(){
         var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
         if (isCompleted == false) {
-            $(this).show();
-        } else {
-            $(this).hide();
+          return;
         }
+        $(this).wrap('<s />');
+      });
+      $('.taskicon_done').each(function(){
+        var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
+        if (isCompleted == false) {
+            $(this).hide();
+        }else {
+            $(this).show();
+        }
+      });
 
+      $('.taskicon_ready').each(function () {
+          var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
+          if (isCompleted == false) {
+              $(this).show();
+          } else {
+              $(this).hide();
+          }
+
+      });
     });
   });
 </script>
