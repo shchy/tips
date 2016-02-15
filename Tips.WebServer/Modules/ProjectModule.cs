@@ -36,7 +36,7 @@ namespace Tips.WebServer.Modules
 
                 var user =
                    eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
-
+                
                 return View["Views/Project", new { Auth = user, Project = withRecord }];
             };
 
