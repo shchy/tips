@@ -205,6 +205,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Views\User.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Views\UserMaster.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

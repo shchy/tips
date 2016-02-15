@@ -1,15 +1,30 @@
 @foreach(var item in Model){
   var isCompleted = item.IsCompleted.ToString();
-  <div class="row">
-    <div class="col-md-1">
-      <span class="glyphicon glyphicon-ok taskicon_done"  isCompleted="@isCompleted" style="display:none"></span>
-    @if(item.Assign!=null)
-    {
-      <img src="@item.Assign.IconFile" class="img-rounded img-responsive taskicon_ready" width="24" isCompleted="@isCompleted" style="display:none" />
-    }
-    </div>
-    <div class="col-md-11">
-      <a class="task" href="~/task/@item.Id" isCompleted="@isCompleted">@item.Name</a>
-    </div>
+  var progress = (Enumerable.Sum(item.Records,(Func<ITaskRecord,double>)(x=>x.Value)) / item.Value) * 100.0;
+  var assignUserIcon = item.Assign!=null ? @item.Assign.IconFile : "";
+  var assignUserName = item.Assign!=null ? @item.Assign.Name : "";
+  var assignUserId = item.Assign!=null ? @item.Assign.Id : "";
+  var iconVisibility = item.Assign!=null ? "visible" : "hidden";
+
+
+  <div class="media">
+    <a class="media-left" href="@Url.Content(string.Format("~/user/{0}", assignUserId))">
+      <img src="@assignUserIcon" class="media-object img-circle" width="64" style="visibility:@iconVisibility"/>
+      <p class="text-center">@assignUserName</p>
+    </a>
+    <a class="media-body" href="~/task/@item.Id" >
+      <div class="media-heading">
+        <p class="task" href="~/task/@item.Id" isCompleted="@isCompleted">
+          <span class="glyphicon glyphicon-ok taskicon_done"  isCompleted="@isCompleted" style="visibility:hidden"></span>
+          @item.Name
+          <span class="badge">@(item.Value)pt</span>
+        </p>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuenow="@(progress)" aria-valuemin="0" aria-valuemax="100" style="width: @(progress)%;">
+          @(progress)%
+        </div>
+      </div>
+    </a>
   </div>
 }

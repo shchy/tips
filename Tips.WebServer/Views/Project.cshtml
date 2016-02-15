@@ -22,20 +22,10 @@
       $('.taskicon_done').each(function(){
         var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
         if (isCompleted == false) {
-            $(this).hide();
+            $(this).css('visibility', 'hidden');
         }else {
-            $(this).show();
+            $(this).css('visibility', 'visible');
         }
-      });
-
-      $('.taskicon_ready').each(function () {
-          var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
-          if (isCompleted == false) {
-              $(this).show();
-          } else {
-              $(this).hide();
-          }
-
       });
     });
   });
