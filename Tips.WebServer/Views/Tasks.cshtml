@@ -1,14 +1,18 @@
 @foreach(var item in Model){
   var isCompleted = item.IsCompleted.ToString();
-  var progress = (Enumerable.Sum(item.Records,(Func<ITaskRecord,double>)(x=>x.Value)) / item.Value) * 100.0;
+  var progressValue = Enumerable.Sum(item.Records,(Func<ITaskRecord,double>)(x=>x.Value));
+  var workValue = Enumerable.Sum(item.Records,(Func<ITaskRecord,double>)(x=>x.WorkValue));
+  var cpi = string.Format("{0:0.0}", progressValue / workValue);
+  var progress = (progressValue / item.Value) * 100.0;
   var assignUserIcon = item.Assign!=null ? @item.Assign.IconFile : "";
   var assignUserName = item.Assign!=null ? @item.Assign.Name : "";
-  var assignUserId = item.Assign!=null ? @item.Assign.Id : "";
   var iconVisibility = item.Assign!=null ? "visible" : "hidden";
+  var taskLink = @Url.Content(string.Format("~/task/{0}", @item.Id));
+  var assignUserLink = item.Assign!=null ? @Url.Content(string.Format("~/user/{0}", @item.Assign.Id)) : taskLink;
 
 
   <div class="media">
-    <a class="media-left" href="@Url.Content(string.Format("~/user/{0}", assignUserId))">
+    <a class="media-left" href="@assignUserLink">
       <img src="@assignUserIcon" class="media-object img-circle" width="64" style="visibility:@iconVisibility"/>
       <p class="text-center">@assignUserName</p>
     </a>
@@ -18,6 +22,7 @@
           <span class="glyphicon glyphicon-ok taskicon_done"  isCompleted="@isCompleted" style="visibility:hidden"></span>
           @item.Name
           <span class="badge">@(item.Value)pt</span>
+          <span class="badge">cpi @cpi</span>
         </p>
       </div>
       <div class="progress">

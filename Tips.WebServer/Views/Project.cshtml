@@ -2,6 +2,15 @@
   Layout = "ProjectMaster.cshtml";
 }
 
+@section Projectcss{
+<style type="text/css">
+<!--
+.media:hover {background: lightblue;}
+.media {padding: 6px; margin:0px;}
+.panel-body {padding:0px;}
+-->
+</style>
+}
 
 @Html.Partial("Sprint.cshtml", Model.Project)
 <a class="btn btn-default pull-right" href="~/project/@Model.Project.Id/edit" >Edit</a>
