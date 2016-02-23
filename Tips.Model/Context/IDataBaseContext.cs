@@ -20,6 +20,7 @@ namespace Tips.Model.Context
         IEnumerable<IUser> GetUser(Func<IUser, bool> predicate = null);
         IEnumerable<IProject> GetProjects(Func<IProject, bool> predicate = null);
         IEnumerable<ITaskWithRecord> GetTaskRecords(Func<ITaskWithRecord, bool> predicate = null);
-
+        
+        void DeleteProject(IProject project);
     }
 }

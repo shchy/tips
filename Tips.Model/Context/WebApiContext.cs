@@ -228,5 +228,10 @@ namespace Tips.Model.Context
         {
             throw new NotImplementedException();
         }
+
+        public void DeleteProject(IProject project)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

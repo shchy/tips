@@ -37,6 +37,10 @@ namespace Tips.Core.Events
     public class GetProjectEvent : PubSubEvent<GetOrder<IProject>>
     {
     }
+    
+    public class DeleteProjectEvent : PubSubEvent<IProject>
+    {
+    }
 
     public class GetTaskWithRecordEvent : PubSubEvent<GetOrder<ITaskWithRecord>>
     {
@@ -54,7 +58,6 @@ namespace Tips.Core.Events
     public class AddUserToTaskEvent : PubSubEvent<AddOrder<IUser, int>>
     {
     }
-
 
     public static class PubSubEventExtention
     {

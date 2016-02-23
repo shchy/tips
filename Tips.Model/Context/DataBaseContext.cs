@@ -193,6 +193,22 @@ namespace Tips.Model.Context
             });
         }
 
+        public void DeleteProject(IProject project)
+        {
+            // todo プロジェクトに紐づくすべてのデータをここで削除する必要がある
+
+            // Sprintsを削除
+            project.Sprints.ForEach(DeleteSprint);
+
+            this.dbContext.Delete(db =>
+            {
+                // プロジェクトを削除
+                var model = project.ToDbModel();
+                db.Projects.Attach(model);
+                db.Projects.Remove(model);
+            });
+        }
+
         public IEnumerable<ITaskWithRecord> GetTaskRecords(Func<ITaskWithRecord, bool> predicate = null)
         {
             return this.dbContext.Get(db =>
@@ -237,6 +253,161 @@ namespace Tips.Model.Context
             {
                 return 
                     db.Users.Where(predicate).ToArray();
+            });
+        }
+        
+        private void DeleteSprint(ISprint sprint)
+        {
+            // todo sprintに紐づくすべてのデータを削除する必要がある
+
+            // プロジェクトとsprintの関係モデルを削除
+            var linkProjectWithSprint =
+                this.dbContext.Get(db =>
+                {
+                    return
+                        db.LinkProjectWithSprint
+                        .Where(link => link.SprintId == sprint.Id);
+                }).ToArray();
+            this.dbContext.Delete(db =>
+            {
+                linkProjectWithSprint.ForEach(link =>
+                {
+                    db.LinkProjectWithSprint.Attach(link);
+                });
+                db.LinkProjectWithSprint.RemoveRange(linkProjectWithSprint);
+            });
+
+            // sprintに紐づくtaskを削除
+            sprint.Tasks.ForEach(DeleteTask);
+
+            this.dbContext.Delete(db =>
+            {
+                var model = sprint.ToDbModel();
+                db.Sprints.Attach(model);
+                db.Sprints.Remove(model);
+            });
+        }
+
+        private void DeleteTask(ITaskItem task)
+        {
+            // todo taskに紐づくすべてのデータを削除する必要がある
+            
+            // taskのコメントを削除
+            var taskComments =
+                this.dbContext.Get(db =>
+                {
+                    var commentIds =
+                        db.LinkTaskItemWithComment
+                        .Where(link => link.TaskItemId == task.Id)
+                        .Select(link => link.TaskCommentId);
+                    return
+                        db.TaskComments
+                        .Where(comment => commentIds.Contains(comment.Id));
+                }).ToArray();
+            this.dbContext.Delete(db =>
+            {
+                taskComments.ForEach(comment =>
+                {
+                    db.TaskComments.Attach(comment);
+                });
+                db.TaskComments.RemoveRange(taskComments);
+            });
+
+            // taskrecordを削除
+            var taskRecords =
+                this.dbContext.Get(db =>
+                {
+                    var recordsIds =
+                        db.LinkTaskItemWithRecord
+                        .Where(link => link.TaskItemId == task.Id)
+                        .Select(link => link.TaskRecordId);
+                    return
+                        db.TaskRecords
+                        .Where(record => recordsIds.Contains(record.Id));
+                }).ToArray();
+            this.dbContext.Delete(db =>
+            {
+                taskRecords.ForEach(record =>
+                {
+                    db.TaskRecords.Attach(record);
+                });
+                db.TaskRecords.RemoveRange(taskRecords);
+            });
+
+            // sprintとtaskの関係モデルを削除
+            var linkSprintWithTaskItem = 
+                this.dbContext.Get(db =>
+                {
+                    return
+                        db.LinkSprintWithTaskItem
+                        .Where(link => link.TaskItemId == task.Id);
+                }).ToArray();
+            this.dbContext.Delete(db =>
+            {
+                linkSprintWithTaskItem.ForEach(link =>
+                {
+                    db.LinkSprintWithTaskItem.Attach(link);
+                });
+                db.LinkSprintWithTaskItem.RemoveRange(linkSprintWithTaskItem);
+            });
+
+            // taskとコメントの関係モデルを削除
+            var linkTaskItemWithComment =
+                this.dbContext.Get(db =>
+                {
+                    return
+                        db.LinkTaskItemWithComment
+                        .Where(link => link.TaskItemId == task.Id);
+                }).ToArray();
+            this.dbContext.Delete(db =>
+            {
+                linkTaskItemWithComment.ForEach(link =>
+                {
+                    db.LinkTaskItemWithComment.Attach(link);
+                });
+                db.LinkTaskItemWithComment.RemoveRange(linkTaskItemWithComment);
+            });
+
+            // taskとtaskrecordの関係モデルを削除
+            var linkTaskItemWithRecord =
+                this.dbContext.Get(db =>
+                {
+                    return
+                        db.LinkTaskItemWithRecord
+                        .Where(link => link.TaskItemId == task.Id);
+                }).ToArray();
+            this.dbContext.Delete(db =>
+            {
+                linkTaskItemWithRecord.ForEach(link =>
+                {
+                    db.LinkTaskItemWithRecord.Attach(link);
+                });
+                db.LinkTaskItemWithRecord.RemoveRange(linkTaskItemWithRecord);
+            });
+
+            // ユーザとtaskの関係モデルを削除
+            var linkUserWithTaskItem =
+                this.dbContext.Get(db =>
+                {
+                    return
+                        db.LinkUserWithTaskItem
+                        .Where(link => link.TaskItemId == task.Id);
+                }).ToArray();
+            this.dbContext.Delete(db =>
+            {
+                linkUserWithTaskItem.ForEach(link =>
+                {
+                    db.LinkUserWithTaskItem.Attach(link);
+                });
+                db.LinkUserWithTaskItem.RemoveRange(linkUserWithTaskItem);
+            });
+
+            this.dbContext.Delete(db =>
+            {
+                // taskを削除
+                var model = task.ToDbModel();
+                db.TaskItems.Attach(model);
+                db.TaskItems.Remove(model);
             });
         }
     }

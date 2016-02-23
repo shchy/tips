@@ -29,6 +29,7 @@ namespace Tips.Core.Controllers
             this.eventAgg.GetEvent<AddProjectEvent>().Subscribe(AddProject, true);
             this.eventAgg.GetEvent<GetProjectEvent>().Subscribe(GetProject, true);
             this.eventAgg.GetEvent<UpdateProjectEvent>().Subscribe(UpdateProject, true);
+            this.eventAgg.GetEvent<DeleteProjectEvent>().Subscribe(DeleteProject, true);
             this.eventAgg.GetEvent<GetTaskWithRecordEvent>().Subscribe(GetTaskWithRecord, true);
             this.eventAgg.GetEvent<AddTaskCommentEvent>().Subscribe(AddTaskComment, true);
             this.eventAgg.GetEvent<AddTaskRecordEvent>().Subscribe(AddTaskRecord, true);
@@ -81,6 +82,11 @@ namespace Tips.Core.Controllers
         private void GetProject(GetOrder<IProject> order)
         {
             order.Callback(this.context.GetProjects(order.Predicate));
+        }
+
+        private void DeleteProject(IProject project)
+        {
+            this.context.DeleteProject(project);
         }
 
         private void AddProject(AddProjectOrder order)
