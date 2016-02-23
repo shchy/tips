@@ -25,6 +25,7 @@ namespace Tips.Core.Controllers
             this.eventAgg.GetEvent<AuthUserEvent>().Subscribe(AuthUser, true);
             this.eventAgg.GetEvent<GetUserEvent>().Subscribe(GetUser, true);
             this.eventAgg.GetEvent<AddUserEvent>().Subscribe(AddUser, true);
+            this.eventAgg.GetEvent<DeleteUserEvent>().Subscribe(DeleteUser, true);
             this.eventAgg.GetEvent<AddUserIconEvent>().Subscribe(AddUserIcon, true);
             this.eventAgg.GetEvent<AddProjectEvent>().Subscribe(AddProject, true);
             this.eventAgg.GetEvent<GetProjectEvent>().Subscribe(GetProject, true);
@@ -108,6 +109,11 @@ namespace Tips.Core.Controllers
         private void GetUser(GetOrder<IUser> order)
         {
             order.Callback(this.context.GetUser(order.Predicate));
+        }
+        
+        private void DeleteUser(IUser user)
+        {
+            this.context.DeleteUser(user);
         }
     }
 }

@@ -21,6 +21,10 @@ namespace Tips.Core.Events
     {
     }
 
+    public class DeleteUserEvent : PubSubEvent<IUser>
+    {
+    }
+
     public class AddUserIconEvent : PubSubEvent<AddUserWithIcon>
     {
     }

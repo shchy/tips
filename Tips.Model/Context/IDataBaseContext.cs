@@ -22,5 +22,6 @@ namespace Tips.Model.Context
         IEnumerable<ITaskWithRecord> GetTaskRecords(Func<ITaskWithRecord, bool> predicate = null);
         
         void DeleteProject(IProject project);
+        void DeleteUser(IUser user);
     }
 }

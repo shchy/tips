@@ -266,8 +266,8 @@ namespace Tips.Model.Context
                 {
                     return
                         db.LinkProjectWithSprint
-                        .Where(link => link.SprintId == sprint.Id);
-                }).ToArray();
+                        .Where(link => link.SprintId == sprint.Id).ToArray();
+                });
             this.dbContext.Delete(db =>
             {
                 linkProjectWithSprint.ForEach(link =>
@@ -302,8 +302,8 @@ namespace Tips.Model.Context
                         .Select(link => link.TaskCommentId);
                     return
                         db.TaskComments
-                        .Where(comment => commentIds.Contains(comment.Id));
-                }).ToArray();
+                        .Where(comment => commentIds.Contains(comment.Id)).ToArray();
+                });
             this.dbContext.Delete(db =>
             {
                 taskComments.ForEach(comment =>
@@ -323,8 +323,8 @@ namespace Tips.Model.Context
                         .Select(link => link.TaskRecordId);
                     return
                         db.TaskRecords
-                        .Where(record => recordsIds.Contains(record.Id));
-                }).ToArray();
+                        .Where(record => recordsIds.Contains(record.Id)).ToArray();
+                });
             this.dbContext.Delete(db =>
             {
                 taskRecords.ForEach(record =>
@@ -340,8 +340,8 @@ namespace Tips.Model.Context
                 {
                     return
                         db.LinkSprintWithTaskItem
-                        .Where(link => link.TaskItemId == task.Id);
-                }).ToArray();
+                        .Where(link => link.TaskItemId == task.Id).ToArray();
+                });
             this.dbContext.Delete(db =>
             {
                 linkSprintWithTaskItem.ForEach(link =>
@@ -357,8 +357,8 @@ namespace Tips.Model.Context
                 {
                     return
                         db.LinkTaskItemWithComment
-                        .Where(link => link.TaskItemId == task.Id);
-                }).ToArray();
+                        .Where(link => link.TaskItemId == task.Id).ToArray();
+                });
             this.dbContext.Delete(db =>
             {
                 linkTaskItemWithComment.ForEach(link =>
@@ -374,8 +374,8 @@ namespace Tips.Model.Context
                 {
                     return
                         db.LinkTaskItemWithRecord
-                        .Where(link => link.TaskItemId == task.Id);
-                }).ToArray();
+                        .Where(link => link.TaskItemId == task.Id).ToArray();
+                });
             this.dbContext.Delete(db =>
             {
                 linkTaskItemWithRecord.ForEach(link =>
@@ -391,8 +391,8 @@ namespace Tips.Model.Context
                 {
                     return
                         db.LinkUserWithTaskItem
-                        .Where(link => link.TaskItemId == task.Id);
-                }).ToArray();
+                        .Where(link => link.TaskItemId == task.Id).ToArray();
+                });
             this.dbContext.Delete(db =>
             {
                 linkUserWithTaskItem.ForEach(link =>
@@ -408,6 +408,36 @@ namespace Tips.Model.Context
                 var model = task.ToDbModel();
                 db.TaskItems.Attach(model);
                 db.TaskItems.Remove(model);
+            });
+        }
+        
+        public void DeleteUser(IUser user)
+        {
+            // todo Userに紐づくすべてのデータをここで削除する必要がある
+            
+            // ユーザとtaskの関係モデルを削除
+            var linkUserWithTaskItem =
+                this.dbContext.Get(db =>
+                {
+                    return
+                        db.LinkUserWithTaskItem
+                        .Where(link => link.UserId == user.Id).ToArray();
+                });
+            this.dbContext.Delete(db =>
+            {
+                linkUserWithTaskItem.ForEach(link =>
+                {
+                    db.LinkUserWithTaskItem.Attach(link);
+                });
+                db.LinkUserWithTaskItem.RemoveRange(linkUserWithTaskItem);
+            });
+
+            this.dbContext.Delete(db =>
+            {
+                // Userを削除
+                var model = user.ToDbModel();
+                db.Users.Attach(model);
+                db.Users.Remove(model);
             });
         }
     }
