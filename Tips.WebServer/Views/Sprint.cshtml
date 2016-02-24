@@ -1,0 +1,19 @@
+﻿
+@foreach (var sprint in Model.Sprints){
+<div class="row">
+  <div class="panel panel-default" >
+    <div class="panel-heading">
+    @{
+        var converter = new Func<DateTime?, string>(d => d.HasValue ? d.Value.ToString("MM/dd") : "");
+        var rangeString = string.Format("{0} - {1}", converter(sprint.Left), converter(sprint.Right));
+        var total = sprint.TotalValue;
+        var remaining = sprint.Remaining;
+        <h3>@sprint.Name (@rangeString) Total=@total pt Remaining = @remaining pt</h3>
+    }
+    </div>
+    <div class="panel-body">
+      @Html.Partial("Tasks.cshtml", sprint.Tasks)
+    </div>
+  </div>
+</div>
+}

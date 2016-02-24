@@ -36,7 +36,7 @@ namespace Tips.WebServer.Modules
 
                 var user =
                    eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
-
+                
                 return View["Views/Project", new { Auth = user, Project = withRecord }];
             };
 
@@ -97,19 +97,11 @@ namespace Tips.WebServer.Modules
             Get["/{id}/report"] = prms =>
             {
                 var id = prms.id;
-
-
+                
                 var project =
                     eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrDefault();
                 var trendChartModel = MakeTrendChartModel(ToWithRecordsProject(project));
                 var piChartModel = MakePiChartModel(trendChartModel);
-
-                var totalValue = project.Sprints.SelectMany(x => x.Tasks).Where(x=>x.Value.HasValue).Sum(x => x.Value.Value);
-                var progressValue =
-                    project.Sprints.SelectMany(x => x.Tasks).OfType<ITaskWithRecord>()
-                    .SelectMany(x => x.Records)
-                    .Sum(x => x.Value);
-                var toDayPv = trendChartModel.Pv.Reverse().Where(x => x.Day <= DateTime.Now).Select(x=>x.Value).FirstOrDefault();
                 var workDays =
                     project.Sprints.Select(sprintToGraphModel.Make)
                     .Aggregate(new GraphModel(), (a, b) => new GraphModel
@@ -120,27 +112,52 @@ namespace Tips.WebServer.Modules
                     }).Pv.Where(x => x.Value != 0).Count();
 
                 return View["Views/ProjectReport"
-                    , new
-                    {
-                        Project = project,
-                        Days = string.Join(",", trendChartModel.Pv.Select(x => string.Format("'{0}'", x.Day.ToString("yyyy/MM/dd"))).ToArray()),
-                        Trend = new
-                        {
-                            Pv = string.Join(",", trendChartModel.Pv.Select(x => x.Value.ToString()).ToArray()),
-                            Ev = string.Join(",", trendChartModel.Ev.Select(x => x.Value.ToString()).ToArray()),
-                            Ac = string.Join(",", trendChartModel.Ac.Select(x => x.Value.ToString()).ToArray()),
-                        },
-                        PI = new
-                        {
-                            Spi = string.Join(",", piChartModel.Item1.Select(x => x.Value.ToString()).ToArray()),
-                            Cpi = string.Join(",", piChartModel.Item2.Select(x => x.Value.ToString()).ToArray()),
-                        },
-                        Spi = piChartModel.Item1.Reverse().FirstOrDefault(x => x.Day <= DateTime.Now),
-                        Cpi = piChartModel.Item2.Reverse().FirstOrDefault(x => x.Day <= DateTime.Now),
-                        Progress = progressValue - toDayPv,
-                        Remaining = totalValue - progressValue,
-                        Average = (totalValue - progressValue) / workDays,
+                    , new {
+                        Project = project
+                        , TrendChartModel = trendChartModel
+                        , PiChartModel = piChartModel
+                        , WorkDays = workDays
                     }];
+
+                //var piChartModel = MakePiChartModel(trendChartModel);
+
+                //var totalValue = project.Sprints.SelectMany(x => x.Tasks).Where(x=>x.Value.HasValue).Sum(x => x.Value.Value);
+                //var progressValue =
+                //    project.Sprints.SelectMany(x => x.Tasks).OfType<ITaskWithRecord>()
+                //    .SelectMany(x => x.Records)
+                //    .Sum(x => x.Value);
+                //var toDayPv = trendChartModel.Pv.Reverse().Where(x => x.Day <= DateTime.Now).Select(x=>x.Value).FirstOrDefault();
+                //var workDays =
+                //    project.Sprints.Select(sprintToGraphModel.Make)
+                //    .Aggregate(new GraphModel(), (a, b) => new GraphModel
+                //    {
+                //        Pv = sprintToGraphModel.Merge(a.Pv, b.Pv),
+                //        Ev = sprintToGraphModel.Merge(a.Ev, b.Ev),
+                //        Ac = sprintToGraphModel.Merge(a.Ac, b.Ac),
+                //    }).Pv.Where(x => x.Value != 0).Count();
+
+                //return View["Views/ProjectReport"
+                //    , new
+                //    {
+                //        Project = project,
+                //        Days = string.Join(",", trendChartModel.Pv.Select(x => string.Format("'{0}'", x.Day.ToString("yyyy/MM/dd"))).ToArray()),
+                //        Trend = new
+                //        {
+                //            Pv = string.Join(",", trendChartModel.Pv.Select(x => x.Value.ToString()).ToArray()),
+                //            Ev = string.Join(",", trendChartModel.Ev.Select(x => x.Value.ToString()).ToArray()),
+                //            Ac = string.Join(",", trendChartModel.Ac.Select(x => x.Value.ToString()).ToArray()),
+                //        },
+                //        PI = new
+                //        {
+                //            Spi = string.Join(",", piChartModel.Item1.Select(x => x.Value.ToString()).ToArray()),
+                //            Cpi = string.Join(",", piChartModel.Item2.Select(x => x.Value.ToString()).ToArray()),
+                //        },
+                //        Spi = piChartModel.Item1.Reverse().FirstOrDefault(x => x.Day <= DateTime.Now),
+                //        Cpi = piChartModel.Item2.Reverse().FirstOrDefault(x => x.Day <= DateTime.Now),
+                //        Progress = progressValue - toDayPv,
+                //        Remaining = totalValue - progressValue,
+                //        Average = (totalValue - progressValue) / workDays,
+                //    }];
             };
         }
 

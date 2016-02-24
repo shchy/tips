@@ -140,4 +140,25 @@ namespace Tips.WebServer
             FormsAuthentication.Enable(pipelines, formsAuthConfiguration);
         }
     }
+
+    public class RazorConfig : Nancy.ViewEngines.Razor.IRazorConfiguration
+    {
+        public IEnumerable<string> GetAssemblyNames()
+        {
+            yield return "Tips.Model";
+        }
+
+        public IEnumerable<string> GetDefaultNamespaces()
+        {
+            yield return "System.Globalization";
+            yield return "System.Collections.Generic";
+            yield return "System.Linq";
+            yield return "Tips.Model";
+        }
+
+        public bool AutoIncludeModelNamespace
+        {
+            get { return true; }
+        }
+    }
 }

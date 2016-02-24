@@ -58,5 +58,25 @@ namespace Tips.Model.Context
                 throw;
             }
         }
+
+        /// <summary>
+        /// 削除系
+        /// </summary>
+        /// <param name="setter"></param>
+        public void Delete(Action<Context> deleter)
+        {
+            try
+            {
+                using (var db = contextFactory())
+                {
+                    deleter(db);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

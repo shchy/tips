@@ -1,13 +1,15 @@
-﻿@Master['Views/ProjectMaster']
+﻿@{
+  Layout = "ProjectMaster.cshtml";
+}
 
-@Section['ProjectContent']
-  <div class="row">
-      <textarea class="col-md-12" rows="20" id="edit">@Model.SprintText</textarea>
-      <button id="save" class="btn btn-default pull-right" >Save</button>
-  </div>
-@EndSection
 
-@Section['ProjectJs']
+<div class="row">
+    <textarea class="col-md-12" rows="20" id="edit">@Model.SprintText</textarea>
+    <button id="save" class="btn btn-default pull-right" >Save</button>
+</div>
+
+
+@section ProjectJs{
 <script type="text/javascript">
         $(function () {
           $('#save').click(function(e){
@@ -16,7 +18,7 @@
               edittext : $('#edit').val()
             };
             var json = JSON.stringify(jsonData);
-            var url = '@Path['~/project/@Model.Project.Id/save']';
+            var url = '@Url.Content(string.Format("~/project/{0}/save",@Model.Project.Id))';
             $.ajax({
               type:'post',
               url:url,
@@ -26,7 +28,7 @@
               success : function(data) {
                     // Success
                     // alert("success");
-                    location.href = '@Path['~/project/@Model.Project.Id']';
+                    location.href = '@Url.Content(string.Format("~/project/{0}", @Model.Project.Id))';
               },
               error : function(data) {
                   // Error
@@ -39,4 +41,4 @@
           });
         });
 </script>
-@EndSection
+}

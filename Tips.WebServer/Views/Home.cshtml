@@ -1,0 +1,94 @@
+﻿@{
+  Layout = "Master.cshtml";
+}
+
+@section css{
+<link href="/css/navbar-fixed-top.css" rel="stylesheet">
+
+<style type="text/css">
+.btn-delete {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    display: block;
+    padding: 5px 8px;
+    font-size: 12px;
+    color: #767676;
+    cursor: pointer;
+    background-color: #fff;
+    border: 1px solid #e1e1e8;
+    border-radius: 0 4px 0 4px;
+}
+</style>
+}
+
+<!--header-->
+@Html.Partial("MenuBar.cshtml", Model)
+
+<div class="container">
+  <div class="page-header">
+      <h1>Project List</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <a href="@Url.Content("~/project/create")" class="text-center">create project</a>
+    </div>
+  </div>
+
+  @foreach (var item in Model.Projects)
+  {
+    <div class="panel panel-default" >
+      <div class="panel-heading" style="position: relative">
+        <h4><a href="~/project/@item.Id">@item.Name</a></h4>
+          <button id="deleteCommand" type="button" class="btn btn-default btn-lg btn-delete" value="@item.Id">
+              <span class="glyphicon glyphicon-remove-sign"></span>
+          </button>
+      </div>
+      <div class="panel-body">
+        <p>@item.Describe</p>
+      </div>
+    </div>
+  }
+</div>
+
+@section js{
+<script type="text/javascript">
+        $(function () {
+            $('.btn-delete').click(function (e) { confirmDeleteProject($(this)); });
+        });
+
+        function confirmDeleteProject(button) {
+            if (window.confirm("Are you sure you want to delete this project ?")) {
+                deleteProject(button.val(), '@Url.Content("~/api/projects/")', function () {
+                    location.reload();
+                    window.confirm('Project has been successfully deleted.');
+                })
+            }
+        }
+
+        function deleteProject(id, url, callback) {
+
+            var jsonData = {
+                projectid: id
+            };
+            var json = JSON.stringify(jsonData);
+
+            $.ajax({
+                type: 'delete',
+                url: url,
+                dataType: 'JSON',
+                scriptCharset: 'utf-8',
+                data : json,
+                success: callback,
+                error: function (data) {
+                    // Error
+                    alert("error");
+                    alert(JSON.stringify(data));
+                }
+            });
+        }
+
+</script>
+}

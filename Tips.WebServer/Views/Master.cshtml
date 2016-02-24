@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Runtime.CompilerServices;
+
+<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -9,12 +11,12 @@
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/typeaheadjs.css" rel="stylesheet">
 
-    @Section['css'];
+    @RenderSection("css", false)
 
 </head>
 <body>
 
-    @Section['Content'];
+    @RenderBody()
 
     <!-- add js -->
     <!-- Bootstrap core JavaScript
@@ -25,6 +27,6 @@
     <script src="/js/typeahead.bundle.min.js"></script>
 
 
-    @Section['js'];
+    @RenderSection("js", false)
 </body>
 </html>

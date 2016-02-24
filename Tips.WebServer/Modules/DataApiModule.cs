@@ -117,6 +117,34 @@ namespace Tips.WebServer.Modules
 
                 return Response.AsJson(new { }, HttpStatusCode.OK);
             };
+            
+            Delete["/projects/"] = _ =>
+            {
+                var json = this.Request.Body.ToStreamString();
+                var jObj = JObject.Parse(json);
+                var projectId = jObj["projectid"].Value<int>();
+
+                var project =
+                    eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == projectId).FirstOrNothing();
+
+                project.On(eventAgg.GetEvent<DeleteProjectEvent>().Publish);
+
+                return Response.AsJson(new { }, HttpStatusCode.OK);
+            };
+            
+            Delete["/users/"] = _ =>
+            {
+                var json = this.Request.Body.ToStreamString();
+                var jObj = JObject.Parse(json);
+                var userId = jObj["userid"].Value<string>();
+
+                var user =
+                    eventAgg.GetEvent<GetUserEvent>().Get(x => x.Id.Equals(userId)).FirstOrNothing();
+
+                user.On(eventAgg.GetEvent<DeleteUserEvent>().Publish);
+
+                return Response.AsJson(new { }, HttpStatusCode.OK);
+            };
         }
 
         

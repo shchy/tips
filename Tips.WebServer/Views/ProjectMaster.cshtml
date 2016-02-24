@@ -1,0 +1,28 @@
+﻿@{
+  Layout = "Master.cshtml";
+}
+
+@section css{
+<link href="/css/navbar-fixed-top.css" rel="stylesheet">
+  @RenderSection("Projectcss", false)
+}
+
+<!--header-->
+@Html.Partial("MenuBar.cshtml", Model);
+
+<div class="container">
+    <div class="page-header">
+        <h1>@Model.Project.Name</h1>
+    </div>
+
+    <div class="col-md-2">
+      @Html.Partial("ProjectMenu.cshtml", Model.Project)
+    </div>
+    <div class="col-md-10">
+      @RenderBody()
+    </div>
+</div>
+
+@section js{
+  @RenderSection("ProjectJs", false)
+}

@@ -1,0 +1,35 @@
+﻿@{
+  Layout = "SystemManageMaster.cshtml";
+}
+
+<div class="page-header">
+    <h2>Users</h2>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <a class="btn btn-default pull-right" href="@Url.Content("~/systemmanage/user/add")">New</a>
+  </div>
+</div>
+
+@foreach(var user in @Model.Users){
+<div class="panel panel-default">
+  <div class="panel-body" style="position: relative">
+    <div class="row">
+      <div class="col-md-1" >
+        <img src="@user.IconFile" class="img-rounded img-responsive" />
+      </div>
+      <div class="col-md-11">
+        <a href="@Url.Content(string.Format("~/user/{0}", @user.Id))">@user.Name</a>
+      </div>
+      <button id="deleteCommand" type="button" class="btn btn-default btn-lg btn-user-delete" value="@user.Id">
+          <span class="glyphicon glyphicon-remove-sign"></span>
+      </button>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <blockquote class="blockquote-reverse">
+      @user.Id @user.Role
+    </blockquote>
+  </div>
+</div>
+}

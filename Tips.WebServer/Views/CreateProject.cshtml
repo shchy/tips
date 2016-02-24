@@ -1,13 +1,14 @@
-﻿@Master['Views/Master']
+﻿@{
+  Layout = "Master.cshtml";
+}
 
-@Section['css']
-<link href="/css/navbar-fixed-top.css" rel="stylesheet">
-@EndSection
-
-@Section['Content']
+@section css{
+  <link href="/css/navbar-fixed-top.css" rel="stylesheet">
+}
 
 <!--header-->
-@Partial['Views/MenuBar'];
+
+@Html.Partial("MenuBar.cshtml", Model)
 
 <div class="container">
   <div class="page-header">
@@ -27,9 +28,8 @@
   <button id="add" class="btn btn-default pull-right">Add</button>
 
 </div>
-@EndSection
 
-@Section['js']
+@section js{
 <script type="text/javascript">
   $(function () {
 
@@ -44,7 +44,7 @@
         sprints:[],
       };
       var json = JSON.stringify(jsonData);
-      var url = '@Path['~/api/projects/']';
+      var url = '@Url.Content("~/api/projects/")';
       $.ajax({
         type:'post',
         url:url,
@@ -52,7 +52,7 @@
         dataType : 'JSON',
         scriptCharset: 'utf-8',
         success : function(data) {
-              location.href = '@Path['~/home/']';
+              location.href = '@Url.Content("~/home/")';
         },
         error : function(data) {
             // Error
@@ -63,4 +63,4 @@
     });
   });
 </script>
-@EndSection
+}

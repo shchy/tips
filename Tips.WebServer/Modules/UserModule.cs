@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
+using Tips.Model.Models;
 
 namespace Tips.WebServer.Modules
 {
@@ -27,8 +28,11 @@ namespace Tips.WebServer.Modules
             Get["/{id}"] = prms =>
             {
                 var userId = prms.id.ToString();
-                var url = string.Format("/user/{0}/edit", userId as string);
-                return Response.AsRedirect(url);
+
+                var user =
+                    eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == userId).FirstOrDefault();
+
+                return View["Views/User", this.AddIconFilePath(Request.Url, user)];
             };
 
 
@@ -39,7 +43,21 @@ namespace Tips.WebServer.Modules
                 var user =
                     eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == userId).FirstOrDefault();
 
-                return View["Views/UserEdit", this.AddIconFilePath(Request.Url, user)];
+                // 自分でなかったらダメ
+                var canEdit = 
+                    user.Id == this.Context.CurrentUser.UserName
+                    || this.Context.CurrentUser.Claims.Contains(UserRole.Admin.ToString());
+
+                if (canEdit)
+                {
+                    return View["Views/UserEdit", this.AddIconFilePath(Request.Url, user)];
+                }
+                else
+                {
+                    var url = string.Format("/user/{0}", user.Id);
+                    return Response.AsRedirect(url);
+                }
+
             };
         }
     }

@@ -21,6 +21,10 @@ namespace Tips.Core.Events
     {
     }
 
+    public class DeleteUserEvent : PubSubEvent<IUser>
+    {
+    }
+
     public class AddUserIconEvent : PubSubEvent<AddUserWithIcon>
     {
     }
@@ -35,6 +39,10 @@ namespace Tips.Core.Events
     }
 
     public class GetProjectEvent : PubSubEvent<GetOrder<IProject>>
+    {
+    }
+    
+    public class DeleteProjectEvent : PubSubEvent<IProject>
     {
     }
 
@@ -54,7 +62,6 @@ namespace Tips.Core.Events
     public class AddUserToTaskEvent : PubSubEvent<AddOrder<IUser, int>>
     {
     }
-
 
     public static class PubSubEventExtention
     {

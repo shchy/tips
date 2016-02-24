@@ -10,5 +10,6 @@ namespace Tips.Model.Context
     {
         T Get<T>(Func<Source, T> getter);
         void Update(Action<Source> setter);
+        void Delete(Action<Source> deleter);
     }
 }
