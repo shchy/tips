@@ -1,4 +1,4 @@
-# tips
+# tips [![Stories in Ready](https://badge.waffle.io/shchy/tips.svg?label=ready&title=Ready)](http://waffle.io/shchy/tips)
 
 ## tip
 - 先、先端
