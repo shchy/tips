@@ -1,5 +1,5 @@
 @foreach(var item in Model){
-  var isCompleted = item.IsCompleted.ToString();
+  var isCompleted = ModelExtensions.IsCompleted(item).ToString();
   var progressValue = Enumerable.Sum(item.Records,(Func<ITaskRecord,double>)(x=>x.Value));
   var workValue = Enumerable.Sum(item.Records,(Func<ITaskRecord,double>)(x=>x.WorkValue));
   var cpi = string.Format("{0:0.0}", progressValue / workValue);

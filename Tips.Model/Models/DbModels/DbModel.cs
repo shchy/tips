@@ -146,7 +146,6 @@ namespace Tips.Model.Models.DbModels
         [Key]
         public int TaskItemId { get; set; }
         public int IsDeleted { get; set; }
-
     }
 
 
