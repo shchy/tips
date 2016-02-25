@@ -156,6 +156,8 @@ namespace Tips.Model.Models
 
     }
 
+
+
     public class TaskItem : ITaskItem
     {
         public int Id { get; set; }
@@ -189,8 +191,6 @@ namespace Tips.Model.Models
                 Assign = assign,
             };
         }
-
-        public bool IsCompleted { get { return this.Value.HasValue && this.Records.Sum(x => x.Value) >= this.Value.Value; } }
 
         public IUser Assign { get; set; }
     }
@@ -264,6 +264,30 @@ namespace Tips.Model.Models
             this.Ev = Enumerable.Empty<IGraphPoint>();
             this.Pv = Enumerable.Empty<IGraphPoint>();
         }
+    }
+
+    public static class ModelExtensions
+    {
+        public static bool IsCompleted(this ISprint @this)
+        {
+            var tasks = @this.Tasks.ToArray();
+            var taskWiths = @this.Tasks.OfType<ITaskWithRecord>().ToArray();
+            // 判断できないときはfalse
+            if (tasks.Length != taskWiths.Length)
+            {
+                return false;
+            }
+
+            return
+                taskWiths.All(t => t.IsCompleted());
+
+        }
+
+        public static bool IsCompleted(this ITaskWithRecord @this)
+        {
+            return @this.Value.HasValue && @this.Records.Sum(x => x.Value) >= @this.Value.Value;
+        }
+
     }
 
     // todo toFile
