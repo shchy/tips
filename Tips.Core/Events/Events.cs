@@ -58,6 +58,9 @@ namespace Tips.Core.Events
     {
     }
 
+    public class DeleteTaskRecordEvent : PubSubEvent<DeleteOrder<ITaskWithRecord, int>>
+    {
+    }
 
     public class AddUserToTaskEvent : PubSubEvent<AddOrder<IUser, int>>
     {
@@ -115,5 +118,14 @@ namespace Tips.Core.Events
             @this.Publish(order);
         }
 
+        public static void Publish<T, With>(this PubSubEvent<DeleteOrder<T, With>> @this, T model, With with)
+        {
+            var order = new DeleteOrder<T, With>
+            {
+                Model = model,
+                WithIn = with,
+            };
+            @this.Publish(order);
+        }
     }
 }

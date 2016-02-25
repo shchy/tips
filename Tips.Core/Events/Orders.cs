@@ -31,4 +31,10 @@ namespace Tips.Core.Events
         public T Model { get; set; }
         public With WithIn { get; set; }
     }
+
+    public class DeleteOrder<T, With>
+    {
+        public T Model { get; set; }
+        public With WithIn { get; set; }
+    }
 }

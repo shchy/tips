@@ -145,6 +145,19 @@ namespace Tips.WebServer.Modules
 
                 return Response.AsJson(new { }, HttpStatusCode.OK);
             };
+
+            Delete["/task/record/"] = _ =>
+            {
+                var model = JsonConvert.DeserializeObject<DeleteTaskRecord>(this.Request.Body.ToStreamString());
+
+                var taskWithRecord =
+                    eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(x => x.Id.Equals(model.TaskId)).FirstOrNothing();
+
+                taskWithRecord.On(task =>
+                    eventAgg.GetEvent<DeleteTaskRecordEvent>().Publish(task, model.RecordId));
+
+                return Response.AsJson(new { }, HttpStatusCode.OK);
+            };
         }
 
         
@@ -161,7 +174,11 @@ namespace Tips.WebServer.Modules
             public TaskRecord Record { get; set; }
         }
 
-        
+        class DeleteTaskRecord
+        {
+            public int TaskId { get; set; }
+            public int RecordId { get; set; }
+        }
     }
 
     public static class MyClass

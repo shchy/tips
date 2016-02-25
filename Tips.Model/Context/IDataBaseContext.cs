@@ -23,5 +23,6 @@ namespace Tips.Model.Context
         
         void DeleteProject(IProject project);
         void DeleteUser(IUser user);
+        void DeleteTaskRecord(ITaskWithRecord taskWithRecord, int recordId);
     }
 }

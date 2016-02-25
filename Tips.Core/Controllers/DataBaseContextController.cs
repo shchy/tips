@@ -34,6 +34,7 @@ namespace Tips.Core.Controllers
             this.eventAgg.GetEvent<GetTaskWithRecordEvent>().Subscribe(GetTaskWithRecord, true);
             this.eventAgg.GetEvent<AddTaskCommentEvent>().Subscribe(AddTaskComment, true);
             this.eventAgg.GetEvent<AddTaskRecordEvent>().Subscribe(AddTaskRecord, true);
+            this.eventAgg.GetEvent<DeleteTaskRecordEvent>().Subscribe(DeleteTaskRecord, true);
             this.eventAgg.GetEvent<AddUserToTaskEvent>().Subscribe(AddUserToTask, true);
         }
 
@@ -58,6 +59,11 @@ namespace Tips.Core.Controllers
         private void AddTaskRecord(AddOrder<ITaskRecord, int> order)
         {
             this.context.AddTaskRecord(order.Model, order.WithIn);
+        }
+        
+        private void DeleteTaskRecord(DeleteOrder<ITaskWithRecord, int> order)
+        {
+            this.context.DeleteTaskRecord(order.Model, order.WithIn);
         }
 
         private void AddTaskComment(AddOrder<ITaskComment, int> order)

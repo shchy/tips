@@ -238,5 +238,10 @@ namespace Tips.Model.Context
         {
             throw new NotImplementedException();
         }
+
+        public void DeleteTaskRecord(ITaskWithRecord taskWithRecord, int recordId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -440,5 +440,30 @@ namespace Tips.Model.Context
                 db.Users.Remove(model);
             });
         }
+
+        public void DeleteTaskRecord(ITaskWithRecord taskWithRecord, int recordId)
+        {
+            // taskとtaskrecordの関係モデルを削除
+            this.dbContext.Delete(db =>
+            {
+                var links = db.LinkTaskItemWithRecord
+                            .Where(x => x.TaskItemId == taskWithRecord.Id
+                                        && x.TaskRecordId == recordId);
+                links.ForEach(x => db.LinkTaskItemWithRecord.Attach(x));
+                db.LinkTaskItemWithRecord.RemoveRange(links);
+            });
+
+            // taskrecordを削除
+            this.dbContext.Delete(db =>
+            {
+                var record = taskWithRecord.Records.Where(x => x.Id == recordId).FirstOrNothing();
+                record.On(x =>
+                {
+                    var model = x.ToDbModel();
+                    db.TaskRecords.Attach(model);
+                    db.TaskRecords.Remove(model);
+                });
+            });
+        }
     }
 }
