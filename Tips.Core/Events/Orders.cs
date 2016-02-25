@@ -20,6 +20,12 @@ namespace Tips.Core.Events
         public Func<T,bool> Predicate { get; set; }
     }
 
+    public class GetOrder<TIN, TOUT>
+    {
+        public TIN Param { get; set; }
+        public Action<TOUT> Callback { get; set; }
+    }
+
     public class AuthOrder 
     {
         public IUser AuthUser { get; set; }

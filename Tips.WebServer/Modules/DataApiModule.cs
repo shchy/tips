@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
 using Tips.Model.Models;
+using Tips.Model.Models.PermissionModels;
 
 namespace Tips.WebServer.Modules
 {
@@ -120,47 +121,85 @@ namespace Tips.WebServer.Modules
             
             Delete["/projects/"] = _ =>
             {
+                var res = Response.AsJson(new { }, HttpStatusCode.OK);
                 var json = this.Request.Body.ToStreamString();
                 var jObj = JObject.Parse(json);
                 var projectId = jObj["projectid"].Value<int>();
+                var permission =
+                    eventAgg.GetEvent<GetDeleteProjectPermissionEvent>().Get().Return();
 
-                var project =
+                if (IsEnableUser(eventAgg, permission))
+                {
+                    var project =
                     eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == projectId).FirstOrNothing();
 
-                project.On(eventAgg.GetEvent<DeleteProjectEvent>().Publish);
+                    project.On(eventAgg.GetEvent<DeleteProjectEvent>().Publish);
+                }
+                else res = HttpStatusCode.Forbidden;
 
-                return Response.AsJson(new { }, HttpStatusCode.OK);
+                return res;
             };
             
             Delete["/users/"] = _ =>
             {
+                var res = Response.AsJson(new { }, HttpStatusCode.OK);
                 var json = this.Request.Body.ToStreamString();
                 var jObj = JObject.Parse(json);
                 var userId = jObj["userid"].Value<string>();
+                var permission =
+                    eventAgg.GetEvent<GetDeleteUserPermissionEvent>().Get().Return();
 
-                var user =
-                    eventAgg.GetEvent<GetUserEvent>().Get(x => x.Id.Equals(userId)).FirstOrNothing();
+                if (IsEnableUser(eventAgg, permission))
+                {
+                    var user =
+                        eventAgg.GetEvent<GetUserEvent>().Get(x => x.Id.Equals(userId)).FirstOrNothing();
 
-                user.On(eventAgg.GetEvent<DeleteUserEvent>().Publish);
+                    user.On(eventAgg.GetEvent<DeleteUserEvent>().Publish);
+                }
+                else res = HttpStatusCode.Forbidden;
 
-                return Response.AsJson(new { }, HttpStatusCode.OK);
+                return res;
             };
 
             Delete["/task/record/"] = _ =>
             {
+                var res = Response.AsJson(new { }, HttpStatusCode.OK);
                 var model = JsonConvert.DeserializeObject<DeleteTaskRecord>(this.Request.Body.ToStreamString());
+                var permission =
+                    eventAgg.GetEvent<GetDeleteTaskRecordPermissionEvent>().Get(Tuple.Create(model.TaskId, model.RecordId)).Return();
 
                 var taskWithRecord =
                     eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(x => x.Id.Equals(model.TaskId)).FirstOrNothing();
-
+                
                 taskWithRecord.On(task =>
-                    eventAgg.GetEvent<DeleteTaskRecordEvent>().Publish(task, model.RecordId));
+                {
+                    if (!IsEnableUser(eventAgg, permission))
+                    {
+                        // not permitted
+                        res = Response.AsJson(new { }, HttpStatusCode.Forbidden);
+                        return;
+                    }
+                    eventAgg.GetEvent<DeleteTaskRecordEvent>().Publish(task, model.RecordId);
+                });
 
-                return Response.AsJson(new { }, HttpStatusCode.OK);
+                return res;
             };
         }
 
-        
+        private bool IsEnableUser(IEventAggregator eventAgg, IPermission permission)
+        {
+            var query =
+                from current in this.Context.CurrentUser.ToMaybe()
+                from name in current.UserName.ToMaybe()
+                from user in
+                    (from u in eventAgg.GetEvent<GetUserEvent>().Get(x => x.Id.Equals(name))
+                     select u).FirstOrNothing()
+                where permission.IsPermittedDelete(user)
+                select true;
+
+            return
+                query.IsSomething;
+        }
 
         class AddTaskComment
         {

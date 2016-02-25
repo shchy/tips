@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Tips.Model.Models;
 using Tips.Model.Models.DbModels;
+using Tips.Model.Models.PermissionModels;
+using Tips.Model.Models.PermissionModels.Extends;
 
 namespace Tips.Model.Context
 {
@@ -464,6 +466,39 @@ namespace Tips.Model.Context
                     db.TaskRecords.Remove(model);
                 });
             });
+        }
+        
+        public IPermission GetDeleteTaskRecordPermission(Tuple<int, int> taskAndRecord)
+        {
+            var permission = new DeleteTaskRecordPermission();
+
+            // 作業履歴抽出
+            var records = GetTaskRecords(Fn.New((ITaskWithRecord task) => task.Id == taskAndRecord.Item1))
+                            .SelectMany(x => x.Records)
+                            .Where(x => x.Id == taskAndRecord.Item2);
+            // 作業履歴の作成者に削除権限を付与
+            var workersPermission = new UserPermissions() { IsEnableDelete = true };
+            records.ForEach(x => permission.Others.Add(x.Who.Id, workersPermission));
+
+            return permission;
+        }
+
+        public IPermission GetDeleteUserPermission()
+        {
+            var permission = new DeleteUserPermission();
+            
+            // 現状ではDBにアクセスする必要なし
+
+            return permission;
+        }
+        
+        public IPermission GetDeleteProjectPermission()
+        {
+            var permission = new DeleteProjectPermission();
+
+            // 現状ではDBにアクセスする必要なし
+
+            return permission;
         }
     }
 }
