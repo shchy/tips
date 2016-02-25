@@ -102,14 +102,18 @@ namespace Tips.WebServer.Modules
                     eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrDefault();
                 var trendChartModel = MakeTrendChartModel(ToWithRecordsProject(project));
                 var piChartModel = MakePiChartModel(trendChartModel);
-                var workDays =
+                var workDaysPV =
                     project.Sprints.Select(sprintToGraphModel.Make)
                     .Aggregate(new GraphModel(), (a, b) => new GraphModel
                     {
                         Pv = sprintToGraphModel.Merge(a.Pv, b.Pv),
                         Ev = sprintToGraphModel.Merge(a.Ev, b.Ev),
                         Ac = sprintToGraphModel.Merge(a.Ac, b.Ac),
-                    }).Pv.Where(x => x.Value != 0).Count();
+                    }).Pv;
+
+                // workDaysに日付とValueの配列が含まれているので、Valueが0じゃない（非稼働日じゃない）
+                // かつ現在日付以降の日数を計算する
+                var workDays = workDaysPV.Where(x => x.Day > DateTime.Now).Where(x => x.Value != 0).Count();
 
                 return View["Views/ProjectReport"
                     , new {
