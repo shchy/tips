@@ -17,6 +17,16 @@ namespace Tips.WebServer.Modules
         {
             Get["/"] = prms =>
             {
+                // ログイン情報がある場合ホーム画面にリダイレクト
+                var query =
+                    from user in this.Context.CurrentUser.ToMaybe()
+                    where eventAgg.GetEvent<GetUserEvent>().Get(x => user.UserName.Equals(x.Id)).Any()
+                    select user;
+
+                if (query.IsSomething)
+                    return Response.AsRedirect("/home/");
+
+                // ログイン情報がないor不正な場合はログイン画面へ
                 return View["Views/Login"];
             };
 

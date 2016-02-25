@@ -25,10 +25,12 @@ namespace Tips.Core.Controllers
             this.eventAgg.GetEvent<AuthUserEvent>().Subscribe(AuthUser, true);
             this.eventAgg.GetEvent<GetUserEvent>().Subscribe(GetUser, true);
             this.eventAgg.GetEvent<AddUserEvent>().Subscribe(AddUser, true);
+            this.eventAgg.GetEvent<DeleteUserEvent>().Subscribe(DeleteUser, true);
             this.eventAgg.GetEvent<AddUserIconEvent>().Subscribe(AddUserIcon, true);
             this.eventAgg.GetEvent<AddProjectEvent>().Subscribe(AddProject, true);
             this.eventAgg.GetEvent<GetProjectEvent>().Subscribe(GetProject, true);
             this.eventAgg.GetEvent<UpdateProjectEvent>().Subscribe(UpdateProject, true);
+            this.eventAgg.GetEvent<DeleteProjectEvent>().Subscribe(DeleteProject, true);
             this.eventAgg.GetEvent<GetTaskWithRecordEvent>().Subscribe(GetTaskWithRecord, true);
             this.eventAgg.GetEvent<AddTaskCommentEvent>().Subscribe(AddTaskComment, true);
             this.eventAgg.GetEvent<AddTaskRecordEvent>().Subscribe(AddTaskRecord, true);
@@ -83,6 +85,11 @@ namespace Tips.Core.Controllers
             order.Callback(this.context.GetProjects(order.Predicate));
         }
 
+        private void DeleteProject(IProject project)
+        {
+            this.context.DeleteProject(project);
+        }
+
         private void AddProject(AddProjectOrder order)
         {
             var model = new Project
@@ -102,6 +109,11 @@ namespace Tips.Core.Controllers
         private void GetUser(GetOrder<IUser> order)
         {
             order.Callback(this.context.GetUser(order.Predicate));
+        }
+        
+        private void DeleteUser(IUser user)
+        {
+            this.context.DeleteUser(user);
         }
     }
 }
