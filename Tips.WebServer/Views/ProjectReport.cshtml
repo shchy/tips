@@ -1,10 +1,4 @@
-﻿@using System;
-@using System.Linq;
-@using System.Collections;
-@using System.Collections.Generic;
-@using Tips.Model.Models;
-
-@{
+﻿@{
   Layout = "ProjectMaster.cshtml";
 }
 
@@ -55,6 +49,25 @@
 
 }
 
+
+<div class="row" style="margin-bottom:6px;">
+  <div class="col-md-12" >
+    <h3>Project Report</h3>
+
+    <form class="form-inline" >
+      <div class="form-group">
+        <label for="startDay">StartDay</label>
+        <input type="text" class="form-control" id="startDay" placeholder="yyyy/MM/dd">
+      </div>
+      <div class="form-group">
+        <label for="endDay">EndDay</label>
+        <input type="text" class="form-control" id="endDay" placeholder="yyyy/MM/dd">
+      </div>
+      <button type="button" id="updateCommand" class="btn btn-default" >update</button>
+    </form>
+
+  </div>
+</div>
 
 <div class="row">
 
@@ -133,68 +146,51 @@
 <script src="/js/ccchart-min.js"></script>
 <script type="text/javascript">
   $(function () {
-    @{
-      var findToday = new Func<IGraphPoint,bool>(x => x.Day <= DateTime.Now);
-      var selectTasks = new Func<ISprint,IEnumerable<ITaskItem>>(x => x.Tasks);
-      var filterTask = new Func<ITaskItem,bool>(x=>x.Value.HasValue);
-      var selectValue = new Func<ITaskItem,double>(x=>x.Value.Value);
-      var selectTaskRecords = new Func<ITaskWithRecord,IEnumerable<ITaskRecord>>(x => x.Records);
-      var selectRecordValue = new Func<ITaskRecord,double>(x=>x.Value);
-      var selectPointValue = new Func<IGraphPoint,double>(x=>x.Value);
-      var selectPointDay = new Func<IGraphPoint,string>(x => string.Format("'{0}'", x.Day.ToString("yyyy/MM/dd")));
 
-      var spi = Enumerable.FirstOrDefault(Enumerable.Reverse(Model.PiChartModel.Item1),findToday);
-      var cpi = Enumerable.FirstOrDefault(Enumerable.Reverse(Model.PiChartModel.Item2),findToday);
-      var totalValue = Enumerable.Sum(Enumerable.Where(Enumerable.SelectMany(Model.Project.Sprints,selectTasks),filterTask),selectValue);
-      var progressValue =
-          Enumerable.Sum(
-            Enumerable.SelectMany(
-              Enumerable.OfType<ITaskWithRecord>(
-                Enumerable.SelectMany(Model.Project.Sprints, selectTasks))
-              , selectTaskRecords)
-            , selectRecordValue);
-      var toDayPv =
-          Enumerable.FirstOrDefault(
-            Enumerable.Select(
-              Enumerable.Where(
-                Enumerable.Reverse(Model.TrendChartModel.Pv)
-                , findToday)
-              , selectPointValue));
-      var progress = progressValue - toDayPv;
-      var remaining = totalValue - progressValue;
-      var average = (totalValue - progressValue) / Model.WorkDays;
+    $( document ).ready( function() {
+      var dt = new Date();
+      $('#startDay').val('');
+      $('#endDay').val(dt.toLocaleDateString());
+      $('#updateCommand').click();
+    });
 
+    $('#updateCommand').click(function(e){
 
-      var days = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.TrendChartModel.Pv,selectPointDay)));
+      var startDay = $('#startDay').val();
+      var endDay = $('#endDay').val();
+      var url = '/api/project/@Model.Project.Id/report';
+      var jsonData = {
+        startDay:startDay,
+        endDay:endDay,
+      };
+      getJson(url, jsonData, viewReport);
+    });
 
-      var pvx = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.TrendChartModel.Pv,selectPointValue)));
-      var evx = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.TrendChartModel.Ev,selectPointValue)));
-      var acx = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.TrendChartModel.Ac,selectPointValue)));
+    function viewReport(data){
 
-      var spix = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.PiChartModel.Item1,selectPointValue)));
-      var cpix = string.Join(",", Enumerable.ToArray(Enumerable.Select(Model.PiChartModel.Item2,selectPointValue)));
+      $('#spi').text(data.spi);
+      $('#cpi').text(data.cpi);
+      $('#progress').text(data.progress);
+      $('#remaining').text(data.remaining);
+      $('#average').text(data.average);
+
+      makeTrendChart(data.days, data.pvx, data.evx, data.acx);
+      makePiChart(data.days, data.spix, data.cpix);
+
+      $('.dbl').each(function(){
+        var n = Number($(this).text());
+        $(this).text(n.toFixed(1));
+      });
+
     }
 
-    function toDays(dx){
-      var count = dx.length - 1;
-      var labelcount = 5;
-      var blockSize = parseInt(count / labelcount);
-      for (var i = 1; i < dx.length; i++) {
-        var index = i - 1;
-        if (index % blockSize == 0) {
-            //dx[i] = Date.parse( dx[i] );
-        }else {
-            dx[i] = '';
-        }
-      }
-      return dx;
-    }
 
-    function makeTrendChart(){
-      var dx = ["X",@days];
-      var pv = ["PV",@pvx];
-      var ev = ["EV",@evx];
-      var ac = ["AC",@acx];
+
+    function makeTrendChart(days, pvx, evx, acx){
+      var dx = ["X"].concat(days);
+      var pv = ["PV"].concat(pvx);
+      var ev = ["EV"].concat(evx);
+      var ac = ["AC"].concat(acx);
 
       var trend = {
 
@@ -231,11 +227,11 @@
       };
       ccchart.init('trend', trend);
     }
-    function makePiChart(){
+    function makePiChart(days, spix, cpix){
 
-      var dx = ["X",@days];
-      var spi = ["SPI",@spix];
-      var cpi = ["CPI",@cpix];
+      var dx = ["X"].concat(days);
+      var spi = ["SPI"].concat(spix);
+      var cpi = ["CPI"].concat(cpix);
 
       var pi = {
 
@@ -272,26 +268,40 @@
       ccchart.init('pi', pi);
     }
 
-    $( document ).ready( function() {
-
-      @if (spi != null) {
-        <text>$('#spi').text('@spi.Value');</text>
+    function toDays(dx){
+      var count = dx.length - 1;
+      var labelcount = 5;
+      var blockSize = parseInt(count / labelcount);
+      for (var i = 1; i < dx.length; i++) {
+        var index = i - 1;
+        if (index % blockSize == 0) {
+            //dx[i] = Date.parse( dx[i] );
+        }else {
+            dx[i] = '';
+        }
       }
-      @if (cpi != null) {
-        <text>$('#cpi').text('@cpi.Value');</text>
-      }
-      $('#progress').text('@progress');
-      $('#remaining').text('@remaining');
-      $('#average').text('@average');
+      return dx;
+    }
 
-      makeTrendChart();
-      makePiChart();
-
-      $('.dbl').each(function(){
-        var n = Number($(this).text());
-        $(this).text(n.toFixed(1));
+    // todo 共通化
+    function getJson(url, jsonData, callback)
+    {
+      var query = $.param(jsonData);
+      $.ajax({
+        type:'get',
+        url:url,
+        data : query,
+        dataType : 'JSON',
+        scriptCharset: 'utf-8',
+        success : callback,
+        error : function(data) {
+            // Error
+            alert("error");
+            alert(JSON.stringify(data));
+        }
       });
-    });
+    }
+
   });
 </script>
 }
