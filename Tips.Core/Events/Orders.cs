@@ -20,6 +20,12 @@ namespace Tips.Core.Events
         public Func<T,bool> Predicate { get; set; }
     }
 
+    public class GetOrder<TIN, TOUT>
+    {
+        public TIN Param { get; set; }
+        public Action<TOUT> Callback { get; set; }
+    }
+
     public class AuthOrder 
     {
         public IUser AuthUser { get; set; }
@@ -27,6 +33,12 @@ namespace Tips.Core.Events
     }
 
     public class AddOrder<T,With>
+    {
+        public T Model { get; set; }
+        public With WithIn { get; set; }
+    }
+
+    public class DeleteOrder<T, With>
     {
         public T Model { get; set; }
         public With WithIn { get; set; }

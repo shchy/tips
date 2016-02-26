@@ -89,6 +89,13 @@
     <Compile Include="Models\DbModels\DbModel.cs" />
     <Compile Include="Models\IProject.cs" />
     <Compile Include="Models\IUser.cs" />
+    <Compile Include="Models\PermissionModels\Extends\DeleteProjectPermission.cs" />
+    <Compile Include="Models\PermissionModels\Extends\DeleteTaskRecordPermission.cs" />
+    <Compile Include="Models\PermissionModels\Extends\DeleteUserPermission.cs" />
+    <Compile Include="Models\PermissionModels\IPermission.cs" />
+    <Compile Include="Models\PermissionModels\IUserPermissions.cs" />
+    <Compile Include="Models\PermissionModels\Permission.cs" />
+    <Compile Include="Models\PermissionModels\UserPermissions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +105,7 @@
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.29.2\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.2\build\dotnet\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

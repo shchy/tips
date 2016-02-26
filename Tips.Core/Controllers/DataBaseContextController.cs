@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Tips.Core.Events;
 using Tips.Model.Context;
 using Tips.Model.Models;
+using Tips.Model.Models.PermissionModels;
 
 namespace Tips.Core.Controllers
 {
@@ -34,7 +35,11 @@ namespace Tips.Core.Controllers
             this.eventAgg.GetEvent<GetTaskWithRecordEvent>().Subscribe(GetTaskWithRecord, true);
             this.eventAgg.GetEvent<AddTaskCommentEvent>().Subscribe(AddTaskComment, true);
             this.eventAgg.GetEvent<AddTaskRecordEvent>().Subscribe(AddTaskRecord, true);
+            this.eventAgg.GetEvent<DeleteTaskRecordEvent>().Subscribe(DeleteTaskRecord, true);
             this.eventAgg.GetEvent<AddUserToTaskEvent>().Subscribe(AddUserToTask, true);
+            this.eventAgg.GetEvent<GetDeleteTaskRecordPermissionEvent>().Subscribe(GetDeleteTaskRecordPermission, true);
+            this.eventAgg.GetEvent<GetDeleteProjectPermissionEvent>().Subscribe(GetDeleteProjectPermission, true);
+            this.eventAgg.GetEvent<GetDeleteUserPermissionEvent>().Subscribe(GetDeleteUserPermission, true);
         }
 
         private void AddUserToTask(AddOrder<IUser, int> order)
@@ -58,6 +63,11 @@ namespace Tips.Core.Controllers
         private void AddTaskRecord(AddOrder<ITaskRecord, int> order)
         {
             this.context.AddTaskRecord(order.Model, order.WithIn);
+        }
+        
+        private void DeleteTaskRecord(DeleteOrder<ITaskWithRecord, int> order)
+        {
+            this.context.DeleteTaskRecord(order.Model, order.WithIn);
         }
 
         private void AddTaskComment(AddOrder<ITaskComment, int> order)
@@ -114,6 +124,21 @@ namespace Tips.Core.Controllers
         private void DeleteUser(IUser user)
         {
             this.context.DeleteUser(user);
+        }
+        
+        private void GetDeleteTaskRecordPermission(GetOrder<Tuple<int, int>, IPermission> order)
+        {
+            order.Callback(this.context.GetDeleteTaskRecordPermission(order.Param));
+        }
+
+        private void GetDeleteUserPermission(Action<IPermission> callback)
+        {
+            callback(this.context.GetDeleteUserPermission());
+        }
+
+        private void GetDeleteProjectPermission(Action<IPermission> callback)
+        {
+            callback(this.context.GetDeleteProjectPermission());
         }
     }
 }

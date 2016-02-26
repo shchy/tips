@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.Model.Models;
+using Tips.Model.Models.PermissionModels;
 
 namespace Tips.Core.Events
 {
@@ -14,6 +15,10 @@ namespace Tips.Core.Events
     }
 
     public class GetUserEvent : PubSubEvent<GetOrder<IUser>>
+    {
+    }
+
+    public class GetDeleteUserPermissionEvent : PubSubEvent<Action<IPermission>>
     {
     }
 
@@ -41,12 +46,20 @@ namespace Tips.Core.Events
     public class GetProjectEvent : PubSubEvent<GetOrder<IProject>>
     {
     }
-    
+
+    public class GetDeleteProjectPermissionEvent : PubSubEvent<Action<IPermission>>
+    {
+    }
+
     public class DeleteProjectEvent : PubSubEvent<IProject>
     {
     }
 
     public class GetTaskWithRecordEvent : PubSubEvent<GetOrder<ITaskWithRecord>>
+    {
+    }
+
+    public class GetDeleteTaskRecordPermissionEvent : PubSubEvent<GetOrder<Tuple<int,int>, IPermission>>
     {
     }
 
@@ -58,6 +71,9 @@ namespace Tips.Core.Events
     {
     }
 
+    public class DeleteTaskRecordEvent : PubSubEvent<DeleteOrder<ITaskWithRecord, int>>
+    {
+    }
 
     public class AddUserToTaskEvent : PubSubEvent<AddOrder<IUser, int>>
     {
@@ -71,6 +87,19 @@ namespace Tips.Core.Events
             var isCallback = false;
             var callback = Act.New((TReturn x) => { v = x; isCallback = true; });
             @this.Publish(callback);
+            return v.ToMaybe().Where(_ => isCallback);
+        }
+
+        public static IMaybe<TReturn> Get<TIN, TReturn>(this PubSubEvent<GetOrder<TIN,TReturn>> @this, TIN param)
+        {
+            var v = default(TReturn);
+            var isCallback = false;
+            var order = new GetOrder<TIN, TReturn>
+            {
+                Param = param,
+                Callback = Act.New((TReturn x) => { v = x; isCallback = true; })
+            };
+            @this.Publish(order);
             return v.ToMaybe().Where(_ => isCallback);
         }
 
@@ -115,5 +144,14 @@ namespace Tips.Core.Events
             @this.Publish(order);
         }
 
+        public static void Publish<T, With>(this PubSubEvent<DeleteOrder<T, With>> @this, T model, With with)
+        {
+            var order = new DeleteOrder<T, With>
+            {
+                Model = model,
+                WithIn = with,
+            };
+            @this.Publish(order);
+        }
     }
 }

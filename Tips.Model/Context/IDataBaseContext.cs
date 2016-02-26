@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.Model.Models;
+using Tips.Model.Models.PermissionModels;
 
 namespace Tips.Model.Context
 {
@@ -23,5 +24,10 @@ namespace Tips.Model.Context
         
         void DeleteProject(IProject project);
         void DeleteUser(IUser user);
+        void DeleteTaskRecord(ITaskWithRecord taskWithRecord, int recordId);
+
+        IPermission GetDeleteTaskRecordPermission(Tuple<int, int> taskAndRecord);
+        IPermission GetDeleteProjectPermission();
+        IPermission GetDeleteUserPermission();
     }
 }

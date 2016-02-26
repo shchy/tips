@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.Model.Models;
+using Tips.Model.Models.PermissionModels;
 
 namespace Tips.Model.Context
 {
@@ -235,6 +236,26 @@ namespace Tips.Model.Context
         }
 
         public void DeleteUser(IUser user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteTaskRecord(ITaskWithRecord taskWithRecord, int recordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPermission GetDeleteTaskRecordPermission(Tuple<int, int> taskAndRecord)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPermission GetDeleteProjectPermission()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPermission GetDeleteUserPermission()
         {
             throw new NotImplementedException();
         }
