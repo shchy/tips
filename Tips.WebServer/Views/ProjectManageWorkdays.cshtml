@@ -1,0 +1,48 @@
+﻿@{
+  Layout = "ProjectManageMaster.cshtml";
+}
+
+<div class="page-header">
+    <h2>Workdays</h2>
+</div>
+
+<div class="row" hidden="hidden">
+  <div class="col-md-12">
+    <a class="btn btn-default pull-right" href="@Url.Content("./edit")" disabled>Edit</a>
+  </div>
+</div>
+
+<div class="row">
+    <textarea class="col-md-12" rows="20" id="edit">@Model.Json</textarea>
+    <button id="save" class="btn btn-default pull-right" >Save</button>
+</div>
+
+@section js{
+  <script type="text/javascript">
+    $(function () {
+
+      $('#save').click(function(e){
+
+        var json = $('#edit').val();
+        var url = '@Url.Content(string.Format("~/projectmanage/{0}/setupworkdays", @Model.Project.Id))';
+        $.ajax({
+          type:'post',
+          url:url,
+          data : json,
+          dataType : 'JSON',
+          scriptCharset: 'utf-8',
+          success : function(data) {
+                location.href = '@Url.Content(string.Format("~/projectmanage/{0}", @Model.Project.Id))';
+          },
+          error : function(data) {
+              // Error
+              alert("error");
+              alert(JSON.stringify(data));
+              $("#response").html(JSON.stringify(data));
+          }
+        });
+      });
+
+    });
+  </script>
+}

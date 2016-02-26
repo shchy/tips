@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tips.Core.Services;
 using Tips.Model.Models;
 using Tips.Model.Models.PermissionModels;
 
@@ -79,6 +80,12 @@ namespace Tips.Core.Events
     {
     }
 
+    public class GetWorkdayContextEvent : PubSubEvent<GetOrder<int, IWorkdayContext>>
+    {
+
+    }
+    
+
     public static class PubSubEventExtention
     {
         public static IMaybe<TReturn> Get<TReturn>(this PubSubEvent<Action<TReturn>> @this)
@@ -89,7 +96,7 @@ namespace Tips.Core.Events
             @this.Publish(callback);
             return v.ToMaybe().Where(_ => isCallback);
         }
-
+        
         public static IMaybe<TReturn> Get<TIN, TReturn>(this PubSubEvent<GetOrder<TIN,TReturn>> @this, TIN param)
         {
             var v = default(TReturn);

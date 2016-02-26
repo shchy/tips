@@ -139,6 +139,7 @@
     <Compile Include="Modules\DataApiModule.cs" />
     <Compile Include="Modules\LoginModule.cs" />
     <Compile Include="Modules\ProjectModule.cs" />
+    <Compile Include="Modules\ProjectManageModule.cs" />
     <Compile Include="Modules\SystemManageModule.cs" />
     <Compile Include="Modules\TaskModule.cs" />
     <Compile Include="Modules\UserHomeModule.cs" />
@@ -205,6 +206,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Views\ProjectManageMaster.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Views\ProjectManageWorkdays.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Views\User.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

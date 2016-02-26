@@ -17,11 +17,11 @@ namespace Tips.Core.Services
 
     public class SprintToGraphModel : ISprintToGraphModel
     {
-        private Func<DateTime, bool> isWorkday;
+        private IWorkdayContext workdayService;
 
-        public SprintToGraphModel(Func<DateTime,bool> isWorkday)
+        public SprintToGraphModel(IWorkdayContext workdayService)
         {
-            this.isWorkday = isWorkday;
+            this.workdayService = workdayService;
         }
 
         public IGraphModel Make(ISprint sprint)
@@ -76,7 +76,7 @@ namespace Tips.Core.Services
                  select day).ToArray();
             var workDays =
                 (from day in alldays
-                 where this.isWorkday(day)
+                 where this.workdayService.IsWorkday(day)
                  select day).ToArray();
 
             // 稼働日が無い場合は先頭日に全部押し付ける
