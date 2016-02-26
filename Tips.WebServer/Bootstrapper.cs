@@ -66,13 +66,7 @@ namespace Tips.WebServer
 
             existingContainer.RegisterType<ITaskToTextFactory, TaskToTextFactory>();
 
-            existingContainer.RegisterType<ISprintToGraphModel, SprintToGraphModel>(
-                new InjectionConstructor(Fn.New((DateTime day) =>
-                    day.DayOfWeek == DayOfWeek.Monday
-                    || day.DayOfWeek == DayOfWeek.Tuesday
-                    || day.DayOfWeek == DayOfWeek.Wednesday
-                    || day.DayOfWeek == DayOfWeek.Thursday
-                    || day.DayOfWeek == DayOfWeek.Friday)));
+            existingContainer.RegisterInstance<string>("workdaySettingFolder", "settings/workday");
 
             //// ssh git server test
             //var projectPath = @"C:\Users\Shuichi\home\src";
@@ -98,7 +92,7 @@ namespace Tips.WebServer
             // コントローラー群を起動
             this.controllers = MakeControllers(container).ToArray();
 
-            // debug admin追加
+            // todo debug admin追加
             var isNothingAdmin =
                 from c in container.ToMaybe()
                 from ev in c.Resolve<IEventAggregator>().ToMaybe()
@@ -115,6 +109,7 @@ namespace Tips.WebServer
         private IEnumerable<object> MakeControllers(IUnityContainer container)
         {
             yield return container.Resolve<DataBaseContextController>();
+            yield return container.Resolve<WorkdayServiceController>();
         }
 
         private void EnableBasicAuth(IUnityContainer container, IPipelines pipelines)
