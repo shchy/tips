@@ -92,7 +92,37 @@ namespace Tips.Core.Controllers
 
         private void GetProject(GetOrder<IProject> order)
         {
-            order.Callback(this.context.GetProjects(order.Predicate));
+            order.Callback(this.context.GetProjects(order.Predicate).Select(ToWithRecordsProject).ToArray());
+        }
+
+        private IProject ToWithRecordsProject(IProject project)
+        {
+            // hack BindするためにSprintのITaskItemをITaskWithRecordに差し替える。
+            var taskWithRecords = eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(_ => true).ToArray();
+            var getWithTask = Fn.New((ITaskItem t) =>
+            {
+                var finded = taskWithRecords.FirstOrDefault(x => x.Id == t.Id);
+                if (finded == null)
+                {
+                    return t;
+                }
+                //(finded as TaskWithRecord).Assign = this.AddIconFilePath(this.Request.Url, finded.Assign);
+                return finded;
+            });
+            var toWithRecords = Fn.New((ISprint s) =>
+            {
+                var sprint = s as Sprint;
+                sprint.Tasks =
+                    sprint.Tasks.Select(getWithTask).ToArray();
+                return sprint;
+            });
+            var toWithRecordsProject = Fn.New((IProject p) =>
+            {
+                p.Sprints = p.Sprints.Select(toWithRecords).ToArray();
+                return p;
+            });
+
+            return toWithRecordsProject(project);
         }
 
         private void DeleteProject(IProject project)
