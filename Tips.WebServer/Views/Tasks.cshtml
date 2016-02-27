@@ -11,24 +11,26 @@
   var assignUserLink = item.Assign!=null ? @Url.Content(string.Format("~/user/{0}", @item.Assign.Id)) : taskLink;
 
 
-  <div class="media">
-    <a class="media-left" href="@assignUserLink">
-      <img src="@assignUserIcon" class="media-object img-circle" width="48" style="visibility:@iconVisibility"/>
-      <p class="text-center">@assignUserName</p>
+  <div class="media" style="border-bottom:1px solid #ccc;">
+    <a class="media-left" href="@assignUserLink" style="min-width:80px;">
+      <img src="@assignUserIcon" class="media-object img-circle" width="48" style="visibility:@iconVisibility;margin: 0 auto;"/>
+      <div class="text-center"><small >@assignUserName</small></div>
     </a>
     <a class="media-body" href="~/task/@item.Id" >
       <div class="media-heading">
         <p class="task" href="~/task/@item.Id" isCompleted="@isCompleted">
           <span class="glyphicon glyphicon-ok taskicon_done"  isCompleted="@isCompleted" style="visibility:hidden"></span>
           @item.Name
-          <span class="badge">@(item.Value)pt</span>
-          <span class="badge">cpi @cpi</span>
         </p>
       </div>
       <div class="progress">
         <div class="progress-bar" role="progressbar" aria-valuenow="@(progress)" aria-valuemin="0" aria-valuemax="100" style="width: @(progress)%;">
           @(progress)%
         </div>
+      </div>
+      <div class="text-right">
+        <span data-toggle="tooltip" data-original-title="value"><span class="glyphicon glyphicon-apple"></span><small>@(item.Value)pt</small></span>
+        <span data-toggle="tooltip" data-original-title="cpi"><span class="glyphicon glyphicon-scale"></span><small>@cpi</small></span>
       </div>
     </a>
   </div>
