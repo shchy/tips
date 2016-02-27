@@ -45,21 +45,10 @@
       };
       var json = JSON.stringify(jsonData);
       var url = '@Url.Content("~/api/projects/")';
-      $.ajax({
-        type:'post',
-        url:url,
-        data : json,
-        dataType : 'JSON',
-        scriptCharset: 'utf-8',
-        success : function(data) {
-              location.href = '@Url.Content("~/home/")';
-        },
-        error : function(data) {
-            // Error
-            alert("error");
-            alert(JSON.stringify(data));
-        }
+      postJson(url, jsonData, function(){
+        location.href = '@Url.Content("~/home/")';
       });
+
     });
   });
 </script>

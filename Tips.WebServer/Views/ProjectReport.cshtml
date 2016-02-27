@@ -283,24 +283,6 @@
       return dx;
     }
 
-    // todo 共通化
-    function getJson(url, jsonData, callback)
-    {
-      var query = $.param(jsonData);
-      $.ajax({
-        type:'get',
-        url:url,
-        data : query,
-        dataType : 'JSON',
-        scriptCharset: 'utf-8',
-        success : callback,
-        error : function(data) {
-            // Error
-            alert("error");
-            alert(JSON.stringify(data));
-        }
-      });
-    }
 
   });
 </script>

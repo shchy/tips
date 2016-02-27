@@ -25,22 +25,10 @@
 
         var json = $('#edit').val();
         var url = '@Url.Content(string.Format("~/projectmanage/{0}/setupworkdays", @Model.Project.Id))';
-        $.ajax({
-          type:'post',
-          url:url,
-          data : json,
-          dataType : 'JSON',
-          scriptCharset: 'utf-8',
-          success : function(data) {
-                location.href = '@Url.Content(string.Format("~/projectmanage/{0}", @Model.Project.Id))';
-          },
-          error : function(data) {
-              // Error
-              alert("error");
-              alert(JSON.stringify(data));
-              $("#response").html(JSON.stringify(data));
-          }
+        postJson(url, JSON.parse(json), function(){
+          location.href = '@Url.Content(string.Format("~/projectmanage/{0}", @Model.Project.Id))';
         });
+
       });
 
     });
