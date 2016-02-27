@@ -30,12 +30,35 @@ namespace Tips.WebServer.Modules
                 return View["Views/Login"];
             };
 
+            Post["/"] = prms =>
+            {
+                var id = (string)this.Request.Form["userId"];
+                var pass = (string)this.Request.Form["password"];
+                var redirect = (string)this.Request.Query["returnUrl"] ?? "/home/";
+
+                var findId =
+                    (from u in eventAgg.GetEvent<GetUserEvent>().Get(_ => true)
+                     where u.Id == id
+                     where u.Password == pass
+                     select (mapper as UserValidator).ToGuid(u)).FirstOrNothing();
+
+                if (findId.IsNothing)
+                {
+                    return Response.AsRedirect("/");
+                }
+
+                return
+                    this.LoginAndRedirect(findId.Return(), DateTime.Now.AddDays(7), redirect);
+            };
+
+
 
             Get["/logout"] = prms =>
             {
                 return this.LogoutAndRedirect("/");
             };
 
+            // todo apiへ
             Get["/login/{id}/pass/{pass}"] = prms =>
             {
                 var id = (string)prms.id;
@@ -53,7 +76,7 @@ namespace Tips.WebServer.Modules
                 }
 
                 return
-                    this.LoginAndRedirect(findId.Return(), DateTime.Now.AddDays(7), "/home/");
+                    this.Login(findId.Return(), DateTime.Now.AddDays(7));
             };
         }
     }
