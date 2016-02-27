@@ -78,8 +78,8 @@ namespace Tips.Core.Services
             }
 
             // Moddays（非稼働日）に設定されてる日だったら稼働日じゃない
-            var findIt = context.ModifyDays.FirstOrDefault(x => (x - day).Days == 0);
-            return findIt == null;
+            var isWorkDay = context.ModifyDays.FirstOrDefault(x => (x - day).Days == 0) == default(DateTime);
+            return isWorkDay;
         }
 
     }
