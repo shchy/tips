@@ -53,24 +53,12 @@
         password:password,
         role:role,
       };
-      var json = JSON.stringify(jsonData);
+
       var url = '@Url.Content("~/api/users/")';
-      $.ajax({
-        type:'post',
-        url:url,
-        data : json,
-        dataType : 'JSON',
-        scriptCharset: 'utf-8',
-        success : function(data) {
-              location.href = '@Url.Content("~/systemmanage/user")';
-        },
-        error : function(data) {
-            // Error
-            alert("error");
-            alert(JSON.stringify(data));
-            $("#response").html(JSON.stringify(data));
-        }
+      postJson(url, jsonData, function(){
+        location.href = '@Url.Content("~/systemmanage/user")';
       });
+      
     });
   });
 </script>

@@ -32,7 +32,7 @@
             <ul class="nav navbar-nav navbar-right">
 
               <li><a href="~/systemmanage/"><span class="glyphicon glyphicon-wrench" /></a></li>
-              @if(((IDictionary<String, object>)@Model).ContainsKey("Project")){
+              @if(@Model != null && ((IDictionary<String, object>)@Model).ContainsKey("Project")){
                 <li><a href="~/projectmanage/@Model.Project.Id"><span class="glyphicon glyphicon-cog" /></a></li>
               }
 

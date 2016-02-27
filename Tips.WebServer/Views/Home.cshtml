@@ -69,25 +69,10 @@
         }
 
         function deleteProject(id, url, callback) {
-
             var jsonData = {
                 projectid: id
             };
-            var json = JSON.stringify(jsonData);
-
-            $.ajax({
-                type: 'delete',
-                url: url,
-                dataType: 'JSON',
-                scriptCharset: 'utf-8',
-                data : json,
-                success: callback,
-                error: function (data) {
-                    // Error
-                    alert("error");
-                    alert(JSON.stringify(data));
-                }
-            });
+            deleteJson(url, jsonData, callback);
         }
 
 </script>

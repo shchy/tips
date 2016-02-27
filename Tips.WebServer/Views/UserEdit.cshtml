@@ -63,25 +63,6 @@
       }
     });
 
-    // todo 共通化
-    function postJson(url, jsonData, callback)
-    {
-      var json = JSON.stringify(jsonData);
-      $.ajax({
-        type:'post',
-        url:url,
-        data : json,
-        dataType : 'JSON',
-        scriptCharset: 'utf-8',
-        success : callback,
-        error : function(data) {
-            // Error
-            alert("error");
-            alert(JSON.stringify(data));
-        }
-      });
-    }
-
     function update(){
       var id = $('#userId').val();
       var name = $('#name').val();
@@ -125,21 +106,7 @@
     $('#file').change(function() {
       $('#selectedFile').val($(this).val());
     });
-
-    function readFile(file, callback)
-    {
-      var isEnable=file.files && file.files[0];
-      if ( isEnable == undefined ) {
-        callback();
-      }
-
-      var r = new FileReader();
-      r.onload = function(e) {
-        var base64String = e.target.result;
-        callback(base64String.split(',')[1]);
-      };
-      r.readAsDataURL( file.files[0] );
-    }
+    
   });
 </script>
 }
