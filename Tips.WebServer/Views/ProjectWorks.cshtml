@@ -1,0 +1,154 @@
+﻿@{
+  Layout = "ProjectMaster.cshtml";
+}
+
+@section Projectcss{
+}
+
+<div class="row table-responsive">
+    <table class="table table-sm table-bordered" id="worksTable">
+      <caption>works</caption>
+      <thead class="thead-inverse">
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+</div>
+
+@section ProjectJs{
+<script type="text/javascript">
+  $(function () {
+
+    $( document ).ready( function() {
+      var jsonData = {
+        projectId:@Model.Project.Id
+      };
+      var url = '/api/project/@Model.Project.Id/works';
+      getJson(url, jsonData, function(data){
+        view(data);
+
+        var toDayId = new Date(new Date().toLocaleDateString()).valueOf();
+        $('html, body').animate({
+            scrollTop: $("#"+toDayId).offset().top - $('#navbar').height()
+        }, 500);
+
+      });
+    });
+
+    function view(data){
+
+      var users = [];
+      $(data.records).map(function(){return this.who;}).each(function(){
+        var userIdList = $(users).map(function(){return this.id}).toArray();
+
+        if ($.inArray(this.id, userIdList) < 0) {
+          users.push(this);
+        }
+      });
+
+      makeColumn(users);
+
+      var minDay = new Date(new Date(data.minDay).toLocaleDateString());
+      var maxDay = new Date(new Date(data.maxDay).toLocaleDateString());
+      for (var curr = minDay; curr <= maxDay; curr.setDate(curr.getDate() + 1)) {
+        getWithmakeRow(curr);
+      }
+
+      $(data.records).each(function(){
+          addWorksValue(this);
+      });
+    }
+
+    function getWithmakeRow(day){
+      var dt = new Date(day.toLocaleDateString());
+      var dateId = dt.valueOf();
+      var row = $('#worksTable tbody').find('tr#' + dateId);
+      if (row.length == 0) {
+        row = addRow(dateId, dt);
+      }
+      return row;
+    }
+
+    function addWorksValue(record){
+
+      var row = getWithmakeRow(new Date(record.day))
+      var userId = record.who.id;
+      var value = record.value;
+      var workValue = record.workValue;
+      var cell = row.find('#'+userId);
+      var totalWorkValue = cell.attr('workValue');
+      var totalValue = cell.attr('value');
+      if (totalWorkValue && totalWorkValue.match(/\d+/) != null) {
+        workValue += parseInt(totalWorkValue);
+      }
+      if (totalValue && totalValue.match(/\d+/) != null) {
+        value += parseInt(totalValue);
+      }
+      cell.empty();
+      $("<p>" + userId + "</p>").appendTo(cell);
+      $("<p>workValues:" + workValue + "pt</p>").appendTo(cell);
+      $("<p>values:" + value + "pt</p>").appendTo(cell);
+      cell.attr('workValue', workValue);
+      cell.attr('value', value);
+    }
+
+    function makeColumn(users){
+      // 日付ヘッダ
+      $("<th class='col-md-1'>Date</th>").appendTo($('#worksTable thead'));
+
+      $(users).each(function(){
+        var userHeader = $("<th class='col-md-1'></th>");
+        userHeader.html(this.name);
+        userHeader.attr('id', this.id);
+        userHeader.appendTo($('#worksTable thead'));
+      });
+    }
+
+    function addRow(dateId, date){
+      var week = [
+          'SUN', //Sunday starts at 0
+          'MON',
+          'TUE',
+          'WED',
+          'THU',
+          'FRI',
+          'SAT'
+      ];
+      var row = $("<tr><th>" + date.toLocaleDateString() + "(" + week[date.getDay()] +")" + "</th></tr>");
+      row.attr('id', dateId);
+      row.appendTo($('#worksTable tbody'));
+
+      var tds = $('#worksTable thead th').each(function()
+      {
+        var userId = $(this).attr('id');
+        if (!userId) {
+          return;
+        }
+        var td = $("<td></td>");
+        td.attr('id', userId);
+        td.appendTo(row);
+      });
+      return row;
+    }
+
+    // todo 共通化
+    function getJson(url, jsonData, callback)
+    {
+      var query = $.param(jsonData);
+      $.ajax({
+        type:'get',
+        url:url,
+        data : query,
+        dataType : 'JSON',
+        scriptCharset: 'utf-8',
+        success : callback,
+        error : function(data) {
+            // Error
+            alert("error");
+            alert(JSON.stringify(data));
+        }
+      });
+    }
+  });
+</script>
+}

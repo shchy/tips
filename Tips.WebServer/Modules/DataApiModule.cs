@@ -47,7 +47,7 @@ namespace Tips.WebServer.Modules
                 var id = (int)prms.id;
                 var left = DateTime.MinValue;
                 var right = DateTime.MaxValue;
-                var current = DateTime.Now;
+                var current = DateTime.Now.AddDays(1).AddTicks(-1);
 
                 var tryGetRangeDate = Fn.New((DateTime d, string s) => {
                     if (string.IsNullOrWhiteSpace(s))
@@ -61,10 +61,10 @@ namespace Tips.WebServer.Modules
                 });
                 left = tryGetRangeDate(left, (string)this.Request.Query["startDay"]);
                 right = tryGetRangeDate(right, (string)this.Request.Query["endDay"]);
-                if (right != DateTime.MaxValue)
-                {
-                    current = right;
-                }
+                //if (right != DateTime.MaxValue)
+                //{
+                //    current = right;
+                //}
 
                 var query =
                     from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
@@ -94,8 +94,10 @@ namespace Tips.WebServer.Modules
                     var cpi = piChartModel.Item2.Reverse().FirstOrDefault(x => x.Day <= current);
                     var totalValue = project.Sprints.SelectMany(s => s.Tasks).Where(t => t.Value.HasValue).Sum(t => t.Value.Value);
                     var progressValue =
-                        project.Sprints.SelectMany(s => s.Tasks).OfType<ITaskWithRecord>()
-                        .SelectMany(t => t.Records.Where(x=>x.Day <= current))
+                        project.Sprints.SelectMany(s => s.Tasks)
+                        .OfType<ITaskWithRecord>()
+                        .SelectMany(t => t.Records)
+                        .Where(x => x.Day <= current)
                         .Sum(r => r.Value);
                     var toDayPv =
                         trendChartModel.Pv.Reverse().Where(x => x.Day <= current)
@@ -129,6 +131,31 @@ namespace Tips.WebServer.Modules
                             spix,
                             cpix,
                         }) as object;
+                });
+                return
+                    view.Return(() => HttpStatusCode.InternalServerError);
+            };
+
+            Get["/project/{id}/works"] = prms =>
+            {
+                var id = (int)prms.id;
+
+                var query =
+                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    let records =
+                        from sprint in project.Sprints
+                        from task in sprint.Tasks.OfType<ITaskWithRecord>()
+                        from record in task.Records
+                        select record
+                    let dx = project.Sprints.SelectMany(x=>new[] { x.Left, x.Right } )
+                            .Where(x=>x.HasValue)
+                    select new {
+                        records,
+                        minDay = dx.Min(x=>x.Value),
+                        maxDay = dx.Max(x=>x.Value) };
+                var view = query.Select(q =>
+                {   
+                    return Response.AsJson(q) as object;
                 });
                 return
                     view.Return(() => HttpStatusCode.InternalServerError);
