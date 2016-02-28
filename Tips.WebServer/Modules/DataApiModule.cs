@@ -47,7 +47,8 @@ namespace Tips.WebServer.Modules
                 var id = (int)prms.id;
                 var left = DateTime.MinValue;
                 var right = DateTime.MaxValue;
-                var current = DateTime.Now.AddDays(1).AddTicks(-1);
+                var current = DateTime.Now.AddDays(1);
+                current = current.Date.AddTicks(-1);    // 現在日付+1から1ミリ秒引いて23:59:59を生成する
 
                 var tryGetRangeDate = Fn.New((DateTime d, string s) => {
                     if (string.IsNullOrWhiteSpace(s))
