@@ -37,6 +37,12 @@
     color: palevioletred;
 }
 
+.panel > .panel-heading.drem {
+    background-image: none;
+    background-color: yellow;
+    color: gray;
+}
+
 .panel > .panel-body > h1 {
     margin: 6px 6px;
 }
@@ -125,6 +131,17 @@
     </div>
   </div>
 
+  <div class="col-md-2 col-xs-4">
+    <div class="panel panel-default">
+      <div class="panel-heading drem">
+        <h4>Days Remaining</h4>
+      </div>
+      <div class="panel-body ">
+        <h1 id="DaysRemaining" class="text-center dbl"></h1>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 
@@ -173,6 +190,7 @@
       $('#progress').text(data.progress);
       $('#remaining').text(data.remaining);
       $('#average').text(data.average);
+      $('#DaysRemaining').text(data.workDays);
 
       makeTrendChart(data.days, data.pvx, data.evx, data.acx);
       makePiChart(data.days, data.spix, data.cpix);
