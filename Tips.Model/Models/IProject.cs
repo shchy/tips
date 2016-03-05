@@ -73,7 +73,6 @@ namespace Tips.Model.Models
         string Describe { get; }
     }
 
-    [PropertyChanged.ImplementPropertyChanged]
     public partial class Project : IProject
     {
         public string Describe { get; set; }
@@ -167,7 +166,6 @@ namespace Tips.Model.Models
         public double? Value { get; set; }
     }
 
-    [PropertyChanged.ImplementPropertyChanged]
     public class TaskWithRecord : TaskItem, ITaskWithRecord
     {
         [JsonConverter(typeof(ConcreteConverter<List<TaskComment>>))]
@@ -210,7 +208,6 @@ namespace Tips.Model.Models
         public double WorkValue { get; set; }
     }
 
-    [PropertyChanged.ImplementPropertyChanged]
     public class TaskComment : ITaskComment
     {
         public DateTime Day { get; set; }
