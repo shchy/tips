@@ -249,6 +249,11 @@ namespace Tips.Model.Models
         public DateTime Day { get; set; }
 
         public double Value { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1}", Day.ToString("yyyy/MM/dd"), Value );
+        }
     }
 
     public class GraphModel : IGraphModel

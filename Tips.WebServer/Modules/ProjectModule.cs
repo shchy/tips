@@ -18,7 +18,8 @@ namespace Tips.WebServer.Modules
     {
         private IEventAggregator eventAgg;
 
-        public ProjectModule(IEventAggregator eventAgg, ITaskToTextFactory taskToText)
+        public ProjectModule(IEventAggregator eventAgg
+            , ITaskToTextFactory taskToText)
             : base("/project/")
         {
             this.eventAgg = eventAgg;
