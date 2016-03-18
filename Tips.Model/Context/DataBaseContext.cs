@@ -118,10 +118,10 @@ namespace Tips.Model.Context
             this.dbContext.Update(db =>
             {
                 var model = record.ToDbModel();
-                db.TaskRecords.Add(model);
+                db.TaskRecords.AddOrUpdate(model);
                 db.SaveChanges();
                 var link = model.ToDbLink(taskId);
-                db.LinkTaskItemWithRecord.Add(link);
+                db.LinkTaskItemWithRecord.AddOrUpdate(link);
                 db.SaveChanges();
             });
         }
@@ -224,6 +224,7 @@ namespace Tips.Model.Context
                         where link.TaskItemId == t.Id
                         from r in db.TaskRecords.ToArray()
                         where r.Id == link.TaskRecordId
+                        orderby r.Day
                         select r
                     let cx =
                         from link in db.LinkTaskItemWithComment.ToArray()

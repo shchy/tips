@@ -16,10 +16,15 @@
     padding:0pt;
     margin-left: 12pt;
 }
-.btn-delete-task-record {
+.btn-on-task-record {
     border:0pt;
     margin:0pt;
     padding:0pt;
+    width:1.5em;
+}
+.input-area {
+    height: 2em;
+    width: 6em;
 }
 -->
 </style>
@@ -105,12 +110,15 @@
         @foreach(var record in Model.Task.Records){
           <li class="list-group-item">
             <div class="list-group-item-div">
-              <button id="deleteCommand" type="button" class="btn btn-default btn-lg btn-delete btn-delete-task-record" value="@record.Id">
+              <button id="editCommand" type="button" class="btn btn-default btn-lg btn-delete btn-edit-task-record btn-on-task-record" value="@record.Id">
+                <span class="glyphicon glyphicon-pencil"></span>
+              </button>
+              <button id="deleteCommand" type="button" class="btn btn-default btn-lg btn-delete btn-delete-task-record btn-on-task-record" value="@record.Id">
                 <span class="glyphicon glyphicon-remove-sign"></span>
               </button>
             </div>
-            <span class="badge">@record.Value</span>
-            @record.Day.Month/@record.Day.Day @record.Who.Name @record.WorkValue
+            <span class="badge" value="@record.Id">@record.Value</span>
+            <span class="task-info" value="@record.Id"><span id="workDate">@record.Day.Year/@record.Day.Month/@record.Day.Day</span> <span id="workerName">@record.Who.Name</span> <span id="workCost">@record.WorkValue</span></span>
           </li>
         }
 
@@ -311,5 +319,127 @@
       deleteJson(url, jsonData, callback);
     }
   });
+
+
+    $('.btn-edit-task-record').click(function (e) {
+        // 前処理～
+
+        // 編集用のコンポーネントを削除
+        removeEditTaskComponents();
+
+        // 全てのtaskInfoを表示する
+        showAllTaskInfo();
+
+        var val = $(this).val();
+        var taskInfo = $(".task-info[value=" + val + "]");
+        var editCommand = $(".btn-edit-task-record[value=" + val + "]");
+        var deleteCommand = $(".btn-delete-task-record[value=" + val + "]");
+        // 対象のtaskInfoを隠す
+        taskInfo.hide();
+        // 対象の編集ボタンを隠す
+        editCommand.hide();
+        // 対象の削除ボタンを隠す
+        deleteCommand.hide();
+
+        // 編集用コントロール作成 ～
+
+        // 日付取得
+        var date = taskInfo.children('#workDate').text();
+        // user名取得
+        var userName = taskInfo.children('#workerName').text();
+        // コスト取得
+        var cost = taskInfo.children('#workCost').text();
+            
+        // 対象のtaskInfoの下にinput-task-infoを作成する
+        taskInfo.after(' \
+                <span class="input-task-info" value="' + val + '"> \
+                    <textarea class="input-date input-area">' + date + '</textarea> \
+                    <span>' + userName + '</span> \
+                    <textarea class="input-cost input-area">' + cost + '</textarea> \
+                </span> \
+            ');
+        // 押下された編集ボタンの代わりに適用ボタンを作成する
+        editCommand.after(' \
+                <button id="editOK" type="button" class="btn btn-default btn-lg btn-delete btn-edit-ok-task-record btn-on-task-record" value="' + val + '"> \
+                <span class="glyphicon glyphicon-ok"></span> \
+              </button> \
+            ');
+
+        // 削除ボタンの代わりにキャンセルボタンを作成する
+        deleteCommand.after(' \
+                <button id="editCancel" type="button" class="btn btn-default btn-lg btn-delete btn-edit-cancel-task-record btn-on-task-record" value="' + val + '"> \
+                <span class="glyphicon glyphicon-remove"></span> \
+              </button> \
+            ');
+
+        // 適用ボタンのイベントハンドリング
+        $("#editOK[value=" + val + "]").click(function (e) { 
+            var updatedDate = $(".input-task-info[value=" + val + "] .input-date").val();
+            var updatedCost = $(".input-task-info[value=" + val + "] .input-cost").val();
+            var cpi = Number($('.badge[value=' + val + ']').text())
+            // 編集内容で更新
+            updateTaskRecord(@Model.Task.Id, val, updatedDate, updatedCost, cpi, '@Url.Content("~/api/task/record/")', function () {
+                // 成功したら画面更新
+                location.reload();
+            })
+        });
+
+        // キャンセルボタンのイベントハンドリング
+        $("#editCancel[value=" + val + "]").click(function (e) { 
+            // 編集用のコンポーネントを削除
+            removeEditTaskComponents(); 
+            // 全てのtaskInfoを表示する
+            showAllTaskInfo();
+        }); 
+
+    });
+
+    function updateTaskRecord(taskid, recordid, date, cost, cpi, url, callback) {
+        if (cost == 0) {
+            return;
+        }
+
+        var jsonData = {
+            taskId:taskid,
+            record : {
+                id: recordid,
+                day: date,
+                value: cpi,
+                workvalue: cost,
+                who:{
+                    id:'@Model.Auth.Id',
+                    name:'@Model.Auth.Name'
+                }
+            },
+        };
+
+        postJson(url, jsonData, function(){
+            location.reload();
+        });
+    }
+
+    function removeEditTaskComponents()
+    {
+        // 全てのinput-task-infoを削除する
+        $('.input-task-info').remove();
+
+        // 全てのbtn-edit-ok-task-recordを削除する
+        $('.btn-edit-ok-task-record').remove();
+
+        // 全てのbtn-edit-cancel-task-recordを削除する
+        $('.btn-edit-cancel-task-record').remove();
+    }
+
+    function showAllTaskInfo()
+    {
+        // 全てのtaskInfoを表示する
+        $('.task-info').show();
+
+        // 全ての編集ボタンを表示する
+        $('.btn-edit-task-record').show();
+
+        // 全ての削除ボタンを表示する
+        $('.btn-delete-task-record').show();
+    }
 </script>
 }
