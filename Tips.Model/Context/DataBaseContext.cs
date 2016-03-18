@@ -224,6 +224,7 @@ namespace Tips.Model.Context
                         where link.TaskItemId == t.Id
                         from r in db.TaskRecords.ToArray()
                         where r.Id == link.TaskRecordId
+                        orderby r.Day
                         select r
                     let cx =
                         from link in db.LinkTaskItemWithComment.ToArray()
