@@ -1,0 +1,56 @@
+﻿@{
+  Layout = "ProjectMaster.cshtml";
+}
+
+@section Projectcss{
+<link href="/css/jquery-ui/jquery-ui.min.css" rel="stylesheet">
+<style type="text/css">
+<!--
+.media:hover {background: lightblue;}
+.media {padding: 6px; margin:0px;}
+.panel-body {padding:0px;}
+.progress {margin-bottom:0px;}
+
+    .task-box {
+        padding:5px;
+        border:solid;
+        border-width:1px;
+    }
+
+-->
+</style>
+}
+
+あああ
+The Kanban
+<div id="div1" class="task-box">61<br />タスクタイトル</div>
+<table class="table">
+    <thead>
+        <tr><td>Backlog</td><td>Ready</td><td>In Progress</td><td>Done</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><div class="task-box">61<br />タスクタイトル</div></td>
+            <td><div class="task-box">61<br />タスクタイトル</div></td>
+            <td><div class="task-box">61<br />タスクタイトル</div></td>
+            <td><div class="task-box">61<br />タスクタイトル</div></td>
+        </tr>
+    </tbody>
+</table>
+
+@*@Html.Partial("Sprint.cshtml", Model.Project)
+<a class="btn btn-default pull-right" href="~/project/@Model.Project.Id/edit" >Edit</a>*@
+
+@section ProjectJs{
+<script src="~/js/jquery-ui.min.js"></script>
+<script type="text/javascript">
+  $(function () {
+
+      $(document).ready(function () {
+          // #div1をdrag可能に
+          $(".task-box").draggable();
+      });
+
+  });
+</script>
+}

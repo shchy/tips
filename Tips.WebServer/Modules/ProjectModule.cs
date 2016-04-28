@@ -116,6 +116,18 @@ namespace Tips.WebServer.Modules
 
                 return view.Return(() => Response.AsRedirect("/project/" + id));
             };
+            
+            Get["/{id}/kanban"] = prms =>
+            {
+                // projectid
+                var id = (int)prms.id;
+
+                var view =
+                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    select View["Views/Kanban", new { Project = project }] as object;
+
+                return view.Return(() => Response.AsRedirect("/project/" + id));
+            };
         }
     }
 }
