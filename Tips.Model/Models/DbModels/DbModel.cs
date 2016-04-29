@@ -55,6 +55,8 @@ namespace Tips.Model.Models.DbModels
         public string Name { get; set; }
 
         public double? Value { get; set; }
+
+        public int StatusCode { get; set; }
     }
 
     public class DbTaskComment 
@@ -179,6 +181,7 @@ namespace Tips.Model.Models.DbModels
                 Id = @this.Id,
                 Name = @this.Name,
                 Value = @this.Value,
+                StatusCode = @this.StatusCode,
             };
         }
 
@@ -303,6 +306,7 @@ namespace Tips.Model.Models.DbModels
                 Id = @this.Id,
                 Name = @this.Name,
                 Value = @this.Value,
+                StatusCode = @this.StatusCode,
             };
         }
 

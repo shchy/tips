@@ -1,5 +1,6 @@
-﻿@{
-  Layout = "ProjectMaster.cshtml";
+﻿@using Tips.Model.Models
+@{
+    Layout = "ProjectMaster.cshtml";
 }
 
 @section Projectcss{
@@ -71,6 +72,8 @@
 
     .task-box-footer {
         text-align:right;
+        vertical-align:bottom;
+        text-anchor:end;
     }
 
     .task-list {
@@ -82,7 +85,6 @@
         margin:0;
         padding:0;
         padding-bottom:5px;
-
     }
 
     #task-board {
@@ -107,46 +109,91 @@
         border-right:1px solid #808080;
     }
 
+    .assign-icon {
+        float: right;
+        max-width:24px;
+    }
+
 -->
 </style>
 }
 
+@helper ToListItem(ITaskWithRecord item){
+    var assignUserIcon = item.Assign != null ? @item.Assign.IconFile : "";
+    var assignUserName = item.Assign != null ? @item.Assign.Name : "";
+    var iconVisibility = item.Assign != null ? "visible" : "hidden";
+    var taskLink = @Url.Content(string.Format("~/task/{0}", @item.Id));
+    var assignUserLink = item.Assign != null ? @Url.Content(string.Format("~/user/{0}", @item.Assign.Id)) : taskLink;
+    <li class="task-list-item" value="@item.Value">
+        <div class="task-box">
+            <div class="task-box-header"><a href="@taskLink">@item.Id</a></div>
+            <hr>
+            <div class="task-box-body">
+                <a href="@taskLink">@item.Name</a>
+                <hr>
+                <div class="task-box-footer">
+                    <span class="glyphicon glyphicon-apple"></span><small>@(item.Value)pt</small>
+                    <a href="@assignUserLink">
+                        @assignUserName
+                        <img src="@assignUserIcon" class="media-object img-circle assign-icon" style="visibility:@iconVisibility;" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </li>
+}
+
+<div style="text-align:right">
+    <button class="button">Save</button>
+</div>
+
 <table id="task-board" class="table">
     <thead>
-        <tr><td>Backlog</td><td>Ready</td><td>In Progress</td><td>Done</td></tr>
+        <tr>
+            <td>Backlog (<span id="value-of-backlog"></span>pt)</td>
+            <td>Ready (<span id="value-of-ready"></span>pt)</td>
+            <td>In Progress (<span id="value-of-inprogress"></span>pt)</td>
+            <td>Done (<span id="value-of-done"></span>pt)</td>
+        </tr>
     </thead>
     <tbody>
         <tr>
             <td id="backlog-column" class="task-board-column">
                 <ul id="backlog-list" class="task-list">
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
+                @foreach (var item in Model.BacklogTasks)
+                {
+                    @ToListItem(item);
+                }
                 </ul>
             </td>
             <td id="ready-column" class="task-board-column">
                 <ul id="ready-list" class="task-list">
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
+                @{
+                    foreach (var item in Model.ReadyTasks)
+                    {
+                        @ToListItem(item);
+                    }
+                }
                 </ul>
             </td>
             <td id="in-progress-column" class="task-board-column">
                 <ul id="in-progress-list" class="task-list">
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
+                @{
+                    foreach (var item in Model.InProgressTasks)
+                    {
+                        @ToListItem(item);
+                    }
+                }
                 </ul>
             </td>
             <td id="done-column" class="task-board-column">
                 <ul id="done-list" class="task-list">
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
-                    <li class="task-list-item" value="61"><div class="task-box"><div class="task-box-header">61</div><hr><div class="task-box-body">タスクタイトル<hr><div class="task-box-footer">10pt</div></div></div></li>
+                @{
+                    foreach (var item in Model.DoneTasks)
+                    {
+                        @ToListItem(item);
+                    }
+                }
                 </ul>
             </td>
         </tr>
@@ -159,7 +206,32 @@
 @section ProjectJs{
 <script src="~/js/jquery-ui.min.js"></script>
 <script type="text/javascript">
+    function updateListValues() {
+        var backlogVal = 0;
+        var readyVal = 0;
+        var inProgressVal = 0;
+        var doneVal = 0;
+        $.each($('#backlog-list li'), function (index, elm) {
+            backlogVal += elm.value;
+        });
+        $.each($('#ready-list li'), function (index, elm) {
+            readyVal += elm.value;
+        });
+        $.each($('#in-progress-list li'), function (index, elm) {
+            inProgressVal += elm.value;
+        });
+        $.each($('#done-list li'), function (index, elm) {
+            doneVal += elm.value;
+        });
+
+        $('#value-of-backlog').html(backlogVal);
+        $('#value-of-ready').html(readyVal);
+        $('#value-of-inprogress').html(inProgressVal);
+        $('#value-of-done').html(doneVal);
+    }
+
   $(function () {
+
 
       $(document).ready(function () {
           // #div1をdrag可能に
@@ -176,13 +248,16 @@
 
           $('#backlog-column').droppable({
               drop: function (event, ui) {
-                  var item = ui.draggable.clone();
-                  item[0].style.top = 0;
-                  item[0].style.left = 0;
-                  item[0].style.zIndex = 0;
-                  $('#backlog-list').append(item[0]);
-                  ui.draggable.remove();
-                  $(".task-list-item").draggable(options);
+                  if (!$.contains($('#backlog-list').get(0), ui.draggable[0])) {
+                      var item = ui.draggable.clone();
+                      item[0].style.top = 0;
+                      item[0].style.left = 0;
+                      item[0].style.zIndex = 0;
+                      $('#backlog-list').append(item[0]);
+                      ui.draggable.remove();
+                      $(".task-list-item").draggable(options);
+                      updateListValues();
+                  }
                   //window.setTimeout(function () {
                   //    $('#one').swapWith($('#two'));
                   //    $("li").draggable(options);
@@ -192,39 +267,50 @@
 
           $('#ready-column').droppable({
               drop: function (event, ui) {
-                  var item = ui.draggable.clone();
-                  item[0].style.top = 0;
-                  item[0].style.left = 0;
-                  item[0].style.zIndex = 0;
-                  $('#ready-list').append(item[0]);
-                  ui.draggable.remove();
-                  $(".task-list-item").draggable(options);
+                  if (!$.contains($('#ready-list').get(0), ui.draggable[0])) {
+                      var item = ui.draggable.clone();
+                      item[0].style.top = 0;
+                      item[0].style.left = 0;
+                      item[0].style.zIndex = 0;
+                      $('#ready-list').append(item[0]);
+                      ui.draggable.remove();
+                      $(".task-list-item").draggable(options);
+                      updateListValues();
+                  }
               }
           });
 
           $('#in-progress-column').droppable({
               drop: function (event, ui) {
-                  var item = ui.draggable.clone();
-                  item[0].style.top = 0;
-                  item[0].style.left = 0;
-                  item[0].style.zIndex = 0;
-                  $('#in-progress-list').append(item[0]);
-                  ui.draggable.remove();
-                  $(".task-list-item").draggable(options);
+                  if (!$.contains($('#in-progress-list').get(0), ui.draggable[0])) {
+                      var item = ui.draggable.clone();
+                      item[0].style.top = 0;
+                      item[0].style.left = 0;
+                      item[0].style.zIndex = 0;
+                      $('#in-progress-list').append(item[0]);
+                      ui.draggable.remove();
+                      $(".task-list-item").draggable(options);
+                      updateListValues();
+                  }
               }
           });
 
           $('#done-column').droppable({
               drop: function (event, ui) {
-                  var item = ui.draggable.clone();
-                  item[0].style.top = 0;
-                  item[0].style.left = 0;
-                  item[0].style.zIndex = 0;
-                  $('#done-list').append(item[0]);
-                  ui.draggable.remove();
-                  $(".task-list-item").draggable(options);
+                  if (!$.contains($('#done-list').get(0), ui.draggable[0])) {
+                      var item = ui.draggable.clone();
+                      item[0].style.top = 0;
+                      item[0].style.left = 0;
+                      item[0].style.zIndex = 0;
+                      $('#done-list').append(item[0]);
+                      ui.draggable.remove();
+                      $(".task-list-item").draggable(options);
+                      updateListValues();
+                  }
               }
           });
+
+          updateListValues();
       });
 
       jQuery.fn.swapWith = function (to) {

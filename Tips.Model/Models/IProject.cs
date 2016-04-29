@@ -31,6 +31,7 @@ namespace Tips.Model.Models
     public interface ITaskItem : IIdentity<int>, INameable
     {
         double? Value { get; }
+        int StatusCode { get; }
     }
 
     public interface ITaskComment : IIdentity<int>
@@ -164,6 +165,8 @@ namespace Tips.Model.Models
         public string Name { get; set; }
 
         public double? Value { get; set; }
+
+        public int StatusCode { get; set; }
     }
 
     public class TaskWithRecord : TaskItem, ITaskWithRecord

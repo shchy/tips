@@ -43,7 +43,7 @@ namespace Tips.Model.Context
             }
             else
             {
-                //var sql = string.Empty;
+                var sql = string.Empty;
                 //sql += "create table DbLinkUserWithTaskItem(";
                 //sql += " UserId TEXT";
                 //sql += " ,TaskItemId INTEGER";
@@ -52,6 +52,17 @@ namespace Tips.Model.Context
                 //sql += " ,FOREIGN KEY(UserId)REFERENCES DbUser(Id)";
                 //sql += " ,FOREIGN KEY(TaskItemId)REFERENCES DbTaskItem(Id)";
                 //sql += ");";
+                //this.Database.ExecuteSqlCommand(sql);
+                //this.SaveChanges();
+                
+                //sql += "CREATE TABLE DbTaskStatusMaster( Id INTEGER, Name TEXT, PRIMARY KEY (Id));";
+                //sql += "ALTER TABLE DbTaskItem ADD (StatusCode INTEGER, FOREIGN KEY(StatusCode)REFERENCES DbTaskStatusMaster(Id));";
+                //sql += "INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(0, 'Backlog');";
+                //sql += "INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(1, 'Ready');";
+                //sql += "INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(2, 'In Progress');";
+                //sql += "INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(3, 'Done');";
+                //sql += "UPDATE DbTaskItem SET StatusCode = 0;";
+
                 //this.Database.ExecuteSqlCommand(sql);
                 //this.SaveChanges();
             }
@@ -84,11 +95,18 @@ namespace Tips.Model.Context
             sql += " ,Right INTEGER";
             sql += " ,PRIMARY KEY (Id)";
             sql += ");";
+            sql += "create table DbTaskStatusMaster(";
+            sql += " Id INTEGER";
+            sql += " , Name TEXT";
+            sql += " , PRIMARY KEY (Id)";
+            sql += ");";
             sql += "create table DbTaskItem(";
             sql += " Id INTEGER";
             sql += " ,Name TEXT";
             sql += " ,Value REAL";
+            sql += " ,StatusCode INTEGER";
             sql += " ,PRIMARY KEY (Id)";
+            sql += " ,FOREIGN KEY(StatusCode)REFERENCES DbTaskStatusMaster(Id)";
             sql += ");";
             sql += "create table DbTaskComment(";
             sql += " Id INTEGER";
@@ -191,6 +209,7 @@ namespace Tips.Model.Context
     //    public override void Up()
     //    {
     //    }
+
     //    public override void Down()
     //    {
     //    }
