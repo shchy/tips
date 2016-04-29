@@ -55,13 +55,13 @@ namespace Tips.Model.Context
                 //this.Database.ExecuteSqlCommand(sql);
                 //this.SaveChanges();
                 
-                //sql += "CREATE TABLE DbTaskStatusMaster( Id INTEGER, Name TEXT, PRIMARY KEY (Id));";
-                //sql += "ALTER TABLE DbTaskItem ADD (StatusCode INTEGER, FOREIGN KEY(StatusCode)REFERENCES DbTaskStatusMaster(Id));";
-                //sql += "INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(0, 'Backlog');";
-                //sql += "INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(1, 'Ready');";
-                //sql += "INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(2, 'In Progress');";
-                //sql += "INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(3, 'Done');";
-                //sql += "UPDATE DbTaskItem SET StatusCode = 0;";
+                //this.Database.ExecuteSqlCommand("CREATE TABLE DbTaskStatusMaster( Id INTEGER, Name TEXT, PRIMARY KEY (Id));");
+                //this.Database.ExecuteSqlCommand("ALTER TABLE DbTaskItem ADD (StatusCode INTEGER, FOREIGN KEY(StatusCode)REFERENCES DbTaskStatusMaster(Id));");
+                //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(0, 'Backlog');");
+                //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(1, 'Ready');");
+                //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(2, 'In Progress');");
+                //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(3, 'Done');");
+                //this.Database.ExecuteSqlCommand("UPDATE DbTaskItem SET StatusCode = 0;");
 
                 //this.Database.ExecuteSqlCommand(sql);
                 //this.SaveChanges();

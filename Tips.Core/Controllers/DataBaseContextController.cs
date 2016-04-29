@@ -40,6 +40,12 @@ namespace Tips.Core.Controllers
             this.eventAgg.GetEvent<GetDeleteTaskRecordPermissionEvent>().Subscribe(GetDeleteTaskRecordPermission, true);
             this.eventAgg.GetEvent<GetDeleteProjectPermissionEvent>().Subscribe(GetDeleteProjectPermission, true);
             this.eventAgg.GetEvent<GetDeleteUserPermissionEvent>().Subscribe(GetDeleteUserPermission, true);
+            this.eventAgg.GetEvent<UpdateTaskEvent>().Subscribe(UpdateTask, true);
+        }
+
+        private void UpdateTask(ITaskItem order)
+        {
+            this.context.UpdateTask(order);
         }
 
         private void AddUserToTask(AddOrder<IUser, int> order)

@@ -84,7 +84,11 @@ namespace Tips.Core.Events
     {
 
     }
-    
+
+    public class UpdateTaskEvent : PubSubEvent<ITaskItem>
+    {
+
+    }
 
     public static class PubSubEventExtention
     {

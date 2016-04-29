@@ -259,5 +259,10 @@ namespace Tips.Model.Context
         {
             throw new NotImplementedException();
         }
+
+        public void UpdateTask(ITaskItem task)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

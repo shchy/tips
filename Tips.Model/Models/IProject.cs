@@ -31,7 +31,7 @@ namespace Tips.Model.Models
     public interface ITaskItem : IIdentity<int>, INameable
     {
         double? Value { get; }
-        int StatusCode { get; }
+        int StatusCode { get; set; }
     }
 
     public interface ITaskComment : IIdentity<int>

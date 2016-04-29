@@ -124,7 +124,7 @@
     var iconVisibility = item.Assign != null ? "visible" : "hidden";
     var taskLink = @Url.Content(string.Format("~/task/{0}", @item.Id));
     var assignUserLink = item.Assign != null ? @Url.Content(string.Format("~/user/{0}", @item.Assign.Id)) : taskLink;
-    <li class="task-list-item" value="@item.Value">
+    <li class="task-list-item" value="@item.Value" name="@item.Id">
         <div class="task-box">
             <div class="task-box-header"><a href="@taskLink">@item.Id</a></div>
             <hr>
@@ -144,7 +144,7 @@
 }
 
 <div style="text-align:right">
-    <button class="button">Save</button>
+    <button id="button-save" class="button">Save</button>
 </div>
 
 <table id="task-board" class="table">
@@ -312,6 +312,53 @@
 
           updateListValues();
       });
+
+      $('#button-save').click(function (e) {
+          var url = '@Url.Content("~/api/task/status/save")';
+
+          var backlogTasks = [];
+          var readyTasks = [];
+          var inProgressTasks = [];
+          var doneTasks = [];
+          var test = [
+              {"taskId" : 1, "statusCode": 0},
+              {"taskId" : 2, "statusCode": 1}
+          ];
+          var tasks = [];
+          $.each($('#backlog-list li'), function (index, elm) {
+              tasks.push({
+                  taskId: elm.attributes["name"].value,
+                  statusCode: 0,
+              });
+          });
+          $.each($('#ready-list li'), function (index, elm) {
+              tasks.push({
+                  taskId: elm.attributes["name"].value,
+                  statusCode: 1,
+              });
+          });
+          $.each($('#in-progress-list li'), function (index, elm) {
+              tasks.push({
+                  taskId: elm.attributes["name"].value,
+                  statusCode: 2,
+              });
+          });
+          $.each($('#done-list li'), function (index, elm) {
+              tasks.push({
+                  taskId: elm.attributes["name"].value,
+                  statusCode: 3,
+              });
+          });
+
+          var jsonData = {
+              projectId: @Model.Project.Id,
+              tasks: tasks,
+          };
+
+          postJson(url, jsonData, function () {
+              // do nothing
+          });
+      })
 
       jQuery.fn.swapWith = function (to) {
           return this.each(function () {

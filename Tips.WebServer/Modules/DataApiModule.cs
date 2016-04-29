@@ -305,6 +305,45 @@ namespace Tips.WebServer.Modules
 
                 return res;
             };
+
+            Post["/task/status/save"] = _ =>
+            {
+                var res = Response.AsJson(new { }, HttpStatusCode.OK);
+                var model = JsonConvert.DeserializeObject<SaveTasksStatus>(this.Request.Body.ToStreamString());
+
+                var query =
+                    from task in eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(a => true)
+                    from a in model.Tasks
+                    where task.Id == a.TaskId
+                    where task.StatusCode != a.StatusCode
+                    select new { T = task, Status = a.StatusCode };
+
+                // todo database のNameを参照する？
+                var toStatusName = Fn.New<int, string>(x => x.ToGuards()
+                                                                .When(3, a => "Done")
+                                                                .When(2, a => "In Progress")
+                                                                .When(1, a => "Ready")
+                                                                .Return("Backlog"));
+                var user = eventAgg.GetEvent<GetUserEvent>().Get(x => x.Id.Equals(Context.CurrentUser.UserName)).First();
+                var date = DateTime.Now;
+                foreach (var item in query)
+                {
+                    var oldStatus = toStatusName(item.T.StatusCode);
+                    var newStatus = toStatusName(item.Status);
+                    var message = string.Format("Changed status: {0} -> {1}", oldStatus, newStatus);
+                    var comment = new TaskComment()
+                    {
+                        Who = user,
+                        Day = date,
+                        Text = message,
+                    };
+                    eventAgg.GetEvent<AddTaskCommentEvent>().Publish(comment, item.T.Id);
+                    item.T.StatusCode = item.Status;
+                    eventAgg.GetEvent<UpdateTaskEvent>().Publish(item.T);
+                }
+
+                return res;
+            };
         }
 
         private bool IsEnableUser(IEventAggregator eventAgg, IPermission permission)
@@ -406,6 +445,18 @@ namespace Tips.WebServer.Modules
         {
             public int TaskId { get; set; }
             public int RecordId { get; set; }
+        }
+
+        public class SaveTasksStatus
+        {
+            public int ProjectId { get; set; }
+            public TaskStatus[] Tasks { get; set; }
+        }
+
+        public class TaskStatus
+        {
+            public int TaskId { get; set; }
+            public int StatusCode { get; set; }
         }
     }
 
