@@ -190,6 +190,7 @@ namespace Tips.Model.Models
                 Records = records,
                 Comments = comments,
                 Assign = assign,
+                StatusCode = source.StatusCode,
             };
         }
 
