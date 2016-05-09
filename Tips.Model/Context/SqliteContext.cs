@@ -54,14 +54,16 @@ namespace Tips.Model.Context
                 //sql += ");";
                 //this.Database.ExecuteSqlCommand(sql);
                 //this.SaveChanges();
-                
+
                 //this.Database.ExecuteSqlCommand("CREATE TABLE DbTaskStatusMaster( Id INTEGER, Name TEXT, PRIMARY KEY (Id));");
-                //this.Database.ExecuteSqlCommand("ALTER TABLE DbTaskItem ADD (StatusCode INTEGER, FOREIGN KEY(StatusCode)REFERENCES DbTaskStatusMaster(Id));");
+                //this.Database.ExecuteSqlCommand("ALTER TABLE DbTaskItem RENAME TO DbTaskItemTemp;");
+                //this.Database.ExecuteSqlCommand("CREATE TABLE DbTaskItem( Id INTEGER, Name TEXT, Value REAL, StatusCode INTEGER, PRIMARY KEY (Id), FOREIGN KEY(StatusCode)REFERENCES DbTaskStatusMaster(Id));");
                 //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(0, 'Backlog');");
                 //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(1, 'Ready');");
                 //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(2, 'In Progress');");
                 //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(3, 'Done');");
-                //this.Database.ExecuteSqlCommand("UPDATE DbTaskItem SET StatusCode = 0;");
+                //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskItem SELECT NULL AS Id, DbTaskItemTemp.Name AS Name, DbTaskItemTemp.Value AS Value, 0 AS StatusCode FROM DbTaskItemTemp;");
+                //this.Database.ExecuteSqlCommand("DROP TABLE DbTaskItemTemp;");
 
                 //this.Database.ExecuteSqlCommand(sql);
                 //this.SaveChanges();
