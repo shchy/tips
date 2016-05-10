@@ -46,10 +46,11 @@ namespace Tips.Core.Services
         private string ToText(ITaskItem model)
         {
             return
-                string.Format(@"- {0} {1} {2}"
+                string.Format(@"- {0} {1} {2} {3}"
                     , model.Id.ToString("[00]")
                     , model.Name
-                    , model.Value.HasValue ? string.Format("@{0}pt",  model.Value) : "");
+                    , model.Value.HasValue ? string.Format("@{0}pt",  model.Value) : ""
+                    , string.Format("${0}", model.StatusCode));
         }
 
         public IEnumerable<ISprint> Make(string text)
@@ -129,6 +130,21 @@ namespace Tips.Core.Services
 
             var task = new TaskItem();
             var name = line.TrimStart().TrimStart('-');
+            
+            {
+                var reg = new Regex(@"$(\d))",
+                    RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
+                var values = findedList.Select(x => TryToInt(x.TrimStart('$'))).ToArray();
+
+                if (values.Any())
+                    task.StatusCode = values.Max();
+                name =
+                    findedList.Aggregate(
+                        name
+                        , (a, x) => a.Replace(x, string.Empty))
+                        .Trim();
+            }
 
             {
                 var reg = new Regex(@"(@(\d+\.\d+)pt|@(\d+\.\d+))|((@(\d+)pt|@(\d+)))",
