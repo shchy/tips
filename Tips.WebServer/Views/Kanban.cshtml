@@ -119,6 +119,7 @@
 }
 
 @helper ToListItem(ITaskWithRecord item){
+    var isCompleted = ModelExtensions.IsCompleted(item).ToString();
     var assignUserIcon = item.Assign != null ? @item.Assign.IconFile : "";
     var assignUserName = item.Assign != null ? @item.Assign.Name : "";
     var iconVisibility = item.Assign != null ? "visible" : "hidden";
@@ -126,10 +127,15 @@
     var assignUserLink = item.Assign != null ? @Url.Content(string.Format("~/user/{0}", @item.Assign.Id)) : taskLink;
     <li class="task-list-item" value="@item.Value" name="@item.Id">
         <div class="task-box">
-            <div class="task-box-header"><a href="@taskLink">@item.Id</a></div>
+            <div class="task-box-header">
+                <a href="@taskLink">
+                    <span class="glyphicon glyphicon-ok taskicon_done" isCompleted="@isCompleted" style="visibility:hidden;width:0"></span>
+                    @item.Id
+                </a>
+            </div>
             <hr>
             <div class="task-box-body">
-                <a href="@taskLink">@item.Name</a>
+                <a class="task-name" href="@taskLink" isCompleted="@isCompleted">@item.Name</a>
                 <hr>
                 <div class="task-box-footer">
                     <span class="glyphicon glyphicon-apple"></span><small>@(item.Value)pt</small>
@@ -307,6 +313,25 @@
                       $(".task-list-item").draggable(options);
                       updateListValues();
                   }
+              }
+          });
+
+          $('.task-name').each(function(){
+              var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
+              if (isCompleted == false) {
+                  return;
+              }
+              $(this).wrap('<s />');
+          });
+
+          $('.taskicon_done').each(function(){
+              var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
+              if (isCompleted == false) {
+                  $(this).css('visibility', 'hidden');
+                  $(this).css('width', '0');
+              }else {
+                  $(this).css('visibility', 'visible');
+                  $(this).css('width', 'auto');
               }
           });
 
