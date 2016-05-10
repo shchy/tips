@@ -151,6 +151,13 @@ namespace Tips.Model.Models.DbModels
     }
 
 
+    public class SchemaInfo
+    {
+        [Key]
+        public int Id { get; set; }
+        public int Version { get; set; }
+    }
+
     public static class DbModelExtension
     {
         public static DbProject ToDbModel(this IProject @this)

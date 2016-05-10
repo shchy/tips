@@ -58,6 +58,7 @@ namespace Tips.WebServer
                     , "db");
             existingContainer.RegisterType<IDataSource, SqliteContext>(
                 new InjectionConstructor(dbPath));
+            existingContainer.RegisterType<IDataBaseContextInitializer, SqliteContextInitializer>();
 
             existingContainer.RegisterType<IDataBaseSource<SqliteContext>, DataBaseSource<SqliteContext>>(
                 new InjectionConstructor(Fn.New(() => existingContainer.Resolve<IDataSource>() as SqliteContext)));
@@ -88,6 +89,9 @@ namespace Tips.WebServer
             // 認証設定
             EnableBasicAuth(container, pipelines);
             EnableFormAuth(container, pipelines);
+
+            // DBの初期化処理
+            container.Resolve<IDataBaseContextInitializer>().Initialize();
 
             // コントローラー群を起動
             this.controllers = MakeControllers(container).ToArray();
