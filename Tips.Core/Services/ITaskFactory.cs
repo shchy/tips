@@ -132,7 +132,7 @@ namespace Tips.Core.Services
             var name = line.TrimStart().TrimStart('-');
             
             {
-                var reg = new Regex(@"$(\d))",
+                var reg = new Regex(@"\$\d",
                     RegexOptions.IgnoreCase | RegexOptions.Singleline);
                 var findedList = reg.Matches(line).OfType<Match>().Select(x => x.Value);
                 var values = findedList.Select(x => TryToInt(x.TrimStart('$'))).ToArray();
