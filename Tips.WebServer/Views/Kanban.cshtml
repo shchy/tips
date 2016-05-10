@@ -1,0 +1,437 @@
+﻿@using Tips.Model.Models
+@{
+    Layout = "ProjectMaster.cshtml";
+}
+
+@section Projectcss{
+<link href="/css/jquery-ui/jquery-ui.min.css" rel="stylesheet">
+<style type="text/css">
+<!--
+.media:hover {background: lightblue;}
+.media {padding: 6px; margin:0px;}
+.panel-body {padding:0px;}
+.progress {margin-bottom:0px;}
+
+    .task-box {
+        align-content:center;
+        text-align:center;
+    }
+
+    .task-box-header {
+        margin-right:0;
+        margin-left:0;
+        position: relative;
+        width:100%;
+        background-color: #92d050;
+        border-color: #ddd;
+        border-width: 1px;
+        border-radius: 4px 4px 0 0;
+        box-shadow: none;
+        border-style: solid;
+        padding: 4px;
+        text-align:left;
+    }
+
+    .task-box-body {
+        padding-bottom:5px;
+        
+        margin-top: -5px;
+        margin-right: 1px;
+        margin-left: 1px;
+        color: #64584f;
+        background: #fff;
+        -webkit-border-bottom-left-radius: 4px;
+        -webkit-border-bottom-right-radius: 4px;
+        -moz-border-radius-bottomleft: 4px;
+        -moz-border-radius-bottomright: 4px;
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+        text-shadow: 0 1px 0 #fff;
+        -webkit-box-shadow: 0 1px 3px #9d9891;
+        -moz-box-shadow: 0 1px 3px #9d9891;
+        box-shadow: 0 1px 3px #9d9891;
+        border: 1px solid #f9f9f8;
+        behavior: url(PIE.htc);
+        padding: 8px;
+
+        text-align:left;
+        word-wrap:break-word;
+    }
+
+    .task-box hr {
+        margin: 0 5px 0 5px;
+        padding: 0;
+        border: 0;
+        height: 1px;
+        background: #b6b1a9;
+        -webkit-box-shadow: 0 1px 0 #fff;
+        -moz-box-shadow: 0 1px 0 #fff;
+        box-shadow: 0 1px 0 #fff;
+        behavior: url(PIE.htc);
+    }
+
+    .task-box-footer {
+        text-align:right;
+        vertical-align:bottom;
+        text-anchor:end;
+        position:relative;
+    }
+
+    .task-list {
+        list-style-type:none;
+        padding:0;
+    }
+
+    .task-list-item {
+        margin:0;
+        padding:0;
+        padding-bottom:5px;
+    }
+
+    #task-board {
+        table-layout:fixed;
+        min-height:450px;
+        height:100%;
+        background-color:lightyellow;
+    }
+    
+    #task-board thead {
+        text-align:center;
+        background-color:#ffd77a;
+    }
+
+    #task-board td {
+        border-left:1px solid #808080;
+        border-right:1px solid #808080;
+    }
+
+    .task-board-column {
+        border-left:1px solid #808080;
+        border-right:1px solid #808080;
+    }
+
+    .assign-icon {
+        float: left;
+        max-width:24px;
+    }
+
+    .assign {
+        position:absolute;
+        left:0;
+    }
+
+    .assign-name {
+        position:absolute;
+        bottom:0;
+        vertical-align:bottom text-bottom;
+    }
+
+    .tooltips {
+        bottom: 0;
+        vertical-align: bottom text-bottom;
+    }
+-->
+</style>
+}
+
+@helper ToListItem(ITaskWithRecord item){
+    var isCompleted = ModelExtensions.IsCompleted(item).ToString();
+    var progressValue = Enumerable.Sum(item.Records,(Func<ITaskRecord,double>)(x=>x.Value));
+    var workValue = Enumerable.Sum(item.Records,(Func<ITaskRecord,double>)(x=>x.WorkValue));
+    var cpi = string.Format("{0:0.0}", progressValue / workValue);
+    var assignUserIcon = item.Assign != null ? @item.Assign.IconFile : "";
+    var assignUserName = item.Assign != null ? @item.Assign.Name : "";
+    var iconVisibility = item.Assign != null ? "visible" : "hidden";
+    var taskLink = @Url.Content(string.Format("~/task/{0}", @item.Id));
+    var assignUserLink = item.Assign != null ? @Url.Content(string.Format("~/user/{0}", @item.Assign.Id)) : taskLink;
+    <li class="task-list-item" value="@item.Value" name="@item.Id">
+        <div class="task-box">
+            <div class="task-box-header">
+                <a href="@taskLink">
+                    <span class="glyphicon glyphicon-ok taskicon_done" isCompleted="@isCompleted" style="visibility:hidden;width:0"></span>
+                    @item.Id
+                </a>
+            </div>
+            <hr>
+            <div class="task-box-body">
+                <a class="task-name" href="@taskLink" isCompleted="@isCompleted">@item.Name</a>
+                <hr>
+                <div class="task-box-footer">
+                    <span class="tooltips">
+                        <span data-toggle="tooltip" data-original-title="value">
+                            <span class="glyphicon glyphicon-apple"></span><small>@(item.Value)pt</small>
+                        </span>
+                        <span data-toggle="tooltip" data-original-title="cpi">
+                            <span class="glyphicon glyphicon-scale"></span><small>@cpi</small>
+                        </span>
+                    </span>
+                    <a class="assign" href="@assignUserLink">
+                        <img src="@assignUserIcon" class="media-object img-circle assign-icon" style="visibility:@iconVisibility;" />
+                        <span class="assign-name">
+                            @if (assignUserName.Length <= 12)
+                            {
+                                @assignUserName
+                            }
+                            else
+                            {
+                                @string.Format("{0}...", assignUserName.Substring(0, 9))
+                            }
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </li>
+}
+
+<div style="text-align:right">
+    <button id="button-save" class="button">Save</button>
+</div>
+
+<table id="task-board" class="table">
+    <thead>
+        <tr>
+            <td>Backlog (<span id="value-of-backlog"></span>pt)</td>
+            <td>Ready (<span id="value-of-ready"></span>pt)</td>
+            <td>In Progress (<span id="value-of-inprogress"></span>pt)</td>
+            <td>Done (<span id="value-of-done"></span>pt)</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td id="backlog-column" class="task-board-column">
+                <ul id="backlog-list" class="task-list">
+                @foreach (var item in Model.BacklogTasks)
+                {
+                    @ToListItem(item);
+                }
+                </ul>
+            </td>
+            <td id="ready-column" class="task-board-column">
+                <ul id="ready-list" class="task-list">
+                @{
+                    foreach (var item in Model.ReadyTasks)
+                    {
+                        @ToListItem(item);
+                    }
+                }
+                </ul>
+            </td>
+            <td id="in-progress-column" class="task-board-column">
+                <ul id="in-progress-list" class="task-list">
+                @{
+                    foreach (var item in Model.InProgressTasks)
+                    {
+                        @ToListItem(item);
+                    }
+                }
+                </ul>
+            </td>
+            <td id="done-column" class="task-board-column">
+                <ul id="done-list" class="task-list">
+                @{
+                    foreach (var item in Model.DoneTasks)
+                    {
+                        @ToListItem(item);
+                    }
+                }
+                </ul>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+@*@Html.Partial("Sprint.cshtml", Model.Project)
+<a class="btn btn-default pull-right" href="~/project/@Model.Project.Id/edit" >Edit</a>*@
+
+@section ProjectJs{
+<script src="~/js/jquery-ui.min.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    function updateListValues() {
+        var backlogVal = 0;
+        var readyVal = 0;
+        var inProgressVal = 0;
+        var doneVal = 0;
+        $.each($('#backlog-list li'), function (index, elm) {
+            backlogVal += elm.value;
+        });
+        $.each($('#ready-list li'), function (index, elm) {
+            readyVal += elm.value;
+        });
+        $.each($('#in-progress-list li'), function (index, elm) {
+            inProgressVal += elm.value;
+        });
+        $.each($('#done-list li'), function (index, elm) {
+            doneVal += elm.value;
+        });
+
+        $('#value-of-backlog').html(backlogVal);
+        $('#value-of-ready').html(readyVal);
+        $('#value-of-inprogress').html(inProgressVal);
+        $('#value-of-done').html(doneVal);
+    }
+
+  $(function () {
+
+
+      $(document).ready(function () {
+          $('[data-toggle="tooltip"]').tooltip();
+          // #div1をdrag可能に
+          //$(".task-box").draggable();
+
+          options = {
+              revert: true,
+              zIndex: 100,
+              containment: $('#task-board tbody'),
+              handle: '.task-box-header',
+          };
+
+          $(".task-list-item").draggable(options);
+
+          $('#backlog-column').droppable({
+              drop: function (event, ui) {
+                  if (!$.contains($('#backlog-list').get(0), ui.draggable[0])) {
+                      var item = ui.draggable.clone();
+                      item[0].style.top = 0;
+                      item[0].style.left = 0;
+                      item[0].style.zIndex = 0;
+                      $('#backlog-list').append(item[0]);
+                      ui.draggable.remove();
+                      $(".task-list-item").draggable(options);
+                      updateListValues();
+                  }
+                  //window.setTimeout(function () {
+                  //    $('#one').swapWith($('#two'));
+                  //    $("li").draggable(options);
+                  //}, 600);
+              }
+          });
+
+          $('#ready-column').droppable({
+              drop: function (event, ui) {
+                  if (!$.contains($('#ready-list').get(0), ui.draggable[0])) {
+                      var item = ui.draggable.clone();
+                      item[0].style.top = 0;
+                      item[0].style.left = 0;
+                      item[0].style.zIndex = 0;
+                      $('#ready-list').append(item[0]);
+                      ui.draggable.remove();
+                      $(".task-list-item").draggable(options);
+                      updateListValues();
+                  }
+              }
+          });
+
+          $('#in-progress-column').droppable({
+              drop: function (event, ui) {
+                  if (!$.contains($('#in-progress-list').get(0), ui.draggable[0])) {
+                      var item = ui.draggable.clone();
+                      item[0].style.top = 0;
+                      item[0].style.left = 0;
+                      item[0].style.zIndex = 0;
+                      $('#in-progress-list').append(item[0]);
+                      ui.draggable.remove();
+                      $(".task-list-item").draggable(options);
+                      updateListValues();
+                  }
+              }
+          });
+
+          $('#done-column').droppable({
+              drop: function (event, ui) {
+                  if (!$.contains($('#done-list').get(0), ui.draggable[0])) {
+                      var item = ui.draggable.clone();
+                      item[0].style.top = 0;
+                      item[0].style.left = 0;
+                      item[0].style.zIndex = 0;
+                      $('#done-list').append(item[0]);
+                      ui.draggable.remove();
+                      $(".task-list-item").draggable(options);
+                      updateListValues();
+                  }
+              }
+          });
+
+          $('.task-name').each(function(){
+              var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
+              if (isCompleted == false) {
+                  return;
+              }
+              $(this).wrap('<s />');
+          });
+
+          $('.taskicon_done').each(function(){
+              var isCompleted = $(this).attr('isCompleted').toLowerCase() == 'true';
+              if (isCompleted == false) {
+                  $(this).css('visibility', 'hidden');
+                  $(this).css('width', '0');
+              }else {
+                  $(this).css('visibility', 'visible');
+                  $(this).css('width', 'auto');
+              }
+          });
+
+
+          updateListValues();
+      });
+
+      $('#button-save').click(function (e) {
+          var url = '@Url.Content("~/api/task/status/save")';
+
+          var backlogTasks = [];
+          var readyTasks = [];
+          var inProgressTasks = [];
+          var doneTasks = [];
+          var test = [
+              {"taskId" : 1, "statusCode": 0},
+              {"taskId" : 2, "statusCode": 1}
+          ];
+          var tasks = [];
+          $.each($('#backlog-list li'), function (index, elm) {
+              tasks.push({
+                  taskId: elm.attributes["name"].value,
+                  statusCode: 0,
+              });
+          });
+          $.each($('#ready-list li'), function (index, elm) {
+              tasks.push({
+                  taskId: elm.attributes["name"].value,
+                  statusCode: 1,
+              });
+          });
+          $.each($('#in-progress-list li'), function (index, elm) {
+              tasks.push({
+                  taskId: elm.attributes["name"].value,
+                  statusCode: 2,
+              });
+          });
+          $.each($('#done-list li'), function (index, elm) {
+              tasks.push({
+                  taskId: elm.attributes["name"].value,
+                  statusCode: 3,
+              });
+          });
+
+          var jsonData = {
+              projectId: @Model.Project.Id,
+              tasks: tasks,
+          };
+
+          postJson(url, jsonData, function () {
+              // do nothing
+          });
+      })
+
+      jQuery.fn.swapWith = function (to) {
+          return this.each(function () {
+              var copy_to = $(to).clone();
+              var copy_from = $(this).clone();
+              $(to).replaceWith(copy_from);
+              $(this).replaceWith(copy_to);
+          });
+      };
+
+  });
+</script>
+}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
@@ -26,6 +27,7 @@ namespace Tips.Model.Context
         DbSet<DbLinkProjectWithSprint> LinkProjectWithSprint { get; }
         DbSet<DbLinkSprintWithTask> LinkSprintWithTaskItem { get; }
         DbSet<DbLinkUserWithTaskItem> LinkUserWithTaskItem { get; }
+        DbSet<SchemaInfo> SchemaInfo { get; set; }
 
 
     }
@@ -43,7 +45,8 @@ namespace Tips.Model.Context
             }
             else
             {
-                //var sql = string.Empty;
+                var sql = string.Empty;
+
                 //sql += "create table DbLinkUserWithTaskItem(";
                 //sql += " UserId TEXT";
                 //sql += " ,TaskItemId INTEGER";
@@ -54,10 +57,21 @@ namespace Tips.Model.Context
                 //sql += ");";
                 //this.Database.ExecuteSqlCommand(sql);
                 //this.SaveChanges();
+
+                //this.Database.ExecuteSqlCommand("CREATE TABLE DbTaskStatusMaster( Id INTEGER, Name TEXT, PRIMARY KEY (Id));");
+                //this.Database.ExecuteSqlCommand("ALTER TABLE DbTaskItem RENAME TO DbTaskItemTemp;");
+                //this.Database.ExecuteSqlCommand("CREATE TABLE DbTaskItem( Id INTEGER, Name TEXT, Value REAL, StatusCode INTEGER, PRIMARY KEY (Id), FOREIGN KEY(StatusCode)REFERENCES DbTaskStatusMaster(Id));");
+                //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(0, 'Backlog');");
+                //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(1, 'Ready');");
+                //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(2, 'In Progress');");
+                //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(3, 'Done');");
+                //this.Database.ExecuteSqlCommand("INSERT INTO DbTaskItem SELECT NULL AS Id, DbTaskItemTemp.Name AS Name, DbTaskItemTemp.Value AS Value, 0 AS StatusCode FROM DbTaskItemTemp;");
+                //this.Database.ExecuteSqlCommand("DROP TABLE DbTaskItemTemp;");
+
+                //this.Database.ExecuteSqlCommand(sql);
+                //this.SaveChanges();
             }
         }
-
-        
 
         string MakeSchema()
         {
@@ -147,7 +161,12 @@ namespace Tips.Model.Context
             sql += " ,FOREIGN KEY(UserId)REFERENCES DbUser(Id)";
             sql += " ,FOREIGN KEY(TaskItemId)REFERENCES DbTaskItem(Id)";
             sql += ");";
-            
+            sql += "create table SchemaInfo(";
+            sql += " Id INTEGER";
+            sql += " ,Version INTEGER";
+            sql += " ,PRIMARY KEY (Id)";
+            sql += ");";
+
             return sql;
         }
 
@@ -182,7 +201,99 @@ namespace Tips.Model.Context
         public DbSet<DbLinkTaskItemWithRecord> LinkTaskItemWithRecord { get; set; }
         public DbSet<DbLinkTaskItemWithComment> LinkTaskItemWithComment { get; set; }
         public DbSet<DbLinkUserWithTaskItem> LinkUserWithTaskItem { get; set; }
+        public DbSet<SchemaInfo> SchemaInfo { get; set; }
 
+    }
+
+    public class SqliteContextHelper
+    {
+
+        public SqliteContextHelper()
+        {
+            Migrations = new Dictionary<int, IList<string>>();
+
+            MigrationVersion1();
+        }
+
+        public Dictionary<int, IList<string>> Migrations { get; set; }
+
+        private void MigrationVersion1()
+        {
+            var steps = new List<string>();
+
+            steps.Add("CREATE TABLE DbTaskStatusMaster( Id INTEGER, Name TEXT, PRIMARY KEY (Id));");
+            steps.Add("ALTER TABLE DbTaskItem RENAME TO DbTaskItemTemp;");
+            steps.Add("CREATE TABLE DbTaskItem( Id INTEGER, Name TEXT, Value REAL, StatusCode INTEGER, PRIMARY KEY (Id), FOREIGN KEY(StatusCode)REFERENCES DbTaskStatusMaster(Id));");
+            steps.Add("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(0, 'Backlog');");
+            steps.Add("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(1, 'Ready');");
+            steps.Add("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(2, 'In Progress');");
+            steps.Add("INSERT INTO DbTaskStatusMaster (Id, Name) VALUES(3, 'Done');");
+            steps.Add("INSERT INTO DbTaskItem SELECT NULL AS Id, DbTaskItemTemp.Name AS Name, DbTaskItemTemp.Value AS Value, 0 AS StatusCode FROM DbTaskItemTemp;");
+            steps.Add("DROP TABLE DbTaskItemTemp;");
+
+            // キーはVersionと対応
+            Migrations.Add(1, steps);
+        }
+
+    }
+
+    public class SqliteContextInitializer : IDataBaseContextInitializer
+    {
+        // tips DBのバージョン変更があるたびにインクリメント
+        public static int RequiredDatabaseVersion = 1;
+        private SqliteContext sqliteContext;
+
+        public SqliteContextInitializer(SqliteContext sqliteContext)
+        {
+            this.sqliteContext = sqliteContext;
+        }
+
+        public void Initialize()
+        {
+            // SchemaInfoの有無チェック
+            MakeSchemaInfo();
+
+            // DBのマイグレーション
+            var currentVersion = 0;
+            if (sqliteContext.SchemaInfo.Count() > 0)
+                currentVersion = sqliteContext.SchemaInfo.Max(x => x.Version);
+            SqliteContextHelper mmSqliteHelper = new SqliteContextHelper();
+            while (currentVersion < RequiredDatabaseVersion)
+            {
+                currentVersion++;
+                foreach (var migration in mmSqliteHelper.Migrations[currentVersion])
+                {
+                    sqliteContext.Database.ExecuteSqlCommand(migration);
+                }
+                sqliteContext.SchemaInfo.Add(new SchemaInfo() { Version = currentVersion });
+                sqliteContext.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// SchemaInfoテーブルを作成する
+        /// </summary>
+        private void MakeSchemaInfo()
+        {
+            var cursor = sqliteContext.Database.SqlQuery(typeof(int), @"SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'SchemaInfo'");
+            var iterator = cursor.GetEnumerator();
+            if (iterator.MoveNext() && ((int)iterator.Current <= 0))
+            {
+                var sql = string.Empty;
+                sql += "create table SchemaInfo(";
+                sql += " Id INTEGER";
+                sql += " ,Version INTEGER";
+                sql += " ,PRIMARY KEY (Id)";
+                sql += ");";
+                sqliteContext.Database.ExecuteSqlCommand(sql);
+                sqliteContext.SaveChanges();
+            }
+
+            // iteratorのインスタンスが生き残っているとマイグレーション中のDROP TABLEでtable locked errorが発生するためここで必ずメモリを掃除する
+            cursor = null;
+            iterator = null;
+            GC.Collect();
+        }
     }
 
     //public partial class UserDetailsMigration : DbMigration
@@ -191,6 +302,7 @@ namespace Tips.Model.Context
     //    public override void Up()
     //    {
     //    }
+
     //    public override void Down()
     //    {
     //    }

@@ -29,5 +29,7 @@ namespace Tips.Model.Context
         IPermission GetDeleteTaskRecordPermission(Tuple<int, int> taskAndRecord);
         IPermission GetDeleteProjectPermission();
         IPermission GetDeleteUserPermission();
+
+        void UpdateTask(ITaskItem task);
     }
 }

@@ -501,5 +501,14 @@ namespace Tips.Model.Context
 
             return permission;
         }
+
+        public void UpdateTask(ITaskItem task)
+        {
+            this.dbContext.Update(db =>
+            {
+                var model = task.ToDbModel();
+                db.TaskItems.AddOrUpdate(model);
+            });
+        }
     }
 }

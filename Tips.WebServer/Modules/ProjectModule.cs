@@ -116,6 +116,39 @@ namespace Tips.WebServer.Modules
 
                 return view.Return(() => Response.AsRedirect("/project/" + id));
             };
+            
+            Get["/{id}/kanban"] = prms =>
+            {
+                // projectid
+                var id = (int)prms.id;
+
+                var view =
+                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    let withrecord = this.AddIconFilePath(Request.Url, project)
+                let tasks =
+                        from sprint in withrecord.Sprints
+                        from task in sprint.Tasks
+                        select task as ITaskWithRecord
+                    let backlogTasks =
+                        from task in tasks
+                        where task.StatusCode == 0
+                        select task
+                    let readyTasks =
+                        from task in tasks
+                        where task.StatusCode == 1
+                        select task
+                    let inProgressTasks =
+                        from task in tasks
+                        where task.StatusCode == 2
+                        select task
+                    let doneTasks =
+                        from task in tasks
+                        where task.StatusCode == 3
+                        select task
+                    select View["Views/Kanban", new { Project = withrecord, BacklogTasks = backlogTasks.ToArray(), ReadyTasks = readyTasks.ToArray(), InProgressTasks = inProgressTasks.ToArray(), DoneTasks = doneTasks.ToArray()}] as object;
+
+                return view.Return(() => Response.AsRedirect("/project/" + id));
+            };
         }
     }
 }
