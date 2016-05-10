@@ -8,13 +8,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
+using Tips.Model.Context;
 using Tips.Model.Models;
 
 namespace Tips.WebServer.Modules
 {
     public class TaskModule : NancyModule
     {
-        public TaskModule(IEventAggregator eventAgg)
+        public TaskModule(
+            IDataBaseContext context)
             :base("/task/")
         {
             this.RequiresAuthentication();
@@ -24,11 +26,11 @@ namespace Tips.WebServer.Modules
                 var id = prms.id;
 
                 var task =
-                    eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(x => x.Id == id).FirstOrDefault();
+                    context.GetTaskRecords(x => x.Id == id).FirstOrDefault();
                 (task as TaskWithRecord).Assign = this.AddIconFilePath(Request.Url, task.Assign);
 
                 var user =
-                   eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
+                   context.GetUser(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
 
                 return View["Views/ProjectInTask"
                     , new
@@ -48,13 +50,13 @@ namespace Tips.WebServer.Modules
                 var jObj = JObject.Parse(json);
 
                 var query =
-                    from task in eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    from task in context.GetTaskRecords(x => x.Id == id).FirstOrNothing()
                     from userid in jObj["userid"].Value<string>().ToMaybe()
-                    from user in eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == userid).FirstOrNothing()
+                    from user in context.GetUser(u => u.Id == userid).FirstOrNothing()
                     select new { task, user };
                 query.On(a =>
                 {
-                    eventAgg.GetEvent<AddUserToTaskEvent>().Publish(a.user, a.task.Id);
+                    context.AddTaskToUser(a.user, a.task.Id);
                 });
 
                 var status = query.Select(_ => HttpStatusCode.OK);

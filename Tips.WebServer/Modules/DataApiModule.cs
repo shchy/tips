@@ -1,4 +1,6 @@
-﻿using Nancy;
+﻿using Haskellable.Code.Monads.Maybe;
+using Microsoft.Practices.Unity;
+using Nancy;
 using Nancy.Extensions;
 using Nancy.IO;
 using Nancy.ModelBinding;
@@ -15,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
 using Tips.Core.Services;
+using Tips.Model.Context;
 using Tips.Model.Models;
 using Tips.Model.Models.PermissionModels;
 
@@ -22,7 +25,10 @@ namespace Tips.WebServer.Modules
 {
     public class DataApiModule : NancyModule
     {   
-        public DataApiModule(IEventAggregator eventAgg) : base("/api/")
+        public DataApiModule(
+            IDataBaseContext context
+            , [Dependency("workdaySettingFolder")] string workdaySettingFolder) 
+            : base("/api/")
         {
             this.RequiresAuthentication();
 
@@ -31,7 +37,7 @@ namespace Tips.WebServer.Modules
             {
                 return
                     Response.AsJson(
-                        eventAgg.GetEvent<GetUserEvent>().Get(p => true)
+                        context.GetUser(p => true)
                         .Select(u => this.AddIconFilePath(this.Request.Url, u))
                         .ToArray());
             };
@@ -39,7 +45,9 @@ namespace Tips.WebServer.Modules
             Get["/projects/"] = _ =>
             {
                 return
-                    Response.AsJson(eventAgg.GetEvent<GetProjectEvent>().Get(p => true).ToArray());
+                    Response.AsJson(context.GetProjects(p => true)
+                        .Select(p => MyClass.ToWithRecordsProject(context, p))
+                        .ToArray());
             };
 
             Get["/project/{id}/report"] = prms =>
@@ -68,8 +76,8 @@ namespace Tips.WebServer.Modules
                 //}
 
                 var query =
-                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
-                    from workdayContext in eventAgg.GetEvent<GetWorkdayContextEvent>().Get(id)
+                    from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
+                    from workdayContext in MyClass.GetWorkdayContext(workdaySettingFolder, id)
                     let sprintToGraphModel = new SprintToGraphModel(workdayContext)
                     select new { project, sprintToGraphModel };
                 var view = query.Select(q =>
@@ -142,7 +150,7 @@ namespace Tips.WebServer.Modules
                 var id = (int)prms.id;
 
                 var query =
-                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
                     let records =
                         from sprint in project.Sprints
                         from task in sprint.Tasks.OfType<ITaskWithRecord>()
@@ -166,7 +174,7 @@ namespace Tips.WebServer.Modules
             {
                 return
                     Response.AsJson(
-                        eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(p => true).Select(t=>
+                        context.GetTaskRecords(p => true).Select(t=>
                         {
                             (t as TaskWithRecord).Records = t.Records.Select(r =>
                                 {
@@ -181,7 +189,7 @@ namespace Tips.WebServer.Modules
             {
                 //var model = this.Bind<User>();
                 var model = JsonConvert.DeserializeObject<User>(this.Request.Body.ToStreamString());
-                eventAgg.GetEvent<AddUserEvent>().Publish(model);
+                context.AddUser(model);
 
                 return Response.AsJson(new { }, HttpStatusCode.OK);
             }; 
@@ -194,13 +202,14 @@ namespace Tips.WebServer.Modules
                     //var model = this.Bind<AddUserWithIcon>();
                     var model = JsonConvert.DeserializeObject<AddUserWithIcon>(this.Request.Body.ToStreamString());
                     var targetUser =
-                        eventAgg.GetEvent<GetUserEvent>().Get(p => p.Id == model.UserId).FirstOrDefault();
+                        context.GetUser(p => p.Id == model.UserId).FirstOrDefault();
                     if (targetUser == null)
                     {
                         return HttpStatusCode.BadRequest;
                     }
-
-                    eventAgg.GetEvent<AddUserIconEvent>().Publish(model);
+                    
+                    var bytes = Convert.FromBase64String(model.Base64BytesByImage);
+                    context.AddUserIcon(targetUser, bytes);
 
                     return Response.AsJson(new { }, HttpStatusCode.OK);
                 }
@@ -218,7 +227,7 @@ namespace Tips.WebServer.Modules
                     Project.FromJson(this.Request.Body.ToStreamString())
                     .ToMaybe();
 
-                project.On(eventAgg.GetEvent<UpdateProjectEvent>().Publish);
+                project.On(context.AddProject);
 
                 return Response.AsJson(new { }, project.IsSomething ? HttpStatusCode.OK : HttpStatusCode.InternalServerError);
             };
@@ -228,14 +237,14 @@ namespace Tips.WebServer.Modules
                 //var model = this.Bind<AddTaskComment>();
                 var json = this.Request.Body.ToStreamString();
                 var model = JsonConvert.DeserializeObject<AddTaskComment>(json);
-                eventAgg.GetEvent<AddTaskCommentEvent>().Publish(model.Comment, model.TaskId);
+                context.AddTaskComment(model.Comment, model.TaskId);
 
                 return Response.AsJson(json, HttpStatusCode.OK);
             };
             Post["/task/record/"] = _ =>
             {
                 var model = JsonConvert.DeserializeObject<AddTaskRecord>(this.Request.Body.ToStreamString());
-                eventAgg.GetEvent<AddTaskRecordEvent>().Publish(model.Record, model.TaskId);
+                context.AddTaskRecord(model.Record, model.TaskId);
 
                 return Response.AsJson(new { }, HttpStatusCode.OK);
             };
@@ -247,14 +256,16 @@ namespace Tips.WebServer.Modules
                 var jObj = JObject.Parse(json);
                 var projectId = jObj["projectid"].Value<int>();
                 var permission =
-                    eventAgg.GetEvent<GetDeleteProjectPermissionEvent>().Get().Return();
+                    context.GetDeleteProjectPermission();
 
-                if (IsEnableUser(eventAgg, permission))
+                if (IsEnableUser(context, permission))
                 {
                     var project =
-                    eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == projectId).FirstOrNothing();
+                    context.GetProjects(x => x.Id == projectId)
+                        .Select(p => MyClass.ToWithRecordsProject(context, p))
+                        .FirstOrNothing();
 
-                    project.On(eventAgg.GetEvent<DeleteProjectEvent>().Publish);
+                    project.On(context.DeleteProject);
                 }
                 else res = HttpStatusCode.Forbidden;
 
@@ -268,14 +279,14 @@ namespace Tips.WebServer.Modules
                 var jObj = JObject.Parse(json);
                 var userId = jObj["userid"].Value<string>();
                 var permission =
-                    eventAgg.GetEvent<GetDeleteUserPermissionEvent>().Get().Return();
+                    context.GetDeleteUserPermission();
 
-                if (IsEnableUser(eventAgg, permission))
+                if (IsEnableUser(context, permission))
                 {
                     var user =
-                        eventAgg.GetEvent<GetUserEvent>().Get(x => x.Id.Equals(userId)).FirstOrNothing();
+                        context.GetUser(x => x.Id.Equals(userId)).FirstOrNothing();
 
-                    user.On(eventAgg.GetEvent<DeleteUserEvent>().Publish);
+                    user.On(context.DeleteUser);
                 }
                 else res = HttpStatusCode.Forbidden;
 
@@ -287,20 +298,20 @@ namespace Tips.WebServer.Modules
                 var res = Response.AsJson(new { }, HttpStatusCode.OK);
                 var model = JsonConvert.DeserializeObject<DeleteTaskRecord>(this.Request.Body.ToStreamString());
                 var permission =
-                    eventAgg.GetEvent<GetDeleteTaskRecordPermissionEvent>().Get(Tuple.Create(model.TaskId, model.RecordId)).Return();
+                    context.GetDeleteTaskRecordPermission(Tuple.Create(model.TaskId, model.RecordId));
 
                 var taskWithRecord =
-                    eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(x => x.Id.Equals(model.TaskId)).FirstOrNothing();
+                    context.GetTaskRecords(x => x.Id.Equals(model.TaskId)).FirstOrNothing();
                 
                 taskWithRecord.On(task =>
                 {
-                    if (!IsEnableUser(eventAgg, permission))
+                    if (!IsEnableUser(context, permission))
                     {
                         // not permitted
                         res = Response.AsJson(new { }, HttpStatusCode.Forbidden);
                         return;
                     }
-                    eventAgg.GetEvent<DeleteTaskRecordEvent>().Publish(task, model.RecordId);
+                    context.DeleteTaskRecord(task, model.RecordId);
                 });
 
                 return res;
@@ -312,7 +323,7 @@ namespace Tips.WebServer.Modules
                 var model = JsonConvert.DeserializeObject<SaveTasksStatus>(this.Request.Body.ToStreamString());
 
                 var query =
-                    from task in eventAgg.GetEvent<GetTaskWithRecordEvent>().Get(a => true)
+                    from task in context.GetTaskRecords(a => true)
                     from a in model.Tasks
                     where task.Id == a.TaskId
                     where task.StatusCode != a.StatusCode
@@ -324,7 +335,7 @@ namespace Tips.WebServer.Modules
                                                                 .When(2, a => "In Progress")
                                                                 .When(1, a => "Ready")
                                                                 .Return("Backlog"));
-                var user = eventAgg.GetEvent<GetUserEvent>().Get(x => x.Id.Equals(Context.CurrentUser.UserName)).First();
+                var user = context.GetUser(x => x.Id.Equals(Context.CurrentUser.UserName)).First();
                 var date = DateTime.Now;
                 foreach (var item in query)
                 {
@@ -337,22 +348,22 @@ namespace Tips.WebServer.Modules
                         Day = date,
                         Text = message,
                     };
-                    eventAgg.GetEvent<AddTaskCommentEvent>().Publish(comment, item.T.Id);
+                    context.AddTaskComment(comment, item.T.Id);
                     item.T.StatusCode = item.Status;
-                    eventAgg.GetEvent<UpdateTaskEvent>().Publish(item.T);
+                    context.UpdateTask(item.T);
                 }
 
                 return res;
             };
         }
 
-        private bool IsEnableUser(IEventAggregator eventAgg, IPermission permission)
+        private bool IsEnableUser(IDataBaseContext context, IPermission permission)
         {
             var query =
                 from current in this.Context.CurrentUser.ToMaybe()
                 from name in current.UserName.ToMaybe()
                 from user in
-                    (from u in eventAgg.GetEvent<GetUserEvent>().Get(x => x.Id.Equals(name))
+                    (from u in context.GetUser(x => x.Id.Equals(name))
                      select u).FirstOrNothing()
                 where permission.IsPermittedDelete(user)
                 select true;
@@ -505,19 +516,55 @@ namespace Tips.WebServer.Modules
               }));
             return project;
         }
+
+        public static IProject ToWithRecordsProject(IDataBaseContext context, IProject project)
+        {
+            // hack BindするためにSprintのITaskItemをITaskWithRecordに差し替える。
+            var taskWithRecords = context.GetTaskRecords(_ => true).ToArray();
+            var getWithTask = Fn.New((ITaskItem t) =>
+            {
+                var finded = taskWithRecords.FirstOrDefault(x => x.Id == t.Id);
+                if (finded == null)
+                {
+                    return t;
+                }
+                //(finded as TaskWithRecord).Assign = this.AddIconFilePath(this.Request.Url, finded.Assign);
+                return finded;
+            });
+            var toWithRecords = Fn.New((ISprint s) =>
+            {
+                var sprint = s as Sprint;
+                sprint.Tasks =
+                    sprint.Tasks.Select(getWithTask).ToArray();
+                return sprint;
+            });
+            var toWithRecordsProject = Fn.New((IProject p) =>
+            {
+                p.Sprints = p.Sprints.Select(toWithRecords).ToArray();
+                return p;
+            });
+
+            return toWithRecordsProject(project);
+        }
+
+
+        public static IMaybe<IWorkdayContext> GetWorkdayContext(string workdaySettingFolder, int projectId)
+        {
+            var context = new WorkdayContext(Path.Combine(workdaySettingFolder, projectId + ".json"));
+            return (context as IWorkdayContext).ToMaybe();
+        }
     }
 
     public class LoginApiModule : NancyModule
     {
-        public LoginApiModule(IEventAggregator eventAgg) : base("/api/")
+        public LoginApiModule(IDataBaseContext context) : base("/api/")
         {
             Post["/login/"] = _ =>
             {
                 var model = this.Bind<User>();
 
                 var user =
-                    eventAgg.GetEvent<GetUserEvent>()
-                    .Get(u => u.Id == model.Id && u.Password == model.Password)
+                    context.GetUser(u => u.Id == model.Id && u.Password == model.Password)
                     .FirstOrDefault();
 
                 return

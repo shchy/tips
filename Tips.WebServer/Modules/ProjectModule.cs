@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
 using Tips.Core.Services;
+using Tips.Model.Context;
 using Tips.Model.Models;
 
 namespace Tips.WebServer.Modules
@@ -16,13 +17,11 @@ namespace Tips.WebServer.Modules
     // memo 特定のプロジェクトを開いている時はModelにProjectをいれるとMenuBarのprojectManageボタンが使える
     public class ProjectModule : NancyModule
     {
-        private IEventAggregator eventAgg;
-
-        public ProjectModule(IEventAggregator eventAgg, ITaskToTextFactory taskToText)
+        public ProjectModule(
+            IDataBaseContext context
+            , ITaskToTextFactory taskToText)
             : base("/project/")
         {
-            this.eventAgg = eventAgg;
-            
             this.RequiresAuthentication();
 
             Get["/create"] = prms =>
@@ -36,11 +35,11 @@ namespace Tips.WebServer.Modules
                 var id = prms.id;
                 
                 var project =
-                    eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrDefault();
+                    context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrDefault();
                 var withRecord = this.AddIconFilePath(Request.Url,project);
 
                 var user =
-                   eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
+                   context.GetUser(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
                 
                 return View["Views/Project", new { Auth = user, Project = withRecord }];
             };
@@ -57,12 +56,12 @@ namespace Tips.WebServer.Modules
                 var id = prms.id;
 
                 var project =
-                    eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrDefault();
+                    context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrDefault();
 
                 var sprintText = taskToText.Make(project.Sprints);
 
                 var user =
-                   eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
+                   context.GetUser(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
 
                 return View["Views/ProjectEdit"
                     , new
@@ -79,7 +78,7 @@ namespace Tips.WebServer.Modules
                 var id = prms.id;
 
                 var project =
-                    eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrDefault();
+                    context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrDefault();
                 // todo 競合や削除の警告
 
                 var json = this.Request.Body.ToStreamString();
@@ -87,7 +86,7 @@ namespace Tips.WebServer.Modules
                 var sprints = taskToText.Make(jObj["edittext"].Value<string>());
                 
                 project.Sprints = sprints;
-                eventAgg.GetEvent<UpdateProjectEvent>().Publish(project);
+                context.AddProject(project);
 
                 //var user =
                 //   eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
@@ -100,7 +99,7 @@ namespace Tips.WebServer.Modules
                 var id = (int)prms.id;
 
                 var view =
-                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
                     select View["Views/ProjectReport", new { Project = project }] as object;
 
                 return view.Return(() => Response.AsRedirect("/project/" + id));
@@ -111,7 +110,7 @@ namespace Tips.WebServer.Modules
                 var id = (int)prms.id;
 
                 var view =
-                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
                     select View["Views/ProjectWorks", new { Project = project }] as object;
 
                 return view.Return(() => Response.AsRedirect("/project/" + id));
@@ -123,7 +122,7 @@ namespace Tips.WebServer.Modules
                 var id = (int)prms.id;
 
                 var view =
-                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
                     let withrecord = this.AddIconFilePath(Request.Url, project)
                 let tasks =
                         from sprint in withrecord.Sprints

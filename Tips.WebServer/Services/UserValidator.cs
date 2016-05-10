@@ -10,24 +10,26 @@ using Tips.Core.Events;
 using Tips.Model.Models;
 using Nancy.Authentication.Forms;
 using Nancy;
+using Tips.Model.Context;
 
 namespace Tips.WebServer.Services
 {
     public class UserValidator : IUserValidator, IUserMapper
     {
-        private IEventAggregator eventAgg;
+        private IDataBaseContext context;
         private Dictionary<string, Guid> formAuthCache;
 
-        public UserValidator(IEventAggregator eventAgg)
+        public UserValidator(
+            IDataBaseContext context)
         {
-            this.eventAgg = eventAgg;
+            this.context = context;
             this.formAuthCache = new Dictionary<string, Guid>();
         }
 
         public IUserIdentity GetUserFromIdentifier(Guid identifier, NancyContext context)
         {
             var authed =
-                from u in this.eventAgg.GetEvent<GetUserEvent>().Get(_ => true)
+                from u in this.context.GetUser(_ => true)
                 let guid = ToGuid(u)
                 where guid == identifier
                 select ToBasicModel(u);
@@ -46,8 +48,7 @@ namespace Tips.WebServer.Services
         public IUserIdentity Validate(string username, string password)
         {
             return
-                this.eventAgg.GetEvent<GetUserEvent>()
-                    .Get(u => u.Id == username && u.Password == password)
+                this.context.GetUser(u => u.Id == username && u.Password == password)
                     .Select(ToBasicModel)
                     .FirstOrDefault();
         }
