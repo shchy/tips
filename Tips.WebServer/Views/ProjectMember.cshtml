@@ -1,0 +1,183 @@
+﻿@{
+  Layout = "ProjectMaster.cshtml";
+}
+
+
+@section Projectcss{
+<style type="text/css">
+<!--
+.panel-footer {padding: 1px 15px}
+.panel-footer blockquote{margin: 0px; padding: 0px;}
+.btn-user-delete {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    display: block;
+    padding: 5px 8px;
+    font-size: 12px;
+    color: #767676;
+    cursor: pointer;
+    background-color: #fff;
+    border: 1px solid #e1e1e8;
+    border-radius: 0 4px 0 4px;
+}
+
+    .img-rounded {
+        max-width:100px;
+        max-height:100px;
+    }
+-->
+</style>
+}
+
+<div class="row">
+  <div class="col-md-12">
+      <div class="form-inline">
+          <a id="btn-add-member" class="btn btn-default pull-right" href="javascript:void(0)">Add Member</a>
+          <div class="form-group pull-right">
+              <input type="text" class="form-control" id="userId" placeholder="UserId">
+          </div>
+      </div>
+    </div>
+</div>
+
+<br />
+
+<div id="member-list" />
+
+@*@foreach(var user in @Model.Users){
+<div class="panel panel-default">
+  <div class="panel-body" style="position: relative">
+    <div class="row">
+      <div class="col-md-1" >
+        <img src="@user.IconFile" class="img-rounded img-responsive" />
+      </div>
+      <div class="col-md-11">
+        <a href="@Url.Content(string.Format("~/user/{0}", @user.Id))">@user.Name</a>
+      </div>
+      <button id="deleteCommand" type="button" class="btn btn-default btn-lg btn-user-delete" value="@user.Id">
+          <span class="glyphicon glyphicon-remove-sign"></span>
+      </button>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <blockquote class="blockquote-reverse">
+      @user.Id @user.Role
+    </blockquote>
+  </div>
+</div>
+}*@
+
+
+@section ProjectJs{
+<script src="~/js/jquery-ui.min.js"></script>
+<script src="~/js/typeahead.bundle.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+
+        // 検索関数を返す関数
+        var substringMatcher = function (strs) {
+            return function findMatches(q, cb) {
+                var matches, substringRegex;
+
+                // an array that will be populated with substring matches
+                matches = [];
+
+                // regex used to determine if a string contains the substring `q`
+                substrRegex = new RegExp(q, 'i');
+
+                // iterate through the pool of strings and for any string that
+                // contains the substring `q`, add it to the `matches` array
+                $.each(strs, function (i, str) {
+                    if (substrRegex.test(str)) {
+                        matches.push(str);
+                    }
+                });
+
+                cb(matches);
+            };
+        };
+
+        function setupAutoComplete() {
+            var jsonData = {
+            };
+            getJson('@Url.Content("~/api/users")', jsonData, function (data) {
+
+                var data =
+                  $(data).map(function () {
+                      return this.id;
+                  });
+
+
+                $('#userId').typeahead({
+                    hint: true,
+                    highlight: true,
+                    minLength: 1
+                },
+                {
+                    name: 'userId',
+                    source: substringMatcher(data)
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            // メンバー取得＆表示
+            viewMembers();
+            // ユーザIDのオートコンプリート
+            clearTypeahead();
+            setupAutoComplete();
+        });
+
+
+
+        $('#btn-add-member').click(function (e) {
+            var url = '@Url.Content("~/api/project/members/add")';
+            var jsonData = {
+                projectId : @Model.Project.Id,
+                userId : $('#userId').val()
+            };
+
+            postJson(url, jsonData, function (data) {
+                document.location.reload();
+            });
+        });
+    });
+
+    function viewMembers() {
+        var url = '@Url.Content("~/api/project/" + @Model.Project.Id + "/members")';
+        var jsonData = {
+        };
+
+        getJson(url, jsonData, function (data) {
+            $.each(data, function (index, user) {
+                var visibleIcon = user.iconFile != null ? 'visible' : 'hidden';
+                $('#member-list').append(' \
+                    <div class="panel panel-default"> \
+                      <div class="panel-body" style="position:relative"> \
+                        <div class="row"> \
+                          <div class="col-md-1" > \
+                            <img src="' + user.iconFile + '" class="img-rounded img-responsive" style="visibility:' + visibleIcon + '" /> \
+                          </div> \
+                          <div class="col-md-11"> \
+                            <a href="@Url.Content("~/user/")' + user.id + '">' + user.name + '</a> \
+                          </div> \
+                          <button id="deleteCommand" type="button" class="btn btn-default btn-lg btn-user-delete" value="' + user.id + '"> \
+                              <span class="glyphicon glyphicon-remove-sign"></span> \
+                          </button> \
+                        </div> \
+                      </div> \
+                      <div class="panel-footer"> \
+                        <blockquote class="blockquote-reverse"> \
+                          ' + user.id + ' \
+                        </blockquote> \
+                      </div> \
+                    </div> \
+                ');
+            });
+        });
+    }
+
+</script>
+}

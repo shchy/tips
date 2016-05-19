@@ -264,5 +264,20 @@ namespace Tips.Model.Context
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<IUser> GetUserOfProject(int projectId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IProject GetProjectFromTask(int taskId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddProjectMember(IUser user, int projectId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

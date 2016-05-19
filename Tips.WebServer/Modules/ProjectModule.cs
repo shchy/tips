@@ -148,6 +148,17 @@ namespace Tips.WebServer.Modules
 
                 return view.Return(() => Response.AsRedirect("/project/" + id));
             };
+            
+            Get["/{id}/member"] = prms =>
+            {
+                var id = (int)prms.id;
+
+                var view =
+                    from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
+                    select View["Views/ProjectMember", new { Project = project }] as object;
+
+                return view.Return(() => Response.AsRedirect("/project/" + id));
+            };
         }
     }
 }

@@ -510,5 +510,67 @@ namespace Tips.Model.Context
                 db.TaskItems.AddOrUpdate(model);
             });
         }
+
+        public IEnumerable<IUser> GetUserOfProject(int projectId)
+        {
+            return
+                this.dbContext.Get(db =>
+                {
+                    var userIds = db.LinkProjectWithUser
+                                    .Where(x => x.ProjectId == projectId)
+                                    .Select(x => x.UserId)
+                                    .ToArray();
+                    return
+                        db.Users.Where(x => userIds.Contains(x.Id))
+                        .ToArray();
+                });
+        }
+
+        public IProject GetProjectFromTask(int taskId)
+        {
+            return
+                this.dbContext.Get(db =>
+                {
+                    // プロジェクトを取得
+                    var query =
+                        from ts in db.LinkSprintWithTaskItem
+                        from sp in db.LinkProjectWithSprint
+                        from project in db.Projects
+                        where ts.TaskItemId == taskId
+                        where sp.SprintId == ts.SprintId
+                        where project.Id == sp.ProjectId
+                        select project;
+                    
+                    var p = query.FirstOrDefault();
+                    if (p == default(IProject))
+                        return default(IProject);
+
+                    return
+                        this.GetProjects(x => x.Id == p.Id).First();
+                });
+        }
+
+        public void AddProjectMember(IUser user, int projectId)
+        {
+            this.dbContext.Update(db =>
+            {
+                var project =
+                    db.Projects.FirstOrDefault(x => x.Id == projectId);
+
+                var isExist =
+                    db.LinkProjectWithUser
+                    .Any(link => link.ProjectId == projectId 
+                                && link.UserId == user.Id);
+
+                if (project != (default(DbProject)) && !isExist)
+                {
+                    var link = new DbLinkProjectWithUser();
+                    link.ProjectId = projectId;
+                    link.UserId = user.Id;
+                    db.LinkProjectWithUser.AddOrUpdate(link);
+                    db.SaveChanges();
+                }
+            });
+        }
     }
 }

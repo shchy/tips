@@ -355,6 +355,36 @@ namespace Tips.WebServer.Modules
 
                 return res;
             };
+
+            Get["/project/{id}/members"] = prms =>
+            {
+                var id = (int)prms.id;
+                var users =
+                    context.GetUserOfProject(id)
+                            .Select(u => this.AddIconFilePath(this.Request.Url, u))
+                            .ToArray();
+
+                return
+                    Response.AsJson(users, HttpStatusCode.OK);
+            };
+
+            Post["/project/members/add"] = prms =>
+            {
+                var json = this.Request.Body.ToStreamString();
+                var jObj = JObject.Parse(json);
+                var projectId = jObj["projectId"].Value<int>();
+                var userId = jObj["userId"].Value<string>();
+                var user =
+                    context.GetUser(x => x.Id == userId).FirstOrDefault();
+
+                if (user == default(IUser))
+                    return Response.AsJson(new { }, HttpStatusCode.BadRequest);
+
+                context.AddProjectMember(user, projectId);
+
+                return
+                    Response.AsJson(new { }, HttpStatusCode.OK);
+            };
         }
 
         private bool IsEnableUser(IDataBaseContext context, IPermission permission)

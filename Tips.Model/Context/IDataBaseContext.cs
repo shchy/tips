@@ -17,6 +17,7 @@ namespace Tips.Model.Context
         void AddTaskComment(ITaskComment comment, int taskId);
         void AddTaskRecord(ITaskRecord record, int taskId);
         void AddTaskToUser(IUser user, int taskId);
+        void AddProjectMember(IUser user, int projectId);
 
         IEnumerable<IUser> GetUser(Func<IUser, bool> predicate = null);
         IEnumerable<IProject> GetProjects(Func<IProject, bool> predicate = null);
@@ -29,6 +30,9 @@ namespace Tips.Model.Context
         IPermission GetDeleteTaskRecordPermission(Tuple<int, int> taskAndRecord);
         IPermission GetDeleteProjectPermission();
         IPermission GetDeleteUserPermission();
+
+        IEnumerable<IUser> GetUserOfProject(int projectId);
+        IProject GetProjectFromTask(int taskId);
 
         void UpdateTask(ITaskItem task);
     }

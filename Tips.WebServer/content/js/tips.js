@@ -50,3 +50,15 @@ function readFile(file, callback)
   };
   r.readAsDataURL( file.files[0] );
 }
+
+function clearTypeahead()
+{
+    localStorage.removeItem("__names__adjacencyList");
+    localStorage.removeItem("__names__adjacencyList__ttl__");
+    localStorage.removeItem("__names__itemHash");
+    localStorage.removeItem("__names__itemHash__ttl__");
+    localStorage.removeItem("__names__protocol");
+    localStorage.removeItem("__names__protocol__ttl__");
+    localStorage.removeItem("__names__thumbprint");
+    localStorage.removeItem("__names__thumbprint__ttl__");
+}

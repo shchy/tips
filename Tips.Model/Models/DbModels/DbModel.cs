@@ -150,6 +150,12 @@ namespace Tips.Model.Models.DbModels
         public int IsDeleted { get; set; }
     }
 
+    public class DbLinkProjectWithUser
+    {
+        public int Id { get; set; }
+        public int ProjectId { get; set; }
+        public string UserId { get; set; }
+    }
 
     public class SchemaInfo
     {

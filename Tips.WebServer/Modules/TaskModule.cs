@@ -29,6 +29,9 @@ namespace Tips.WebServer.Modules
                     context.GetTaskRecords(x => x.Id == id).FirstOrDefault();
                 (task as TaskWithRecord).Assign = this.AddIconFilePath(Request.Url, task.Assign);
 
+                var project =
+                    context.GetProjectFromTask(id);
+
                 var user =
                    context.GetUser(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
 
@@ -37,6 +40,7 @@ namespace Tips.WebServer.Modules
                     {
                         Auth = user,
                         Task = task,
+                        Project = project,
                         Progress = (task.Records.Sum(x=>x.Value) / task.Value) * 100.0,
                         ProgressValue = task.Records.Sum(x => x.Value),
                     }];

@@ -170,12 +170,14 @@
     };
 
     function setupAutoComplete(){
-      getJson('@Url.Content("~/api/users/")', function(data){
+      var jsonData = {
+      };
+      getJson('@Url.Content("~/api/project/" + Model.Project.Id + "/members")', jsonData, function(data){
 
         var data =
           $(data).map(function(){
-            return this.id;
-          });
+                  return this.id;
+              });
 
 
         $('#userId').typeahead({
@@ -191,7 +193,7 @@
     }
 
     $( document ).ready( function() {
-
+      clearTypeahead();
       setupAutoComplete();
 
     });
