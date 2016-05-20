@@ -625,5 +625,18 @@ namespace Tips.Model.Context
 
             return permission;
         }
+
+        public IPermission GetAccessProjectPermission(int projectId)
+        {
+            var permission = new AccessProjectPermission();
+
+            // プロジェクトメンバーを取得
+            var users = GetUserOfProject(projectId);
+
+            // プロジェクトメンバーに権限を付与
+            users.ForEach(u => permission.Others.Add(u.Id, true));
+
+            return permission;
+        }
     }
 }

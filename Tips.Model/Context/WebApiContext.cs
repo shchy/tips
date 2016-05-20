@@ -294,5 +294,10 @@ namespace Tips.Model.Context
         {
             throw new NotImplementedException();
         }
+
+        public IPermission GetAccessProjectPermission(int projectId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

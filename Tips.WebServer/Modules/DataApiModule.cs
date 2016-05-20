@@ -237,6 +237,12 @@ namespace Tips.WebServer.Modules
                 //var model = this.Bind<AddTaskComment>();
                 var json = this.Request.Body.ToStreamString();
                 var model = JsonConvert.DeserializeObject<AddTaskComment>(json);
+                var project = context.GetProjectFromTask(model.TaskId);
+                var permission = context.GetAccessProjectPermission(project.Id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 context.AddTaskComment(model.Comment, model.TaskId);
 
                 return Response.AsJson(json, HttpStatusCode.OK);
@@ -244,6 +250,12 @@ namespace Tips.WebServer.Modules
             Post["/task/record/"] = _ =>
             {
                 var model = JsonConvert.DeserializeObject<AddTaskRecord>(this.Request.Body.ToStreamString());
+                var project = context.GetProjectFromTask(model.TaskId);
+                var permission = context.GetAccessProjectPermission(project.Id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 context.AddTaskRecord(model.Record, model.TaskId);
 
                 return Response.AsJson(new { }, HttpStatusCode.OK);
@@ -321,6 +333,10 @@ namespace Tips.WebServer.Modules
             {
                 var res = Response.AsJson(new { }, HttpStatusCode.OK);
                 var model = JsonConvert.DeserializeObject<SaveTasksStatus>(this.Request.Body.ToStreamString());
+                var permission = context.GetAccessProjectPermission(model.ProjectId);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
 
                 var query =
                     from task in context.GetTaskRecords(a => true)

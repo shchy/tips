@@ -11,6 +11,7 @@ using Tips.Core.Events;
 using Tips.Core.Services;
 using Tips.Model.Context;
 using Tips.Model.Models;
+using Tips.Model.Models.PermissionModels;
 
 namespace Tips.WebServer.Modules
 {
@@ -36,6 +37,12 @@ namespace Tips.WebServer.Modules
                 
                 var project =
                     context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrDefault();
+                
+                var permission = context.GetAccessProjectPermission(project.Id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 var withRecord = this.AddIconFilePath(Request.Url,project);
 
                 var user =
@@ -58,6 +65,11 @@ namespace Tips.WebServer.Modules
                 var project =
                     context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrDefault();
 
+                var permission = context.GetAccessProjectPermission(project.Id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 var sprintText = taskToText.Make(project.Sprints);
 
                 var user =
@@ -79,6 +91,12 @@ namespace Tips.WebServer.Modules
 
                 var project =
                     context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrDefault();
+                
+                var permission = context.GetAccessProjectPermission(project.Id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 // todo 競合や削除の警告
 
                 var json = this.Request.Body.ToStreamString();
@@ -98,6 +116,11 @@ namespace Tips.WebServer.Modules
             {
                 var id = (int)prms.id;
 
+                var permission = context.GetAccessProjectPermission(id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 var view =
                     from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
                     select View["Views/ProjectReport", new { Project = project }] as object;
@@ -108,6 +131,11 @@ namespace Tips.WebServer.Modules
             Get["/{id}/works"] = prms =>
             {
                 var id = (int)prms.id;
+
+                var permission = context.GetAccessProjectPermission(id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
 
                 var view =
                     from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
@@ -120,6 +148,11 @@ namespace Tips.WebServer.Modules
             {
                 // projectid
                 var id = (int)prms.id;
+
+                var permission = context.GetAccessProjectPermission(id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
 
                 var view =
                     from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
@@ -153,12 +186,32 @@ namespace Tips.WebServer.Modules
             {
                 var id = (int)prms.id;
 
+                var permission = context.GetAccessProjectPermission(id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 var view =
                     from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
                     select View["Views/ProjectMember", new { Project = project }] as object;
 
                 return view.Return(() => Response.AsRedirect("/project/" + id));
             };
+        }
+        
+        private bool IsEnableUser(IDataBaseContext context, IPermission permission)
+        {
+            var query =
+                from current in this.Context.CurrentUser.ToMaybe()
+                from name in current.UserName.ToMaybe()
+                from user in
+                    (from u in context.GetUser(x => x.Id.Equals(name))
+                     select u).FirstOrNothing()
+                where permission.IsPermittedUser(user)
+                select true;
+
+            return
+                query.IsSomething;
         }
     }
 }

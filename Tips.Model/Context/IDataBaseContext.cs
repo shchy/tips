@@ -33,6 +33,7 @@ namespace Tips.Model.Context
         IPermission GetDeleteUserPermission();
         IPermission GetAddProjectMemberPermission();
         IPermission GetDeleteProjectMemberPermission();
+        IPermission GetAccessProjectPermission(int projectId);
 
         IEnumerable<IUser> GetUserOfProject(int projectId);
         IProject GetProjectFromTask(int taskId);
