@@ -15,7 +15,7 @@ namespace Tips.Model.Models.PermissionModels
 
     public static class IPermissionExtends
     {
-        public static bool IsPermittedDelete(this IPermission @this, IUser user)
+        public static bool IsPermittedUser(this IPermission @this, IUser user)
         {
             // 許可条件に一つでも適合した場合にtrue
             return

@@ -284,5 +284,15 @@ namespace Tips.Model.Context
         {
             throw new NotImplementedException();
         }
+
+        public IPermission GetAddProjectMemberPermission()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPermission GetDeleteProjectMemberPermission()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

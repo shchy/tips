@@ -31,6 +31,8 @@ namespace Tips.Model.Context
         IPermission GetDeleteTaskRecordPermission(Tuple<int, int> taskAndRecord);
         IPermission GetDeleteProjectPermission();
         IPermission GetDeleteUserPermission();
+        IPermission GetAddProjectMemberPermission();
+        IPermission GetDeleteProjectMemberPermission();
 
         IEnumerable<IUser> GetUserOfProject(int projectId);
         IProject GetProjectFromTask(int taskId);

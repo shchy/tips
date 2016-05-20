@@ -376,9 +376,14 @@ namespace Tips.WebServer.Modules
                 var userId = jObj["userId"].Value<string>();
                 var user =
                     context.GetUser(x => x.Id == userId).FirstOrDefault();
+                var permission =
+                    context.GetAddProjectMemberPermission();
 
                 if (user == default(IUser))
-                    return Response.AsJson(new { }, HttpStatusCode.BadRequest);
+                    return HttpStatusCode.BadRequest;
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
 
                 context.AddProjectMember(user, projectId);
 
@@ -394,9 +399,14 @@ namespace Tips.WebServer.Modules
                 var userId = jObj["userId"].Value<string>();
                 var user =
                     context.GetUser(x => x.Id == userId).FirstOrDefault();
+                var permission =
+                    context.GetDeleteProjectMemberPermission();
 
                 if (user == default(IUser))
-                    return Response.AsJson(new { }, HttpStatusCode.BadRequest);
+                    return HttpStatusCode.BadRequest;
+                
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
 
                 context.DeleteProjectMember(user, projectId);
 
@@ -413,7 +423,7 @@ namespace Tips.WebServer.Modules
                 from user in
                     (from u in context.GetUser(x => x.Id.Equals(name))
                      select u).FirstOrNothing()
-                where permission.IsPermittedDelete(user)
+                where permission.IsPermittedUser(user)
                 select true;
 
             return

@@ -607,5 +607,23 @@ namespace Tips.Model.Context
                 db.LinkProjectWithUser.RemoveRange(links);
             });
         }
+
+        public IPermission GetAddProjectMemberPermission()
+        {
+            var permission = new AddProjectMemberPermission();
+
+            // 現状ではDBにアクセスする必要なし
+
+            return permission;
+        }
+
+        public IPermission GetDeleteProjectMemberPermission()
+        {
+            var permission = new DeleteProjectMemberPermission();
+
+            // 現状ではDBにアクセスする必要なし
+
+            return permission;
+        }
     }
 }
