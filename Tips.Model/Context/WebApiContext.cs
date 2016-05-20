@@ -279,5 +279,10 @@ namespace Tips.Model.Context
         {
             throw new NotImplementedException();
         }
+
+        public void DeleteProjectMember(IUser user, int projectId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -22,11 +22,6 @@
     border: 1px solid #e1e1e8;
     border-radius: 0 4px 0 4px;
 }
-
-    .img-rounded {
-        max-width:100px;
-        max-height:100px;
-    }
 -->
 </style>
 }
@@ -176,6 +171,25 @@
                     </div> \
                 ');
             });
+            $('.btn-user-delete').click(confirmDeleteMember);
+        });
+    }
+
+    function confirmDeleteMember(e) {
+        if (window.confirm("Are you sure you want to delete this project member ?")) {
+            deleteMember(this);
+        }
+    }
+
+    function deleteMember(button) {
+        var url = '@Url.Content("~/api/project/members/delete")';
+        var jsonData = {
+            projectId : @Model.Project.Id,
+            userId : button.value
+        };
+
+        postJson(url, jsonData, function (data) {
+            document.location.reload();
         });
     }
 

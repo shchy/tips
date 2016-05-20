@@ -201,6 +201,17 @@ namespace Tips.Model.Context
 
             // Sprintsを削除
             project.Sprints.ForEach(DeleteSprint);
+            
+            // ユーザとprojectの関係モデルを削除
+            this.dbContext.Delete(db =>
+            {
+                var links =
+                    db.LinkProjectWithUser
+                    .Where(x => x.ProjectId == project.Id)
+                    .ToArray();
+                links.ForEach(li => db.LinkProjectWithUser.Attach(li));
+                db.LinkProjectWithUser.RemoveRange(links);
+            });
 
             this.dbContext.Delete(db =>
             {
@@ -434,6 +445,17 @@ namespace Tips.Model.Context
                 });
                 db.LinkUserWithTaskItem.RemoveRange(linkUserWithTaskItem);
             });
+            
+            // ユーザとprojectの関係モデルを削除
+            this.dbContext.Delete(db =>
+            {
+                var links =
+                    db.LinkProjectWithUser
+                    .Where(x => x.UserId == user.Id)
+                    .ToArray();
+                links.ForEach(li => db.LinkProjectWithUser.Attach(li));
+                db.LinkProjectWithUser.RemoveRange(links);
+            });
 
             this.dbContext.Delete(db =>
             {
@@ -570,6 +592,20 @@ namespace Tips.Model.Context
                     db.LinkProjectWithUser.AddOrUpdate(link);
                     db.SaveChanges();
                 }
+            });
+        }
+
+        public void DeleteProjectMember(IUser user, int projectId)
+        {
+            // ユーザとprojectの関係モデルを削除
+            this.dbContext.Delete(db =>
+            {
+                var links =
+                    db.LinkProjectWithUser
+                    .Where(x => x.ProjectId == projectId && x.UserId == user.Id)
+                    .ToArray();
+                links.ForEach(li => db.LinkProjectWithUser.Attach(li));
+                db.LinkProjectWithUser.RemoveRange(links);
             });
         }
     }

@@ -26,6 +26,7 @@ namespace Tips.Model.Context
         void DeleteProject(IProject project);
         void DeleteUser(IUser user);
         void DeleteTaskRecord(ITaskWithRecord taskWithRecord, int recordId);
+        void DeleteProjectMember(IUser user, int projectId);
 
         IPermission GetDeleteTaskRecordPermission(Tuple<int, int> taskAndRecord);
         IPermission GetDeleteProjectPermission();
