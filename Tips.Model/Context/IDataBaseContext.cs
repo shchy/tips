@@ -13,7 +13,7 @@ namespace Tips.Model.Context
         IUser AuthUser(IUser authUser);
         void AddUser(IUser user);
         void AddUserIcon(IUser user, byte[] iconImage);
-        void AddProject(IProject project);
+        void AddProject(IProject project, IUser user);
         void AddTaskComment(ITaskComment comment, int taskId);
         void AddTaskRecord(ITaskRecord record, int taskId);
         void AddTaskToUser(IUser user, int taskId);
@@ -37,6 +37,7 @@ namespace Tips.Model.Context
 
         IEnumerable<IUser> GetUserOfProject(int projectId);
         IProject GetProjectFromTask(int taskId);
+        IEnumerable<IProject> GetProjectBelongUser(IUser user);
 
         void UpdateTask(ITaskItem task);
     }

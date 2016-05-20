@@ -44,8 +44,17 @@ namespace Tips.WebServer.Modules
 
             Get["/projects/"] = _ =>
             {
+                var user =
+                    from c in this.Context.CurrentUser.ToMaybe()
+                    from name in c.UserName.ToMaybe()
+                    from u in context.GetUser(x => x.Id == name).FirstOrNothing()
+                    select u;
+
+                if (user.IsNothing)
+                    return HttpStatusCode.BadRequest;
+
                 return
-                    Response.AsJson(context.GetProjects(p => true)
+                    Response.AsJson(context.GetProjectBelongUser(user.Return())
                         .Select(p => MyClass.ToWithRecordsProject(context, p))
                         .ToArray());
             };
@@ -227,7 +236,13 @@ namespace Tips.WebServer.Modules
                     Project.FromJson(this.Request.Body.ToStreamString())
                     .ToMaybe();
 
-                project.On(context.AddProject);
+                var user =
+                    from c in this.Context.CurrentUser.ToMaybe()
+                    from name in c.UserName.ToMaybe()
+                    from u in context.GetUser(x => x.Id == name).FirstOrNothing()
+                    select u;
+
+                project.On(p => context.AddProject(p, user.Return()));
 
                 return Response.AsJson(new { }, project.IsSomething ? HttpStatusCode.OK : HttpStatusCode.InternalServerError);
             };

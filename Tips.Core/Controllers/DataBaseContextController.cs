@@ -93,7 +93,7 @@ namespace Tips.Core.Controllers
 
         private void UpdateProject(IProject model)
         {
-            this.context.AddProject(model);
+            //this.context.AddProject(model);
         }
 
         private void GetProject(GetOrder<IProject> order)
@@ -143,7 +143,7 @@ namespace Tips.Core.Controllers
                 Name = order.Name,
                 Describe = order.Describe,
             };
-            this.context.AddProject(model);
+            //this.context.AddProject(model);
         }
 
         private void AddUser(IUser user)

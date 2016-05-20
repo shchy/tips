@@ -110,7 +110,7 @@ namespace Tips.Model.Context
             });
         }
 
-        public void AddProject(IProject project)
+        public void AddProject(IProject project, IUser user)
         {
             PostAsJson("api/projects/", () =>
             {
@@ -296,6 +296,11 @@ namespace Tips.Model.Context
         }
 
         public IPermission GetAccessProjectPermission(int projectId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IProject> GetProjectBelongUser(IUser user)
         {
             throw new NotImplementedException();
         }

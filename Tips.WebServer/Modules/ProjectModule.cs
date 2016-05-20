@@ -89,6 +89,12 @@ namespace Tips.WebServer.Modules
             {
                 var id = prms.id;
 
+                var user =
+                    from c in this.Context.CurrentUser.ToMaybe()
+                    from name in c.UserName.ToMaybe()
+                    from u in context.GetUser(x => x.Id == name).FirstOrNothing()
+                    select u;
+
                 var project =
                     context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrDefault();
                 
@@ -104,7 +110,7 @@ namespace Tips.WebServer.Modules
                 var sprints = taskToText.Make(jObj["edittext"].Value<string>());
                 
                 project.Sprints = sprints;
-                context.AddProject(project);
+                context.AddProject(project, user.Return());
 
                 //var user =
                 //   eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();

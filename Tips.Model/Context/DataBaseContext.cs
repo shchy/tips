@@ -29,7 +29,7 @@ namespace Tips.Model.Context
             this.dbContext = dbContext;
         }
 
-        public void AddProject(IProject project)
+        public void AddProject(IProject project, IUser user)
         {
             this.dbContext.Update(db =>
             {
@@ -37,6 +37,9 @@ namespace Tips.Model.Context
                 var dbModel = project.ToDbModel();
                 db.Projects.AddOrUpdate(dbModel);
                 db.SaveChanges();
+
+                // add projectMember
+                AddProjectMember(user, dbModel.Id);
 
                 // todo 他プロジェクトのタスクIDを指定されたら困る
                 // todo ViewModel側でIDのマッピングする様にして直接IDをText入力させない様にするのが正しそう
@@ -637,6 +640,23 @@ namespace Tips.Model.Context
             users.ForEach(u => permission.Others.Add(u.Id, true));
 
             return permission;
+        }
+
+        public IEnumerable<IProject> GetProjectBelongUser(IUser user)
+        {
+            if (user.Role == UserRole.Admin)
+                return GetProjects(p => true);
+
+            var query =
+                from link in this.dbContext.Get(db => db.LinkProjectWithUser.ToArray())
+                from project in this.dbContext.Get(db => db.Projects.ToArray())
+                where link.UserId == user.Id
+                where link.ProjectId == project.Id
+                select project.Id;
+
+            var projectIds = query.ToArray();
+
+            return GetProjects(p => projectIds.Contains(p.Id));
         }
     }
 }

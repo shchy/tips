@@ -26,7 +26,7 @@ namespace Tips.WebServer.Modules
                     context.GetUser(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
 
                 var projects =
-                    context.GetProjects(_ => true).Select(p => MyClass.ToWithRecordsProject(context, p)).ToArray();
+                    context.GetProjectBelongUser(user).Select(p => MyClass.ToWithRecordsProject(context, p)).ToArray();
 
                 return View["Views/Home", new { Auth = user, Projects = projects }];
             };
