@@ -14,19 +14,13 @@ namespace Tips.Model.Models.PermissionModels.Extends
         public DeleteUserPermission()
         {
             // 全体は不許可
-            this.All = new UserPermissions()
-            {
-                IsEnableDelete = false
-            };
+            this.All = false;
 
             // 管理者は許可
-            this.Administrator = new UserPermissions()
-            {
-                IsEnableDelete = true
-            };
+            this.Administrator = true;
 
             // その他は該当なし
-            this.Others = new Dictionary<string, IUserPermissions>();
+            this.Others = new Dictionary<string, bool>();
         }
     }
 }

@@ -90,9 +90,7 @@
     <Compile Include="Models\PermissionModels\Extends\DeleteTaskRecordPermission.cs" />
     <Compile Include="Models\PermissionModels\Extends\DeleteUserPermission.cs" />
     <Compile Include="Models\PermissionModels\IPermission.cs" />
-    <Compile Include="Models\PermissionModels\IUserPermissions.cs" />
     <Compile Include="Models\PermissionModels\Permission.cs" />
-    <Compile Include="Models\PermissionModels\UserPermissions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

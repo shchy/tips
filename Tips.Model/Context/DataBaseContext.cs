@@ -500,8 +500,7 @@ namespace Tips.Model.Context
                             .SelectMany(x => x.Records)
                             .Where(x => x.Id == taskAndRecord.Item2);
             // 作業履歴の作成者に削除権限を付与
-            var workersPermission = new UserPermissions() { IsEnableDelete = true };
-            records.ForEach(x => permission.Others.Add(x.Who.Id, workersPermission));
+            records.ForEach(x => permission.Others.Add(x.Who.Id, true));
 
             return permission;
         }

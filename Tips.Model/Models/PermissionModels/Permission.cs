@@ -8,8 +8,8 @@ namespace Tips.Model.Models.PermissionModels
 {
     public class Permission : IPermission
     {
-        public IUserPermissions Administrator { get; set; }
-        public IUserPermissions All { get; set; }
-        public IDictionary<string, IUserPermissions> Others { get; set; }
+        public bool Administrator { get; set; }
+        public bool All { get; set; }
+        public IDictionary<string, bool> Others { get; set; }
     }
 }

@@ -8,9 +8,9 @@ namespace Tips.Model.Models.PermissionModels
 {
     public interface IPermission
     {
-        IUserPermissions Administrator { get; }
-        IUserPermissions All { get; }
-        IDictionary<string, IUserPermissions> Others { get; } // key: userId, value: permissions
+        bool Administrator { get; }
+        bool All { get; }
+        IDictionary<string, bool> Others { get; } // key: userId, value: permissions
     }
 
     public static class IPermissionExtends
@@ -19,9 +19,9 @@ namespace Tips.Model.Models.PermissionModels
         {
             // 許可条件に一つでも適合した場合にtrue
             return
-                @this.All.IsEnableDelete
-                || (user.Role == UserRole.Admin && @this.Administrator.IsEnableDelete)
-                || (@this.Others.ContainsKey(user.Id) && @this.Others[user.Id].IsEnableDelete);
+                @this.All
+                || (user.Role == UserRole.Admin && @this.Administrator)
+                || (@this.Others.ContainsKey(user.Id) && @this.Others[user.Id]);
         }
     }
 }
