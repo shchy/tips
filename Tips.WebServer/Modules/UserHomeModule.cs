@@ -7,13 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
+using Tips.Model.Context;
 using Tips.Model.Models;
 
 namespace Tips.WebServer.Modules
 {
     public class UserHomeModule : NancyModule
     {
-        public UserHomeModule(IEventAggregator eventAgg)
+        public UserHomeModule(
+            IDataBaseContext context)
             : base("/home/")
         {
             this.RequiresAuthentication();
@@ -21,10 +23,10 @@ namespace Tips.WebServer.Modules
             Get["/"] = prms =>
             {
                 var user =
-                    eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
+                    context.GetUser(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
 
                 var projects =
-                    eventAgg.GetEvent<GetProjectEvent>().Get(_ => true).ToArray();
+                    context.GetProjectBelongUser(user).Select(p => MyClass.ToWithRecordsProject(context, p)).ToArray();
 
                 return View["Views/Home", new { Auth = user, Projects = projects }];
             };

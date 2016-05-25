@@ -7,20 +7,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
+using Tips.Model.Context;
 using Tips.WebServer.Services;
 
 namespace Tips.WebServer.Modules
 {
     public class LoginModule : NancyModule
     {
-        public LoginModule(IEventAggregator eventAgg, IUserMapper mapper)
+        public LoginModule(
+            IDataBaseContext context
+            , IUserMapper mapper)
         {
             Get["/"] = prms =>
             {
                 // ログイン情報がある場合ホーム画面にリダイレクト
                 var query =
                     from user in this.Context.CurrentUser.ToMaybe()
-                    where eventAgg.GetEvent<GetUserEvent>().Get(x => user.UserName.Equals(x.Id)).Any()
+                    where context.GetUser(x => user.UserName.Equals(x.Id)).Any()
                     select user;
 
                 if (query.IsSomething)
@@ -37,7 +40,7 @@ namespace Tips.WebServer.Modules
                 var redirect = (string)this.Request.Query["returnUrl"] ?? "/home/";
 
                 var findId =
-                    (from u in eventAgg.GetEvent<GetUserEvent>().Get(_ => true)
+                    (from u in context.GetUser(_ => true)
                      where u.Id == id
                      where u.Password == pass
                      select (mapper as UserValidator).ToGuid(u)).FirstOrNothing();
@@ -65,7 +68,7 @@ namespace Tips.WebServer.Modules
                 var pass = (string)prms.pass;
 
                 var findId =
-                    (from u in eventAgg.GetEvent<GetUserEvent>().Get(_ => true)
+                    (from u in context.GetUser(_ => true)
                      where u.Id == id
                      where u.Password == pass
                      select (mapper as UserValidator).ToGuid(u)).FirstOrNothing();

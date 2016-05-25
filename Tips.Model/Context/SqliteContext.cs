@@ -27,9 +27,9 @@ namespace Tips.Model.Context
         DbSet<DbLinkProjectWithSprint> LinkProjectWithSprint { get; }
         DbSet<DbLinkSprintWithTask> LinkSprintWithTaskItem { get; }
         DbSet<DbLinkUserWithTaskItem> LinkUserWithTaskItem { get; }
+        DbSet<DbLinkProjectWithUser> LinkProjectWithUser { get; }
         DbSet<SchemaInfo> SchemaInfo { get; set; }
-
-
+        
     }
 
     public class SqliteContext : DbContext, IDataSource
@@ -201,6 +201,7 @@ namespace Tips.Model.Context
         public DbSet<DbLinkTaskItemWithRecord> LinkTaskItemWithRecord { get; set; }
         public DbSet<DbLinkTaskItemWithComment> LinkTaskItemWithComment { get; set; }
         public DbSet<DbLinkUserWithTaskItem> LinkUserWithTaskItem { get; set; }
+        public DbSet<DbLinkProjectWithUser> LinkProjectWithUser { get; set; }
         public DbSet<SchemaInfo> SchemaInfo { get; set; }
 
     }
@@ -213,6 +214,7 @@ namespace Tips.Model.Context
             Migrations = new Dictionary<int, IList<string>>();
 
             MigrationVersion1();
+            MigrationVersion2();
         }
 
         public Dictionary<int, IList<string>> Migrations { get; set; }
@@ -234,13 +236,22 @@ namespace Tips.Model.Context
             // キーはVersionと対応
             Migrations.Add(1, steps);
         }
+        
+        private void MigrationVersion2()
+        {
+            var steps = new List<string>();
 
+            steps.Add("CREATE TABLE DbLinkProjectWithUser( Id INTEGER, ProjectId INTEGER, UserId TEXT, PRIMARY KEY (Id), FOREIGN KEY(ProjectId)REFERENCES DbProject(Id), FOREIGN KEY(UserId)REFERENCES DbUser(Id));");
+
+            // キーはVersionと対応
+            Migrations.Add(2, steps);
+        }
     }
 
     public class SqliteContextInitializer : IDataBaseContextInitializer
     {
         // tips DBのバージョン変更があるたびにインクリメント
-        public static int RequiredDatabaseVersion = 1;
+        public static int RequiredDatabaseVersion = 2;
         private SqliteContext sqliteContext;
 
         public SqliteContextInitializer(SqliteContext sqliteContext)

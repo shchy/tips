@@ -1,4 +1,5 @@
-﻿using Nancy;
+﻿using Microsoft.Practices.Unity;
+using Nancy;
 using Nancy.Security;
 using Prism.Events;
 using System;
@@ -8,13 +9,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
 using Tips.Core.Services;
+using Tips.Model.Context;
 using Tips.Model.Models;
 
 namespace Tips.WebServer.Modules
 {
     public class ProjectManageModule : NancyModule
     {
-        public ProjectManageModule(IEventAggregator eventAgg)
+        public ProjectManageModule(
+            IDataBaseContext context
+            , [Dependency("workdaySettingFolder")] string workdaySettingFolder)
             : base("/projectmanage/")
         {
             this.RequiresAuthentication();
@@ -31,8 +35,8 @@ namespace Tips.WebServer.Modules
                 var id = (int)prms.id;
 
                 var view =
-                    from p in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
-                    from workdayContext in eventAgg.GetEvent<GetWorkdayContextEvent>().Get(p.Id)
+                    from p in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
+                    from workdayContext in MyClass.GetWorkdayContext(workdaySettingFolder, p.Id)
                     let workdays = workdayContext.Load()
                     let json = WorkdayModify.ToJsonText(workdays)
                     select View["Views/ProjectManageWorkdays", new { Project = p, Json = json }] as object;
@@ -45,8 +49,8 @@ namespace Tips.WebServer.Modules
             {
                 var id = (int)prms.id;
                 var query =
-                    from p in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
-                    from workdayContext in eventAgg.GetEvent<GetWorkdayContextEvent>().Get(p.Id)
+                    from p in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
+                    from workdayContext in MyClass.GetWorkdayContext(workdaySettingFolder, p.Id)
                     let json = this.Request.Body.ToStreamString()
                     let model = WorkdayModify.ToModel(json)
                     let result = Fn.New(()=> { workdayContext.Save(model); return 0; }).ToExceptional()

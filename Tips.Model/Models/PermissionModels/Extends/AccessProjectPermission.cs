@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Tips.Model.Models.PermissionModels.Extends
 {
-    public class DeleteTaskRecordPermission : Permission, IPermission
+    public class AccessProjectPermission : Permission, IPermission
     {
         /// <summary>
-        /// プロジェクト削除機能のユーザ制限初期化
+        /// プロジェクトへのアクセス権限初期化
         /// </summary>
-        public DeleteTaskRecordPermission()
+        public AccessProjectPermission()
         {
             // 全体は不許可
             this.All = false;

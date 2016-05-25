@@ -248,28 +248,34 @@
 <script src="~/js/jquery-ui.min.js"></script>
 <script src="~/js/bootstrap.min.js"></script>
 <script type="text/javascript">
+    function floatFormat( number, n ) {
+        var _pow = Math.pow( 10 , n ) ;
+
+        return Math.round( number * _pow ) / _pow ;
+    }
+
     function updateListValues() {
-        var backlogVal = 0;
-        var readyVal = 0;
-        var inProgressVal = 0;
-        var doneVal = 0;
+        var backlogVal = 0.0;
+        var readyVal = 0.0;
+        var inProgressVal = 0.0;
+        var doneVal = 0.0;
         $.each($('#backlog-list li'), function (index, elm) {
-            backlogVal += elm.value;
+            backlogVal += parseFloat(elm.attributes["value"].value);
         });
         $.each($('#ready-list li'), function (index, elm) {
-            readyVal += elm.value;
+            readyVal += parseFloat(elm.attributes["value"].value);
         });
         $.each($('#in-progress-list li'), function (index, elm) {
-            inProgressVal += elm.value;
+            inProgressVal += parseFloat(elm.attributes["value"].value);
         });
         $.each($('#done-list li'), function (index, elm) {
-            doneVal += elm.value;
+            doneVal += parseFloat(elm.attributes["value"].value);
         });
 
-        $('#value-of-backlog').html(backlogVal);
-        $('#value-of-ready').html(readyVal);
-        $('#value-of-inprogress').html(inProgressVal);
-        $('#value-of-done').html(doneVal);
+        $('#value-of-backlog').html(floatFormat(backlogVal, 2));
+        $('#value-of-ready').html(floatFormat(readyVal, 2));
+        $('#value-of-inprogress').html(floatFormat(inProgressVal, 2));
+        $('#value-of-done').html(floatFormat(doneVal, 2));
     }
 
   $(function () {

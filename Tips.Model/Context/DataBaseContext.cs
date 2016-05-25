@@ -29,7 +29,7 @@ namespace Tips.Model.Context
             this.dbContext = dbContext;
         }
 
-        public void AddProject(IProject project)
+        public void AddProject(IProject project, IUser user)
         {
             this.dbContext.Update(db =>
             {
@@ -37,6 +37,9 @@ namespace Tips.Model.Context
                 var dbModel = project.ToDbModel();
                 db.Projects.AddOrUpdate(dbModel);
                 db.SaveChanges();
+
+                // add projectMember
+                AddProjectMember(user, dbModel.Id);
 
                 // todo 他プロジェクトのタスクIDを指定されたら困る
                 // todo ViewModel側でIDのマッピングする様にして直接IDをText入力させない様にするのが正しそう
@@ -201,6 +204,17 @@ namespace Tips.Model.Context
 
             // Sprintsを削除
             project.Sprints.ForEach(DeleteSprint);
+            
+            // ユーザとprojectの関係モデルを削除
+            this.dbContext.Delete(db =>
+            {
+                var links =
+                    db.LinkProjectWithUser
+                    .Where(x => x.ProjectId == project.Id)
+                    .ToArray();
+                links.ForEach(li => db.LinkProjectWithUser.Attach(li));
+                db.LinkProjectWithUser.RemoveRange(links);
+            });
 
             this.dbContext.Delete(db =>
             {
@@ -434,6 +448,17 @@ namespace Tips.Model.Context
                 });
                 db.LinkUserWithTaskItem.RemoveRange(linkUserWithTaskItem);
             });
+            
+            // ユーザとprojectの関係モデルを削除
+            this.dbContext.Delete(db =>
+            {
+                var links =
+                    db.LinkProjectWithUser
+                    .Where(x => x.UserId == user.Id)
+                    .ToArray();
+                links.ForEach(li => db.LinkProjectWithUser.Attach(li));
+                db.LinkProjectWithUser.RemoveRange(links);
+            });
 
             this.dbContext.Delete(db =>
             {
@@ -478,8 +503,7 @@ namespace Tips.Model.Context
                             .SelectMany(x => x.Records)
                             .Where(x => x.Id == taskAndRecord.Item2);
             // 作業履歴の作成者に削除権限を付与
-            var workersPermission = new UserPermissions() { IsEnableDelete = true };
-            records.ForEach(x => permission.Others.Add(x.Who.Id, workersPermission));
+            records.ForEach(x => permission.Others.Add(x.Who.Id, true));
 
             return permission;
         }
@@ -509,6 +533,130 @@ namespace Tips.Model.Context
                 var model = task.ToDbModel();
                 db.TaskItems.AddOrUpdate(model);
             });
+        }
+
+        public IEnumerable<IUser> GetUserOfProject(int projectId)
+        {
+            return
+                this.dbContext.Get(db =>
+                {
+                    var userIds = db.LinkProjectWithUser
+                                    .Where(x => x.ProjectId == projectId)
+                                    .Select(x => x.UserId)
+                                    .ToArray();
+                    return
+                        db.Users.Where(x => userIds.Contains(x.Id))
+                        .ToArray();
+                });
+        }
+
+        public IProject GetProjectFromTask(int taskId)
+        {
+            return
+                this.dbContext.Get(db =>
+                {
+                    // プロジェクトを取得
+                    var query =
+                        from ts in db.LinkSprintWithTaskItem
+                        from sp in db.LinkProjectWithSprint
+                        from project in db.Projects
+                        where ts.TaskItemId == taskId
+                        where sp.SprintId == ts.SprintId
+                        where project.Id == sp.ProjectId
+                        select project;
+                    
+                    var p = query.FirstOrDefault();
+                    if (p == default(IProject))
+                        return default(IProject);
+
+                    return
+                        this.GetProjects(x => x.Id == p.Id).First();
+                });
+        }
+
+        public void AddProjectMember(IUser user, int projectId)
+        {
+            this.dbContext.Update(db =>
+            {
+                var project =
+                    db.Projects.FirstOrDefault(x => x.Id == projectId);
+
+                var isExist =
+                    db.LinkProjectWithUser
+                    .Any(link => link.ProjectId == projectId 
+                                && link.UserId == user.Id);
+
+                if (project != (default(DbProject)) && !isExist)
+                {
+                    var link = new DbLinkProjectWithUser();
+                    link.ProjectId = projectId;
+                    link.UserId = user.Id;
+                    db.LinkProjectWithUser.AddOrUpdate(link);
+                    db.SaveChanges();
+                }
+            });
+        }
+
+        public void DeleteProjectMember(IUser user, int projectId)
+        {
+            // ユーザとprojectの関係モデルを削除
+            this.dbContext.Delete(db =>
+            {
+                var links =
+                    db.LinkProjectWithUser
+                    .Where(x => x.ProjectId == projectId && x.UserId == user.Id)
+                    .ToArray();
+                links.ForEach(li => db.LinkProjectWithUser.Attach(li));
+                db.LinkProjectWithUser.RemoveRange(links);
+            });
+        }
+
+        public IPermission GetAddProjectMemberPermission()
+        {
+            var permission = new AddProjectMemberPermission();
+
+            // 現状ではDBにアクセスする必要なし
+
+            return permission;
+        }
+
+        public IPermission GetDeleteProjectMemberPermission()
+        {
+            var permission = new DeleteProjectMemberPermission();
+
+            // 現状ではDBにアクセスする必要なし
+
+            return permission;
+        }
+
+        public IPermission GetAccessProjectPermission(int projectId)
+        {
+            var permission = new AccessProjectPermission();
+
+            // プロジェクトメンバーを取得
+            var users = GetUserOfProject(projectId);
+
+            // プロジェクトメンバーに権限を付与
+            users.ForEach(u => permission.Others.Add(u.Id, true));
+
+            return permission;
+        }
+
+        public IEnumerable<IProject> GetProjectBelongUser(IUser user)
+        {
+            if (user.Role == UserRole.Admin)
+                return GetProjects(p => true);
+
+            var query =
+                from link in this.dbContext.Get(db => db.LinkProjectWithUser.ToArray())
+                from project in this.dbContext.Get(db => db.Projects.ToArray())
+                where link.UserId == user.Id
+                where link.ProjectId == project.Id
+                select project.Id;
+
+            var projectIds = query.ToArray();
+
+            return GetProjects(p => projectIds.Contains(p.Id));
         }
     }
 }

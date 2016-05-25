@@ -7,13 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
+using Tips.Model.Context;
 using Tips.Model.Models;
 
 namespace Tips.WebServer.Modules
 {
     public class SystemManageModule : NancyModule
     {
-        public SystemManageModule(IEventAggregator eventAgg)
+        public SystemManageModule(
+            IDataBaseContext context)
             : base("/systemmanage/")
         {
             this.RequiresAuthentication();
@@ -27,7 +29,7 @@ namespace Tips.WebServer.Modules
             Get["/user"] = prms =>
             {
                 var users =
-                    eventAgg.GetEvent<GetUserEvent>().Get(_ => true)
+                    context.GetUser(_ => true)
                     .Select(u => this.AddIconFilePath(Request.Url, u))
                     .ToArray();
 

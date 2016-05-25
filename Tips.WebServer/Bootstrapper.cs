@@ -47,10 +47,7 @@ namespace Tips.WebServer
             base.ConfigureApplicationContainer(existingContainer);
 
             // PubSubイベントAggregator
-            existingContainer.RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager());
-            var authUser = existingContainer.Resolve<UserValidator>();
-            existingContainer.RegisterInstance<IUserValidator>(authUser);
-            existingContainer.RegisterInstance<IUserMapper>(authUser);
+            //existingContainer.RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager());
 
             var dbPath = 
                 Path.Combine(
@@ -66,6 +63,10 @@ namespace Tips.WebServer
             existingContainer.RegisterType<IDataBaseContext, DataBaseContext<SqliteContext>>();
 
             existingContainer.RegisterType<ITaskToTextFactory, TaskToTextFactory>();
+
+            var authUser = existingContainer.Resolve<UserValidator>();
+            existingContainer.RegisterInstance<IUserValidator>(authUser);
+            existingContainer.RegisterInstance<IUserMapper>(authUser);
 
             existingContainer.RegisterInstance<string>("workdaySettingFolder", "settings/workday");
 
@@ -94,16 +95,16 @@ namespace Tips.WebServer
             container.Resolve<IDataBaseContextInitializer>().Initialize();
 
             // コントローラー群を起動
-            this.controllers = MakeControllers(container).ToArray();
+            //this.controllers = MakeControllers(container).ToArray();
 
             // todo debug admin追加
             var isNothingAdmin =
                 from c in container.ToMaybe()
-                from ev in c.Resolve<IEventAggregator>().ToMaybe()
-                let admin = ev.GetEvent<GetUserEvent>().Get(u => u.Id == "admin").FirstOrNothing()
+                from ev in c.Resolve<IDataBaseContext>().ToMaybe()
+                let admin = ev.GetUser(u => u.Id == "admin").FirstOrNothing()
                 where admin.IsNothing
                 select ev;
-            isNothingAdmin.On(ev => ev.GetEvent<AddUserEvent>().Publish(new User { Id = "admin", Name = "Admin", Password = "admin", Role = UserRole.Admin }));
+            isNothingAdmin.On(ev => ev.AddUser(new User { Id = "admin", Name = "Admin", Password = "admin", Role = UserRole.Admin }));
 
             Nancy.Json.JsonSettings.MaxJsonLength = int.MaxValue;
 

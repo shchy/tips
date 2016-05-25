@@ -110,7 +110,7 @@ namespace Tips.Model.Context
             });
         }
 
-        public void AddProject(IProject project)
+        public void AddProject(IProject project, IUser user)
         {
             PostAsJson("api/projects/", () =>
             {
@@ -261,6 +261,46 @@ namespace Tips.Model.Context
         }
 
         public void UpdateTask(ITaskItem task)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IUser> GetUserOfProject(int projectId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IProject GetProjectFromTask(int taskId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddProjectMember(IUser user, int projectId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteProjectMember(IUser user, int projectId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPermission GetAddProjectMemberPermission()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPermission GetDeleteProjectMemberPermission()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPermission GetAccessProjectPermission(int projectId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IProject> GetProjectBelongUser(IUser user)
         {
             throw new NotImplementedException();
         }

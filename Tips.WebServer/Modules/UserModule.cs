@@ -7,13 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
+using Tips.Model.Context;
 using Tips.Model.Models;
 
 namespace Tips.WebServer.Modules
 {
     public class UserModule : NancyModule
     {
-        public UserModule(IEventAggregator eventAgg)
+        public UserModule(
+            IDataBaseContext context)
             : base("/user/")
         {
             this.RequiresAuthentication();
@@ -30,7 +32,7 @@ namespace Tips.WebServer.Modules
                 var userId = prms.id.ToString();
 
                 var user =
-                    eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == userId).FirstOrDefault();
+                    context.GetUser(u => u.Id == userId).FirstOrDefault();
 
                 return View["Views/User", this.AddIconFilePath(Request.Url, user)];
             };
@@ -41,7 +43,7 @@ namespace Tips.WebServer.Modules
                 var userId = prms.id;
 
                 var user =
-                    eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == userId).FirstOrDefault();
+                    context.GetUser(u => u.Id == userId).FirstOrDefault();
 
                 // 自分でなかったらダメ
                 var canEdit = 

@@ -86,13 +86,14 @@
     <Compile Include="Models\DbModels\DbModel.cs" />
     <Compile Include="Models\IProject.cs" />
     <Compile Include="Models\IUser.cs" />
+    <Compile Include="Models\PermissionModels\Extends\AccessProjectPermission.cs" />
+    <Compile Include="Models\PermissionModels\Extends\AddProjectMemberPermission.cs" />
+    <Compile Include="Models\PermissionModels\Extends\DeleteProjectMemberPermission.cs" />
     <Compile Include="Models\PermissionModels\Extends\DeleteProjectPermission.cs" />
     <Compile Include="Models\PermissionModels\Extends\DeleteTaskRecordPermission.cs" />
     <Compile Include="Models\PermissionModels\Extends\DeleteUserPermission.cs" />
     <Compile Include="Models\PermissionModels\IPermission.cs" />
-    <Compile Include="Models\PermissionModels\IUserPermissions.cs" />
     <Compile Include="Models\PermissionModels\Permission.cs" />
-    <Compile Include="Models\PermissionModels\UserPermissions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

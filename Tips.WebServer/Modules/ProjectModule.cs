@@ -9,20 +9,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Tips.Core.Events;
 using Tips.Core.Services;
+using Tips.Model.Context;
 using Tips.Model.Models;
+using Tips.Model.Models.PermissionModels;
 
 namespace Tips.WebServer.Modules
 {
     // memo 特定のプロジェクトを開いている時はModelにProjectをいれるとMenuBarのprojectManageボタンが使える
     public class ProjectModule : NancyModule
     {
-        private IEventAggregator eventAgg;
-
-        public ProjectModule(IEventAggregator eventAgg, ITaskToTextFactory taskToText)
+        public ProjectModule(
+            IDataBaseContext context
+            , ITaskToTextFactory taskToText)
             : base("/project/")
         {
-            this.eventAgg = eventAgg;
-            
             this.RequiresAuthentication();
 
             Get["/create"] = prms =>
@@ -36,11 +36,17 @@ namespace Tips.WebServer.Modules
                 var id = prms.id;
                 
                 var project =
-                    eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrDefault();
+                    context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrDefault();
+                
+                var permission = context.GetAccessProjectPermission(project.Id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 var withRecord = this.AddIconFilePath(Request.Url,project);
 
                 var user =
-                   eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
+                   context.GetUser(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
                 
                 return View["Views/Project", new { Auth = user, Project = withRecord }];
             };
@@ -57,12 +63,17 @@ namespace Tips.WebServer.Modules
                 var id = prms.id;
 
                 var project =
-                    eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrDefault();
+                    context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrDefault();
+
+                var permission = context.GetAccessProjectPermission(project.Id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
 
                 var sprintText = taskToText.Make(project.Sprints);
 
                 var user =
-                   eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
+                   context.GetUser(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
 
                 return View["Views/ProjectEdit"
                     , new
@@ -78,8 +89,20 @@ namespace Tips.WebServer.Modules
             {
                 var id = prms.id;
 
+                var user =
+                    from c in this.Context.CurrentUser.ToMaybe()
+                    from name in c.UserName.ToMaybe()
+                    from u in context.GetUser(x => x.Id == name).FirstOrNothing()
+                    select u;
+
                 var project =
-                    eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrDefault();
+                    context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrDefault();
+                
+                var permission = context.GetAccessProjectPermission(project.Id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 // todo 競合や削除の警告
 
                 var json = this.Request.Body.ToStreamString();
@@ -87,7 +110,7 @@ namespace Tips.WebServer.Modules
                 var sprints = taskToText.Make(jObj["edittext"].Value<string>());
                 
                 project.Sprints = sprints;
-                eventAgg.GetEvent<UpdateProjectEvent>().Publish(project);
+                context.AddProject(project, user.Return());
 
                 //var user =
                 //   eventAgg.GetEvent<GetUserEvent>().Get(u => u.Id == Context.CurrentUser.UserName).FirstOrDefault();
@@ -99,8 +122,13 @@ namespace Tips.WebServer.Modules
             {
                 var id = (int)prms.id;
 
+                var permission = context.GetAccessProjectPermission(id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 var view =
-                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
                     select View["Views/ProjectReport", new { Project = project }] as object;
 
                 return view.Return(() => Response.AsRedirect("/project/" + id));
@@ -110,8 +138,13 @@ namespace Tips.WebServer.Modules
             {
                 var id = (int)prms.id;
 
+                var permission = context.GetAccessProjectPermission(id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 var view =
-                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
                     select View["Views/ProjectWorks", new { Project = project }] as object;
 
                 return view.Return(() => Response.AsRedirect("/project/" + id));
@@ -122,8 +155,13 @@ namespace Tips.WebServer.Modules
                 // projectid
                 var id = (int)prms.id;
 
+                var permission = context.GetAccessProjectPermission(id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
                 var view =
-                    from project in eventAgg.GetEvent<GetProjectEvent>().Get(x => x.Id == id).FirstOrNothing()
+                    from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
                     let withrecord = this.AddIconFilePath(Request.Url, project)
                 let tasks =
                         from sprint in withrecord.Sprints
@@ -149,6 +187,37 @@ namespace Tips.WebServer.Modules
 
                 return view.Return(() => Response.AsRedirect("/project/" + id));
             };
+            
+            Get["/{id}/member"] = prms =>
+            {
+                var id = (int)prms.id;
+
+                var permission = context.GetAccessProjectPermission(id);
+
+                if (!IsEnableUser(context, permission))
+                    return HttpStatusCode.Forbidden;
+
+                var view =
+                    from project in context.GetProjects(x => x.Id == id).Select(p => MyClass.ToWithRecordsProject(context, p)).FirstOrNothing()
+                    select View["Views/ProjectMember", new { Project = project }] as object;
+
+                return view.Return(() => Response.AsRedirect("/project/" + id));
+            };
+        }
+        
+        private bool IsEnableUser(IDataBaseContext context, IPermission permission)
+        {
+            var query =
+                from current in this.Context.CurrentUser.ToMaybe()
+                from name in current.UserName.ToMaybe()
+                from user in
+                    (from u in context.GetUser(x => x.Id.Equals(name))
+                     select u).FirstOrNothing()
+                where permission.IsPermittedUser(user)
+                select true;
+
+            return
+                query.IsSomething;
         }
     }
 }
